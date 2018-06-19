@@ -1,0 +1,241 @@
+xfunction Rate_InputDist_dI(nbpop,dir,Iext,K,dIlim,nPrtr,IF_DATA,n,g,IF_Nk,IF_RING,Cff,Crec,IF_SAVE,Xlim,Ylim)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% function Rate_InputDist_dI(nbpop,dir,Iext,K,dIlim,IF_DATA,n,k,g,IF_RING,Crec,Cff)
+% Plots population time average rate vs the 
+% perturbed input Iext(2)+dI.
+% utils : Rate_InputDist(nbpop,dir,I,K)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    if(isempty(Iext))
+        Iext = External_Input('Rate',nbpop,dir) ;
+    end
+
+    IF_PE=false;
+
+    if nargin<7
+        IF_DATA = false ;
+    end
+    if nargin<10
+        IF_Nk = false ;
+    end
+    if nargin<11
+        IF_RING = false ;
+    end
+    if nargin<13
+        IF_SAVE = false ;
+    end
+
+    THRESHOLD = 0 ;
+    
+    X = [] ;
+    Y = [] ;
+
+    I = Iext ;
+    for dI=dIlim(1):dIlim(2):dIlim(3)
+        I(nPrtr) = Iext(nPrtr)+dI ;
+        % I(1) = Iext(1)-dI ;
+        % I(3) = Iext(3)+dI ;
+        % if(dI<dIlim(3)/2)
+        %     I(nPrtr+1) = Iext(nPrtr+1)+2*dI ;
+        % else
+        %     I(nPrtr+1) = Iext(nPrtr+1)-dI ;
+        % end
+        % I(nPrtr+2) = Iext(nPrtr+2)+dI ;
+
+        [u b] = Rate_InputDist(nbpop,dir,I,K,g,false) ;
+        X = [X dI] ;
+        Y = [Y QchAvgTF(u,b).'] ;
+        fprintf('dI %.3f',dI)
+        fprintf(' m ')
+        fprintf('%.3f ',Y(:,end))
+        fprintf('\r')
+    end
+    fprintf('\n')
+
+    if(strfind(dir,'2pop'))
+        cl = {[1 0 0] [0 0 1] [0 1 1]} ;
+    else
+        cl = {[1 0 0] [0 0 1] [0 1 0]  [0.7 0.7 0.7]} ;
+        % cl = {[1 0 0] [0 0 1] [1 0 0] [0 0 1]} ;
+    end
+
+    figname=sprintf('RatesvsdI') ;
+    fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
+    % fig = figure('Name',figname,'NumberTitle','off','Visible','off') ; hold on ; 
+    % set(gcf,'Visible','off')
+
+    for i=1:nbpop
+        plot(X,Y(i,:)./Y(i,1),'-','color',cl{i})
+        % if(i<=nbpop/2)
+        %     plot(X,Y(i,:)./Y(i,1),'--','color',cl{i})
+        % else
+        %     plot(X,Y(i,:)./Y(i,1),'-','color',cl{i})
+        % end
+    end
+    
+    if(strfind(dir,'2pop'))
+        p = sscanf(dir,'2pop_p%f',[2,inf]) ;
+        plot(X,(p.*Y(2,:)+(1-p).*Y(3,:))./(p.*Y(2,1)+(1-p).*Y(3,1)),'-','color','k')
+    else
+        p = [] ;
+    end
+
+    % xlim([0 X(length(X))]) ;
+    xlim([.01 10]) ;
+    set(gca, 'XScale', 'log') ;
+
+    ylim([.01 10]) ;
+    set(gca, 'YScale', 'log') ;
+    
+    xlabel('\delta I')
+    ylabel('m')
+
+    if(IF_SAVE & ~IF_DATA)
+        fprintf('SAVING FIG')
+
+        figdir = sprintf(['./Figs/Rate/%dpop/%s/'],nbpop,dir);
+        try
+            mkdir(figdir)
+        end
+        
+        ProcessFigure(fig, fullfile(figdir,figname)) ;
+        hold off ;
+    end
+            
+    if IF_DATA
+        Iprtr = [Iext(2) dIlim(2) Iext(2)+dIlim(3)] ;
+        nbN = nbNeuron(nbpop,n,IF_Nk,p) ;
+        Cpt = CptNeuron(nbpop,nbN) ;
+        I = Iprtr(1):Iprtr(2):Iprtr(3) ;
+        nb=10 ;
+
+        for i=1:length(I)
+            %%%%%%%%%%%%%%%%%%%%
+            % Individual Rates %
+            %%%%%%%%%%%%%%%%%%%%
+            % data = Import_Data('Rate',dir,nbpop,n,K,g,'IdvRates',false,2,I(i),false,0,0,true) ;
+
+            % for j=1:length(data(1,:))
+            %     IdvRates(i,j) = mean(data(:,j)) ;
+            % end
+             
+            try                         
+                data = Import_Data('Rate',dir,nbpop,n,K,g,'IdvRates',false,2,I(i),false,0,0,true) ;
+                for j=1:length(data(1,:))-1
+                    IdvRates(i,j) = mean(data(:,j+1)) ;
+                end
+            catch
+                fprintf('FILE NOT FOUND \n')
+                if(strfind(dir,'2pop'))
+                    for j=1:n*2/3*10000
+                        IdvRates(i,j) = nan ;
+                    end
+                else
+                    for j=1:n*10000
+                        IdvRates(i,j) = nan ;
+                    end
+                end
+            end
+
+            if(strfind(dir,'2pop'))
+                for j=1:n*2/3*10000
+                    if IdvRates(1,j)>THRESHOLD
+                        IdxPE(i,j) = (IdvRates(1,j)-IdvRates(i,j))./(IdvRates(i,j)+IdvRates(1,j)) ;
+                    else
+                        IdxPE(i,j) = 0 ;
+                    end
+                end
+            else
+                for j=1:n*10000
+                    if IdvRates(1,j)>THRESHOLD
+                        IdxPE(i,j) = (IdvRates(1,j)-IdvRates(i,j))./(IdvRates(i,j)+IdvRates(1,j)) ;
+                    else
+                        IdxPE(i,j) = 0 ;
+                    end
+                end
+            end
+
+            for j=1:nbpop
+                m(j,i) = mean( IdvRates(i,Cpt(j)+1:Cpt(j+1) ) ) ;
+                AvgIdxPE(j,i) = mean( IdxPE(i,Cpt(j)+1:Cpt(j+1) ) ) ;
+            end
+            
+        end
+        
+        for i=1:nbpop
+            plot(I(1:1:end)-Iext(2),m(i,1:1:end)./m(i,1),'o','MarkerEdgeColor',cl{i},'MarkerSize',5,'MarkerFaceColor','none','LineWidth', 1)
+            for k=1:nb
+                nId = randi([Cpt(i)+1 Cpt(i+1)]) ;
+                if IdvRates(1,nId)>THRESHOLD
+                    patchline(I-Iext(2),IdvRates(:,nId)./IdvRates(1,nId),'linestyle','-','edgecolor',cl{i},'edgealpha',.25) 
+                end
+            end
+        end
+
+        if(IF_SAVE)
+            % if nargin>14
+
+            figdir = sprintf(['./Figs/%dpop/%s/LAST/'],nbpop,dir);
+            try
+                mkdir(figdir)
+            end
+
+            ProcessFigure(fig, fullfile(figdir,figname)) ;
+        end
+        hold off ;
+
+        % axes('Position',[.75 .7 .2 .2]) ; hold on ;
+        % box off
+
+        figname=sprintf('idxPEvsdI') ;     
+        fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
+
+        for i=1:nbpop
+            plot(I-Iext(2),AvgIdxPE(i,:),'color',cl{i},'LineWidth',.5)
+            for k=1:nb
+                nId = randi([Cpt(i)+1 Cpt(i+1)]) ;
+                if IdvRates(1,nId)>THRESHOLD
+                    patchline(I-Iext(2),IdxPE(:,nId),'linestyle','-','edgecolor',cl{i},'edgealpha',.25) 
+                end
+            end
+        end
+
+        xlabel('\delta I')
+        ylabel('PE index')
+        set(gca,'FontSize',8)
+
+        if(IF_SAVE)
+            figdir = sprintf(['./Figs/%dpop/%s/LAST/'],nbpop,dir);
+            try
+                mkdir(figdir)
+            end
+
+            ProcessFigure(fig, fullfile(figdir,figname),1.25) ;
+        end
+
+        hold off ;
+    end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    function out = phi(x)
+        out = exp(-x.^2./2)./sqrt(2.*pi);
+    end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    function out = Phi(x)
+        out = .5.*(1+erf( x./sqrt(2) ) ) ;
+    end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    function out = QchAvgTF(u,b)
+        if(b>0)
+            out = u.*Phi( u./sqrt(b) ) + sqrt(b).*phi( u./sqrt(b) ) ;
+        else
+            out = u ;
+        end
+    end
+
+end

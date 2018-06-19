@@ -1,0 +1,757 @@
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.6.22)  3 APR 2018 22:21
+entering extended mode
+ restricted \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**\input PlotFigs.tex
+(./PlotFigs.tex (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size11.clo
+File: size11.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2013/05/02 v3.3-89 Customizing captions (AR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2013/05/02 v1.6-88 caption3 kernel (AR)
+Package caption3 Info: TeX engine: e-TeX on input line 57.
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+\captionmargin=\dimen103
+\captionmargin@=\dimen104
+\captionwidth=\dimen105
+\caption@tempdima=\dimen106
+\caption@indent=\dimen107
+\caption@parindent=\dimen108
+\caption@hangindent=\dimen109
+)
+\c@ContinuedFloat=\count87
+)
+(/usr/share/texlive/texmf-dist/tex/latex/caption/subcaption.sty
+Package: subcaption 2013/02/03 v1.1-62 Sub-captions (AR)
+\c@subfigure=\count88
+\c@subtable=\count89
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/graphics.cfg
+File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
+)
+Package graphics Info: Driver file: pdftex.def on input line 91.
+
+(/usr/share/texlive/texmf-dist/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+)
+\Gread@gobject=\count90
+))
+\Gin@req@height=\dimen110
+\Gin@req@width=\dimen111
+)
+(/usr/share/texmf/tex/latex/pgf/utilities/pgffor.sty
+(/usr/share/texmf/tex/latex/pgf/utilities/pgfrcs.sty
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfutil-common.tex
+\pgfutil@everybye=\toks15
+)
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfutil-latex.def
+\pgfutil@abb=\box26
+
+(/usr/share/texlive/texmf-dist/tex/latex/ms/everyshi.sty
+Package: everyshi 2001/05/15 v3.00 EveryShipout Package (MS)
+))
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfrcs.code.tex
+Package: pgfrcs 2010/10/25 v2.10 (rcs-revision 1.24)
+))
+(/usr/share/texmf/tex/latex/pgf/utilities/pgfkeys.sty
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfkeys.code.tex
+\pgfkeys@pathtoks=\toks16
+\pgfkeys@temptoks=\toks17
+
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfkeysfiltered.code.tex
+\pgfkeys@tmptoks=\toks18
+)))
+(/usr/share/texmf/tex/generic/pgf/utilities/pgffor.code.tex
+Package: pgffor 2010/03/23 v2.10 (rcs-revision 1.18)
+\pgffor@iter=\dimen112
+\pgffor@skip=\dimen113
+\pgffor@stack=\toks19
+\pgffor@toks=\toks20
+))
+(/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2010/09/12 v5.6 Page Geometry
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
+Package ifpdf Info: pdfTeX in PDF mode is detected.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifvtex.sty
+Package: ifvtex 2010/03/01 v1.5 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/ifxetex/ifxetex.sty
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+\Gm@cnth=\count91
+\Gm@cntv=\count92
+\c@Gm@tempcnt=\count93
+\Gm@bindingoffset=\dimen114
+\Gm@wd@mp=\dimen115
+\Gm@odd@mp=\dimen116
+\Gm@even@mp=\dimen117
+\Gm@layoutwidth=\dimen118
+\Gm@layoutheight=\dimen119
+\Gm@layouthoffset=\dimen120
+\Gm@layoutvoffset=\dimen121
+\Gm@dimlist=\toks21
+)
+(/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count94
+\float@exts=\toks22
+\float@box=\box27
+\@float@everytoks=\toks23
+\@floatcapt=\box28
+) (./PlotFigs.aux)
+\openout1 = `PlotFigs.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 7.
+LaTeX Font Info:    ... okay on input line 7.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 7.
+LaTeX Font Info:    ... okay on input line 7.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 7.
+LaTeX Font Info:    ... okay on input line 7.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 7.
+LaTeX Font Info:    ... okay on input line 7.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 7.
+LaTeX Font Info:    ... okay on input line 7.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 7.
+LaTeX Font Info:    ... okay on input line 7.
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: float package is loaded.
+Package caption Info: End \AtBeginDocument code.
+
+(/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count95
+\scratchdimen=\dimen122
+\scratchbox=\box29
+\nofMPsegments=\count96
+\nofMParguments=\count97
+\everyMPshowfont=\toks24
+\MPscratchCnt=\count98
+\MPscratchDim=\dimen123
+\MPnumerator=\count99
+\makeMPintoPDFobject=\count100
+\everyMPtoPDFconversion=\toks25
+) (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
+Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifluatex.sty
+Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
+
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2010/08/19 v1.1 Manage graphics extensions (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/kvdefinekeys.sty
+Package: kvdefinekeys 2011/04/07 v1.3 Define keys (HO)
+))
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/kvsetkeys.sty
+Package: kvsetkeys 2012/04/25 v1.16 Key value parser (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/etexcmds.sty
+Package: etexcmds 2011/02/16 v1.5 Avoid name clashes with e-TeX commands (HO)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+)))
+Package grfext Info: Graphics extension search list:
+(grfext)             [.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 452.
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+ABD: EveryShipout initializing macros
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: <default>
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(36.135pt, 542.02501pt, 36.135pt)
+* v-part:(T,H,B)=(36.135pt, 722.7pt, 36.135pt)
+* \paperwidth=614.295pt
+* \paperheight=794.96999pt
+* \textwidth=542.02501pt
+* \textheight=722.7pt
+* \oddsidemargin=-36.135pt
+* \evensidemargin=-36.135pt
+* \topmargin=-73.135pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=11.0pt
+* \footskip=30.0pt
+* \marginparwidth=0.0pt
+* \marginparsep=0.0pt
+* \columnsep=10.0pt
+* \skip\footins=10.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test1/N4/K250/g1.00/Ratesvsd
+I.pdf, id=1, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test1/N4/K250/g1.00/Rat
+esvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test1/N4/K250/g1.00/Rate
+svsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+1/N4/K250/g1.00/RatesvsdI.pdf used on input line 17.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 17.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 17.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 17.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test2/N4/K250/g1.00/Ratesvsd
+I.pdf, id=2, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test2/N4/K250/g1.00/Rat
+esvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test2/N4/K250/g1.00/Rate
+svsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+2/N4/K250/g1.00/RatesvsdI.pdf used on input line 17.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test3/N4/K250/g1.00/Ratesvsd
+I.pdf, id=3, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test3/N4/K250/g1.00/Rat
+esvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test3/N4/K250/g1.00/Rate
+svsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+3/N4/K250/g1.00/RatesvsdI.pdf used on input line 17.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test4/N4/K250/g1.00/Ratesvsd
+I.pdf, id=4, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test4/N4/K250/g1.00/Rat
+esvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test4/N4/K250/g1.00/Rate
+svsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+4/N4/K250/g1.00/RatesvsdI.pdf used on input line 17.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test5/N4/K250/g1.00/Ratesvsd
+I.pdf, id=5, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test5/N4/K250/g1.00/Rat
+esvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test5/N4/K250/g1.00/Rate
+svsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+5/N4/K250/g1.00/RatesvsdI.pdf used on input line 17.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test6/N4/K250/g1.00/Ratesvsd
+I.pdf, id=6, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test6/N4/K250/g1.00/Rat
+esvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test6/N4/K250/g1.00/Rate
+svsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+6/N4/K250/g1.00/RatesvsdI.pdf used on input line 17.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test7/N4/K250/g1.00/Ratesvsd
+I.pdf, id=7, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test7/N4/K250/g1.00/Rat
+esvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test7/N4/K250/g1.00/Rate
+svsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+7/N4/K250/g1.00/RatesvsdI.pdf used on input line 17.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test8/N4/K250/g1.00/Ratesvsd
+I.pdf, id=8, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test8/N4/K250/g1.00/Rat
+esvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test8/N4/K250/g1.00/Rate
+svsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+8/N4/K250/g1.00/RatesvsdI.pdf used on input line 17.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test9/N4/K250/g1.00/Ratesvsd
+I.pdf, id=9, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test9/N4/K250/g1.00/Rat
+esvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test9/N4/K250/g1.00/Rate
+svsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+9/N4/K250/g1.00/RatesvsdI.pdf used on input line 17.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test10/N4/K250/g1.00/Ratesvs
+dI.pdf, id=10, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test10/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test10/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+10/N4/K250/g1.00/RatesvsdI.pdf used on input line 17.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test11/N4/K250/g1.00/Ratesvs
+dI.pdf, id=11, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test11/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test11/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+11/N4/K250/g1.00/RatesvsdI.pdf used on input line 17.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test12/N4/K250/g1.00/Ratesvs
+dI.pdf, id=12, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test12/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test12/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+12/N4/K250/g1.00/RatesvsdI.pdf used on input line 17.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 17--19
+[]$[]$ $[]$ $[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 17--19
+[]$ $[]$ $[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 17--19
+[]$ $[]$ $[]$
+ []
+
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test13/N4/K250/g1.00/Ratesvs
+dI.pdf, id=13, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test13/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test13/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+13/N4/K250/g1.00/RatesvsdI.pdf used on input line 27.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test14/N4/K250/g1.00/Ratesvs
+dI.pdf, id=14, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test14/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test14/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+14/N4/K250/g1.00/RatesvsdI.pdf used on input line 27.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test15/N4/K250/g1.00/Ratesvs
+dI.pdf, id=15, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test15/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test15/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+15/N4/K250/g1.00/RatesvsdI.pdf used on input line 27.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test16/N4/K250/g1.00/Ratesvs
+dI.pdf, id=16, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test16/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test16/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+16/N4/K250/g1.00/RatesvsdI.pdf used on input line 27.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test17/N4/K250/g1.00/Ratesvs
+dI.pdf, id=17, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test17/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test17/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+17/N4/K250/g1.00/RatesvsdI.pdf used on input line 27.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test18/N4/K250/g1.00/Ratesvs
+dI.pdf, id=18, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test18/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test18/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+18/N4/K250/g1.00/RatesvsdI.pdf used on input line 27.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test19/N4/K250/g1.00/Ratesvs
+dI.pdf, id=19, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test19/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test19/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+19/N4/K250/g1.00/RatesvsdI.pdf used on input line 27.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test20/N4/K250/g1.00/Ratesvs
+dI.pdf, id=20, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test20/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test20/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+20/N4/K250/g1.00/RatesvsdI.pdf used on input line 27.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test21/N4/K250/g1.00/Ratesvs
+dI.pdf, id=21, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test21/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test21/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+21/N4/K250/g1.00/RatesvsdI.pdf used on input line 27.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test22/N4/K250/g1.00/Ratesvs
+dI.pdf, id=22, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test22/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test22/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+22/N4/K250/g1.00/RatesvsdI.pdf used on input line 27.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test23/N4/K250/g1.00/Ratesvs
+dI.pdf, id=23, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test23/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test23/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+23/N4/K250/g1.00/RatesvsdI.pdf used on input line 27.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test24/N4/K250/g1.00/Ratesvs
+dI.pdf, id=24, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test24/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test24/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+24/N4/K250/g1.00/RatesvsdI.pdf used on input line 27.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 27--29
+[]$[]$ $[]$ $[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 27--29
+[]$ $[]$ $[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 27--29
+[]$ $[]$ $[]$
+ []
+
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test25/N4/K250/g1.00/Ratesvs
+dI.pdf, id=25, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test25/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test25/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+25/N4/K250/g1.00/RatesvsdI.pdf used on input line 37.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test26/N4/K250/g1.00/Ratesvs
+dI.pdf, id=26, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test26/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test26/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+26/N4/K250/g1.00/RatesvsdI.pdf used on input line 37.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test27/N4/K250/g1.00/Ratesvs
+dI.pdf, id=27, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test27/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test27/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+27/N4/K250/g1.00/RatesvsdI.pdf used on input line 37.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test28/N4/K250/g1.00/Ratesvs
+dI.pdf, id=28, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test28/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test28/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+28/N4/K250/g1.00/RatesvsdI.pdf used on input line 37.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test29/N4/K250/g1.00/Ratesvs
+dI.pdf, id=29, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test29/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test29/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+29/N4/K250/g1.00/RatesvsdI.pdf used on input line 37.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test30/N4/K250/g1.00/Ratesvs
+dI.pdf, id=30, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test30/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test30/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+30/N4/K250/g1.00/RatesvsdI.pdf used on input line 37.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test31/N4/K250/g1.00/Ratesvs
+dI.pdf, id=31, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test31/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test31/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+31/N4/K250/g1.00/RatesvsdI.pdf used on input line 37.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test32/N4/K250/g1.00/Ratesvs
+dI.pdf, id=32, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test32/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test32/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+32/N4/K250/g1.00/RatesvsdI.pdf used on input line 37.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test33/N4/K250/g1.00/Ratesvs
+dI.pdf, id=33, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test33/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test33/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+33/N4/K250/g1.00/RatesvsdI.pdf used on input line 37.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test34/N4/K250/g1.00/Ratesvs
+dI.pdf, id=34, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test34/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test34/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+34/N4/K250/g1.00/RatesvsdI.pdf used on input line 37.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test35/N4/K250/g1.00/Ratesvs
+dI.pdf, id=35, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test35/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test35/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+35/N4/K250/g1.00/RatesvsdI.pdf used on input line 37.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+</homecentral/alexandre.mahrach/Rates/Figures/4pop/Test36/N4/K250/g1.00/Ratesvs
+dI.pdf, id=36, 288.07625pt x 216.81pt>
+File: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test36/N4/K250/g1.00/Ra
+tesvsdI.pdf Graphic file (type pdf)
+
+<use /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test36/N4/K250/g1.00/Rat
+esvsdI.pdf>
+Package pdftex.def Info: /homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+36/N4/K250/g1.00/RatesvsdI.pdf used on input line 37.
+(pdftex.def)             Requested size: 162.60915pt x 122.38539pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 37--39
+[]$[]$ $[]$ $[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 37--39
+[]$ $[]$ $[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 37--39
+[]$ $[]$ $[]$
+ []
+
+[1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} </homecentral/alexandre.m
+ahrach/Rates/Figures/4pop/Test1/N4/K250/g1.00/RatesvsdI.pdf> </homecentral/alex
+andre.mahrach/Rates/Figures/4pop/Test2/N4/K250/g1.00/RatesvsdI.pdf> </homecentr
+al/alexandre.mahrach/Rates/Figures/4pop/Test3/N4/K250/g1.00/RatesvsdI.pdf> </ho
+mecentral/alexandre.mahrach/Rates/Figures/4pop/Test4/N4/K250/g1.00/RatesvsdI.pd
+f> </homecentral/alexandre.mahrach/Rates/Figures/4pop/Test5/N4/K250/g1.00/Rates
+vsdI.pdf> </homecentral/alexandre.mahrach/Rates/Figures/4pop/Test6/N4/K250/g1.0
+0/RatesvsdI.pdf> </homecentral/alexandre.mahrach/Rates/Figures/4pop/Test7/N4/K2
+50/g1.00/RatesvsdI.pdf> </homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+8/N4/K250/g1.00/RatesvsdI.pdf> </homecentral/alexandre.mahrach/Rates/Figures/4p
+op/Test9/N4/K250/g1.00/RatesvsdI.pdf> </homecentral/alexandre.mahrach/Rates/Fig
+ures/4pop/Test10/N4/K250/g1.00/RatesvsdI.pdf> </homecentral/alexandre.mahrach/R
+ates/Figures/4pop/Test11/N4/K250/g1.00/RatesvsdI.pdf> </homecentral/alexandre.m
+ahrach/Rates/Figures/4pop/Test12/N4/K250/g1.00/RatesvsdI.pdf>] [2 </homecentral
+/alexandre.mahrach/Rates/Figures/4pop/Test13/N4/K250/g1.00/RatesvsdI.pdf> </hom
+ecentral/alexandre.mahrach/Rates/Figures/4pop/Test14/N4/K250/g1.00/RatesvsdI.pd
+f> </homecentral/alexandre.mahrach/Rates/Figures/4pop/Test15/N4/K250/g1.00/Rate
+svsdI.pdf> </homecentral/alexandre.mahrach/Rates/Figures/4pop/Test16/N4/K250/g1
+.00/RatesvsdI.pdf> </homecentral/alexandre.mahrach/Rates/Figures/4pop/Test17/N4
+/K250/g1.00/RatesvsdI.pdf> </homecentral/alexandre.mahrach/Rates/Figures/4pop/T
+est18/N4/K250/g1.00/RatesvsdI.pdf> </homecentral/alexandre.mahrach/Rates/Figure
+s/4pop/Test19/N4/K250/g1.00/RatesvsdI.pdf> </homecentral/alexandre.mahrach/Rate
+s/Figures/4pop/Test20/N4/K250/g1.00/RatesvsdI.pdf> </homecentral/alexandre.mahr
+ach/Rates/Figures/4pop/Test21/N4/K250/g1.00/RatesvsdI.pdf> </homecentral/alexan
+dre.mahrach/Rates/Figures/4pop/Test22/N4/K250/g1.00/RatesvsdI.pdf> </homecentra
+l/alexandre.mahrach/Rates/Figures/4pop/Test23/N4/K250/g1.00/RatesvsdI.pdf> </ho
+mecentral/alexandre.mahrach/Rates/Figures/4pop/Test24/N4/K250/g1.00/RatesvsdI.p
+df>] [3 </homecentral/alexandre.mahrach/Rates/Figures/4pop/Test25/N4/K250/g1.00
+/RatesvsdI.pdf> </homecentral/alexandre.mahrach/Rates/Figures/4pop/Test26/N4/K2
+50/g1.00/RatesvsdI.pdf> </homecentral/alexandre.mahrach/Rates/Figures/4pop/Test
+27/N4/K250/g1.00/RatesvsdI.pdf> </homecentral/alexandre.mahrach/Rates/Figures/4
+pop/Test28/N4/K250/g1.00/RatesvsdI.pdf> </homecentral/alexandre.mahrach/Rates/F
+igures/4pop/Test29/N4/K250/g1.00/RatesvsdI.pdf> </homecentral/alexandre.mahrach
+/Rates/Figures/4pop/Test30/N4/K250/g1.00/RatesvsdI.pdf> </homecentral/alexandre
+.mahrach/Rates/Figures/4pop/Test31/N4/K250/g1.00/RatesvsdI.pdf> </homecentral/a
+lexandre.mahrach/Rates/Figures/4pop/Test32/N4/K250/g1.00/RatesvsdI.pdf> </homec
+entral/alexandre.mahrach/Rates/Figures/4pop/Test33/N4/K250/g1.00/RatesvsdI.pdf>
+ </homecentral/alexandre.mahrach/Rates/Figures/4pop/Test34/N4/K250/g1.00/Ratesv
+sdI.pdf> </homecentral/alexandre.mahrach/Rates/Figures/4pop/Test35/N4/K250/g1.0
+0/RatesvsdI.pdf> </homecentral/alexandre.mahrach/Rates/Figures/4pop/Test36/N4/K
+250/g1.00/RatesvsdI.pdf>] (./PlotFigs.aux) ) 
+Here is how much of TeX's memory you used:
+ 4068 strings out of 494985
+ 81431 string characters out of 6180356
+ 127022 words of memory out of 5000000
+ 7173 multiletter control sequences out of 15000+600000
+ 6379 words of font info for 23 fonts, out of 8000000 for 9000
+ 36 hyphenation exceptions out of 8191
+ 41i,7n,51p,324b,494s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/share/texlive/texmf-dist/font
+s/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmr8.pfb>
+Output written on PlotFigs.pdf (3 pages, 90355 bytes).
+PDF statistics:
+ 130 PDF objects out of 1000 (max. 8388607)
+ 86 compressed objects within 1 object stream
+ 0 named destinations out of 1000 (max. 500000)
+ 181 words of extra memory for PDF output out of 10000 (max. 10000000)
+

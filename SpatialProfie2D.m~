@@ -1,0 +1,131 @@
+function SpatialProfie2D(model,nbpop,dir,Iext,K,n,g,ndI,dI,IF_RING,Crec,Cff,IF_Nk,IF_SAVE,Xlim,Ylim)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% function Rate_InputDist_dI(nbpop,dir,Iext,K,dIlim,IF_DATA,n,k,g,IF_RING,Crec,Cff)
+% Plots population time average rate vs the 
+% perturbed input Iext(2)+dI.
+% utils : Rate_InputDist(nbpop,dir,I,K,theta)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    L = pi ;
+    SCALING = 1.5 ;
+
+    if nargin<9
+        IF_RING = false ;
+    end
+
+    if nargin<12
+        IF_Nk = false ;
+    end
+
+    if nargin<13
+        IF_SAVE = false ;
+    end
+
+    THRESHOLD = 0 ; 
+    popList = ['E' 'I' 'S' 'X'] ;
+    if(strfind(dir,'2pop'))
+        cl = {[1 0 0] [0 0 1] [0 1 1] } ;
+        p = sscanf(dir,'2pop_p%f',[2,inf]) ;
+    else
+        p = [] ;
+        cl = {[1 0 0] [0 0 1] [0 1 0]  [0.7 0.7 0.7]} ;
+    end
+
+    nbN = nbNeuron(nbpop,n,IF_Nk,p) ;
+    Cpt = CptNeuron(nbpop,nbN) ;
+    nb=5 ;         
+    I= [Iext(ndI) dI] ;
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % PE idx Dist at dI
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    for i=1:length(I)        
+        try
+            data = Import_Data(model,dir,nbpop,n,K,g,'IdvRates',false,ndI,I(i),IF_RING,Crec,Cff,true) ;
+            for j=1:length(data(1,:))-1
+                IdvRates(i,j) = mean(data(:,j+1)) ;
+            end
+        catch
+            for j=1:n*10000
+                IdvRates(i,j) = nan ;
+            end
+        end                
+    end
+    
+    % figname=sprintf('Aff%.2fCff%.2f',dI,Cff ) ; 
+
+    for i=1:nbpop
+        BL = IdvRates(1,Cpt(i)+1:Cpt(i+1)) ;
+        Prtr = IdvRates(2,Cpt(i)+1:Cpt(i+1)) ;
+
+        sqrtNp = sqrt(length(BL)) ;
+
+        fprintf('%s Baseline %.3f Prtr %.3f\n',popList(i),mean(BL),mean(Prtr))
+
+        X = linspace(-pi,pi,length(BL)) ;
+        
+        BL = reshape( BL, sqrt( length( BL ) ), sqrt(length(BL)) );
+        Prtr = reshape( Prtr, sqrt( length( Prtr ) ), sqrt( length( Prtr ) ) );
+
+        % idx = find(BL<=THRESHOLD) ;
+        % BL(idx) = nan ;
+        % Prtr(idx) = nan ;
+        R = Prtr./(BL+eps) ;
+        M = R ;
+
+        % M(1:sqrtNp/2,:) = R(sqrtNp/2+1:end,:) ;
+        % M(sqrtNp/2+1:end,:) = R(1:sqrtNp/2,:) ;
+
+        M = interp2(M,'cubic') ;
+        
+        figname=sprintf('Pop%sCrecE%.2fCrecI%.2fCff%.2fAff%.2f',popList(i),Crec(1),Crec(2),Cff,dI ) ; 
+        fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
+        
+        % if( ishandle( findobj('type','figure','name',figname) ) )
+        %     fig = findobj('type','figure','name',figname) ; 
+        %     figure(fig); hold on ; 
+        % else
+        %     fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
+        % end
+        
+        imagesc(M) ;
+        circle(length(M(:,1))./2,length(M(:,1))./2,3*Cff/L*length(M(:,1))./2) ;
+
+        h = colorbar ;
+
+        if(i==2)
+            c = [1 10 20 100] ;
+            caxis(log([c(1) c(length(c))]));
+            colorbar('FontSize',11,'YTick',log(c),'YTickLabel',c);
+        else
+            caxis([0 5])
+        end
+
+        xlabel('X (mm)')
+        ylabel('Y (mm)')
+        
+        set(gca,'xtick',linspace(0,length(M(:,1)),5),'xticklabel',{ linspace(-SCALING,SCALING,5) })
+        set(gca,'ytick',linspace(0,length(M(:,1)),5),'yticklabel',{ linspace(-SCALING,SCALING,5) })
+        xlim([0 length(M(:,1))])
+        ylim([0 length(M(:,1))])
+    end
+    
+    if(IF_SAVE)
+        figdir = sprintf(['./Figs/IF/%dpop/%s/SpatialSpread'],nbpop,dir);
+        try
+            mkdir(figdir)
+        end            
+        ProcessFigure(fig, fullfile(figdir,figname)) ;
+    end
+    
+
+    function h = circle(x,y,r)
+        hold on ;
+        th = 0:pi/50:2*pi;
+        xunit = r * cos(th) + x;
+        yunit = r * sin(th) + y;
+        h = plot(xunit, yunit, '--k','linewidth',1);
+    end
+
+end

@@ -1,0 +1,28 @@
+function [Rates Det] = BalRatesMF(model,nbpop,dir,Iext,J,DisplayOn)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% function [Rates Det] = BalRatesMF(model,nbpop,dir,Iext,J,DisplayOn)
+% Computes Balance state rates in the large N, large K limit.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    if(isempty(J) | nargin<5)       
+        J = ImportJab(model,nbpop,dir) ;
+    end
+    if(isempty(Iext) | nargin<4)
+        Iext = ExternalInput(model,nbpop,dir) ;
+    end
+    if(nargin<6)
+        DisplayOn = 0 ;
+    end
+
+    Det = det(J) ;
+    Rates = linsolve(J,-Iext.') ;
+    
+    if(DisplayOn)
+        fprintf('Rates ')
+        fprintf('%.3f ',Rates)
+        fprintf('\n')
+        fprintf('Det ')
+        fprintf('%.3f ',Det)
+        fprintf('\n')
+    end
+end
