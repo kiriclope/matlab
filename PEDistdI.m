@@ -6,10 +6,11 @@ function PEDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec,Cf
 % utils : Rate_InputDist(nbpop,dir,I,K)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    ndI = 5 ;
-    if(isempty(Iext))
-        Iext = ExternalInput(model,nbpop,dir) ;
-    end
+    L=2;
+    ndI = 2 ;
+    dI = Iext ;
+    Iext = ExternalInput(model,nbpop,dir) ;
+    List = ['E','I','S','V'] ;
 
     warning off ;
 
@@ -38,17 +39,17 @@ function PEDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec,Cf
     cl = {[1 0 0] [0 0 1] [0 1 0]  [0.7 0.7 0.7]} ;
     
     if( strcmp(IF_RING,'Ring') | strcmp(IF_RING,'Gauss') | strcmp(IF_RING,'Exp') )
-        Cth = 125 ;
+        Cth = .125 ;
     else
         Cth = 100 ;
     end
 
     if IF_DATA
-        Iprtr = [Iext(2) dIlim(2) dIlim(3)] ;
+        Iprtr = [Iext(ndI) dIlim(2) Iext(ndI)+dIlim(3)] 
         nbN = nbNeuron(nbpop,n,IF_Nk,[]) ;
         Cpt = CptNeuron(nbpop,nbN) ;
-        I = Iprtr(1):Iprtr(2):Iprtr(3) ;
-        I = [I(1) I(ndI)] ;
+        I = Iprtr(1):Iprtr(2):Iprtr(3) 
+        I = [I(1) I(1)+dI] 
                 
         %%%%%%%%%%%%%%%%%%%%
         % Individual Rates %
@@ -57,7 +58,7 @@ function PEDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec,Cf
         for i=1:2
         
             try
-                data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,1,2,I(i)) ;
+                data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,IF_DATA,ndI,I(i)) ;
                 for j=1:length(data(1,:))-1
                     IdvRates(i,j) = mean(data(:,j+1)) ;
                 end
@@ -78,19 +79,17 @@ function PEDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec,Cf
             
         end
         
-        List = ['E','I','S','V'] ;
-        ndI = 2 ;
 
         for i=1:nbpop
             figname=sprintf('PEIdxvsdI_%s',List(i)) ;
             fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
 
             meanIdx = [] ;
-            Idx = IdxPE(ndI,Cpt(i)+1:Cpt(i+1)) ;
+            Idx = IdxPE(2,Cpt(i)+1:Cpt(i+1)) ;
             idx = find(~isnan(Idx)) ;
             Idx = Idx(idx) ;
             
-            X = linspace(-pi,pi,length( IdvRates(ndI,Cpt(i)+1:Cpt(i+1) ) ) ) ;
+            X = linspace(-L/2,L/2,length( IdvRates(2,Cpt(i)+1:Cpt(i+1) ) ) ) ;
             X = X(idx) ;
 
             idx = find(abs(X)<=Cth) ; % Cff
@@ -104,11 +103,16 @@ function PEDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec,Cf
                 meanIdx = [meanIdx mean(Idx) ] ;
                 if(i==1)
                     histogram(Idx,100,'Normalization', 'pdf' ,'DisplayStyle','stairs','EdgeColor',cl{i}) ;
-                    ylim([0 4])
+                    ylim([0 2])
                 else
-                    histogram(Idx,100,'Normalization', 'pdf' ,'DisplayStyle','stairs','EdgeColor',cl{i}) ;
-                    ylim([0 6])
+                    histogram(Idx,50,'Normalization', 'pdf' ,'DisplayStyle','stairs','EdgeColor',cl{i}) ;
+                    if(i==2 || i==4)
+                        ylim([0 3])
+                    else
+                        ylim([0 5])
+                    end
                 end
+
                 fprintf('mean Idx ')
                 fprintf('%.3f ',meanIdx)
                 fprintf('\n')
@@ -119,14 +123,14 @@ function PEDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec,Cf
                 
                 if(IF_SAVE)
                 
-                    figdir = FigDir(model,nbpop,dir,n,K,g,IF_RING,Crec,Cff) ;
+                    figdir = FigDir(model,nbpop,dir,n,K,g,IF_RING,Crec,Cff,IF_DATA) ;
                     fprintf('Writing %s \n',figdir)
                     
                     try
                         mkdir(figdir) ;
                     end
                     
-                    ProcessFigure(fig, fullfile(figdir,figname),1.25) ;
+                    ProcessFigure(fig, fullfile(figdir,figname),1.25,[1.33*1.25,1.25]) ;
                 end
                 
                 hold off ;        

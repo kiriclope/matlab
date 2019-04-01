@@ -2,15 +2,15 @@ function [] = CheckMat(model,nbpop,n,K,IF_SPACE,Sigma,IF_Nk,DisplayOn,IF_SAVE)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % function [] = Space_CheckMat(model,nbpop,n,K,Sigma,IF_Nk,DisplayOn,IF_SAVE)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    L = pi ;
-    SCALING = 1.5 ;
+    L = 1 ;
+    SCALING = 1. ;
 
-    N = n*10000;
-    % N = n*2500 ;
+    N = n*10000 ;
     nbN = nbNeuron(nbpop,n,IF_Nk,[]) ;
     Cpt = CptNeuron(nbpop,nbN) ;
-        
-    if strcmpi(IF_SPACE,'Ring') | strcmpi(IF_SPACE,'Gauss')  | strcmpi(IF_SPACE,'Exp')
+
+    if strcmpi(IF_SPACE,'Ring') | strcmpi(IF_SPACE,'Gauss2D')  | ...
+            strcmpi(IF_SPACE,'Exp') | strcmpi(IF_SPACE,'Ring/Spec') | strcmpi(IF_SPACE,'Gauss/Spec')
         if(length(Sigma)==1 & nbpop==1)
             str_Matrix = sprintf(['../Connectivity/%dpop/N%d/K%d/%s/CrecI%.4f/Cij_Matrix.dat'],nbpop,n,K,IF_SPACE,Sigma)
         else
@@ -22,16 +22,16 @@ function [] = CheckMat(model,nbpop,n,K,IF_SPACE,Sigma,IF_Nk,DisplayOn,IF_SAVE)
                         str_Matrix = sprintf(['../Connectivity/%dpop/N%d/' ...
                                             'K%d/%s/CrecE%.4fCrecI%.4f/Cij_Matrix.dat'],nbpop,n,K,IF_SPACE,Sigma(1),Sigma(2)) 
                     else
-                        str_Matrix = sprintf(['../%s/Connectivity/%dpop/N%d/' ...
-                                            'KE%dKI%d/%s/CrecE%.4fCrecI%.4f/Cij_Matrix.dat'],model,nbpop,n,K(1),K(2),IF_SPACE,Sigma(1),Sigma(2)) 
+                        str_Matrix = sprintf(['../Connectivity/%dpop/N%d/' ...
+                                            'KE%dKI%d/%s/CrecE%.4fCrecI%.4f/Cij_Matrix.dat'],nbpop,n,K(1),K(2),IF_SPACE,Sigma(1),Sigma(2)) 
                     end
                 elseif(length(Sigma)>=nbpop)
-                    str_Matrix = sprintf(['../%s/Connectivity/%dpop/N%d/' ...
-                                        'K%d/%s/CrecEE%.4fCrecEI%.4fCrecIE%.4fCrecII%.4f/Cij_Matrix.dat'],model,nbpop,n,K,IF_SPACE,Sigma(1),Sigma(2),Sigma(3),Sigma(4)) 
+                    str_Matrix = sprintf(['../Connectivity/%dpop/N%d/' ...
+                                        'K%d/%s/CrecEE%.4fCrecEI%.4fCrecIE%.4fCrecII%.4f/Cij_Matrix.dat'],nbpop,n,K,IF_SPACE,Sigma(1),Sigma(2),Sigma(3),Sigma(4)) 
                 end
             else
-                str_Matrix = sprintf(['../%s/Connectivity/%dpop/N%d/' ...
-                                    'K%d/%s/CrecE%.4fCrecI%.4fCrecS%.4fCrecV%.4f/Cij_Matrix.dat'],model,nbpop,n,K,IF_SPACE,Sigma(1),Sigma(2),Sigma(3),Sigma(4)) 
+                str_Matrix = sprintf(['../Connectivity/%dpop/N%d/' ...
+                                    'K%d/%s/CrecE%.4fCrecI%.4fCrecS%.4fCrecV%.4f/Cij_Matrix.dat'],nbpop,n,K,IF_SPACE,Sigma(1),Sigma(2),Sigma(3),Sigma(4)) 
             end
         end
     else
@@ -39,10 +39,11 @@ function [] = CheckMat(model,nbpop,n,K,IF_SPACE,Sigma,IF_Nk,DisplayOn,IF_SAVE)
     end
 
     fMatrix = fopen(str_Matrix,'rt') ;
-    M = fread(fMatrix,'*int32') ;
+    M = fread(fMatrix,'*float') ;
     size(M) 
     M = reshape(M,N,N) ;
-    M = double(M) ;
+    % nbN(1) = 15000 ;
+    M = double(M) ; 
     size(M) 
 
     popList = ['E','I','S','X'] ;
@@ -50,25 +51,32 @@ function [] = CheckMat(model,nbpop,n,K,IF_SPACE,Sigma,IF_Nk,DisplayOn,IF_SAVE)
     
     for i=1:nbpop
         for j=1:nbpop
-            % meanX = 0 ;
+            meanX = 0 ;
             meanY = 0 ;
-                         
+            
             A = M(Cpt(i)+1:Cpt(i+1),Cpt(j)+1:Cpt(j+1)) ; % A(i,j) j Pres to i Post, 
+            
+            figname=sprintf('Connection Matrix %s%s ',popList(j),popList(i) );
+            fig = figure('Name',figname,'NumberTitle','off') ; hold on ;
+            imagesc(A) ; 
+            xlabel('Post') 
+            ylabel('Pre') 
 
             for k=1:nbN(i)
-                % meanX = meanX + sum(A(:,k)) ;
-                meanY = meanY + sum(A(k,:)) ;
+                meanY = meanY + sum(A(k,:) ) ;
             end
-            
-            fprintf('Average nbPreS %s%s: %.3f \n',popList(j),popList(i),meanY./nbN(j))
-            
             for k=1:nbN(j)
+                meanX = meanX + sum(A(:,k)) ;
+            end
+
+            fprintf('Average nbPreS %s%s: meanX %.3f meanY %.3f \n',popList(j),popList(i),meanX./nbN(j),meanY./nbN(j))
+            
+            for k=1:nbN(i)
                 P(i,j,k) = sum(diag(A,-k)) + sum(diag(A,nbN(j)-k)) ; % P(i,j) j to i
             end
         end
     end
     
-
     for i=1:nbpop        
         for j=1:nbpop
             

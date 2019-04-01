@@ -1,0 +1,191 @@
+\documentclass[11pt]{article}
+\usepackage{caption,subcaption}
+\usepackage{graphicx}
+\usepackage{pgffor}
+\usepackage[nomarginpar, margin=.5in]{geometry} 
+\usepackage{float} 
+
+\begin{document} 
+ 
+\graphicspath{{/homecentral/alexandre.mahrach/Rates/Figures/}}
+% Figure filenames are consecutively numbered
+\begin{figure}
+  \foreach \j in {1,...,12} {%
+    \begin{subfigure}[p]{0.3\textwidth}
+      \includegraphics[width=\linewidth]{4pop/L5_\j/N4/K500/g1.00/RatesvsdI.pdf}
+      \caption{\scriptsize L5 \j}\label{fig:subfig\j}
+    \end{subfigure}\quad
+  }
+  % \caption{Main figure caption}\label{fig:subfig} 
+\end{figure}
+
+\begin{figure}
+  \foreach \j in {13,...,24} {%
+    \begin{subfigure}[p]{0.3\textwidth}
+      \includegraphics[width=\linewidth]{4pop/L5_\j/N4/K500/g1.00/RatesvsdI.pdf}
+      \caption{\scriptsize L5 \j}\label{fig:subfig\j}
+    \end{subfigure}\quad
+  }
+  % \caption{Main figure caption}\label{fig:subfig} 
+\end{figure}
+
+\begin{figure}
+  \foreach \j in {25,...,36} {%
+    \begin{subfigure}[p]{0.3\textwidth}
+      \includegraphics[width=\linewidth]{4pop/L5_\j/N4/K500/g1.00/RatesvsdI.pdf}
+      \caption{\scriptsize L5 \j}\label{fig:subfig\j}
+    \end{subfigure}\quad
+  }
+  % \caption{Main figure caption}\label{fig:subfig} 
+\end{figure}
+
+% \begin{figure}
+%   \foreach \j in {1,...,12} {%
+%     \begin{subfigure}[p]{0.3\textwidth}
+%       \includegraphics[width=\linewidth]{4pop/L5\j/N4/K2500/g1.00/RatesvsdI.pdf}
+%       \caption{\scriptsize L5 \j}\label{fig:subfig\j}
+%     \end{subfigure}\quad
+%   }
+% \end{figure}
+
+% \begin{figure}
+%   \foreach \j in {13,...,24} {%
+%     \begin{subfigure}[p]{0.3\textwidth}
+%       \includegraphics[width=\linewidth]{4pop/L5\j/N4/K2500/g1.00/RatesvsdI.pdf}
+%       \caption{\scriptsize L5 \j}\label{fig:subfig\j}
+%     \end{subfigure}\quad
+%   }
+%   % \caption{Main figure caption}\label{fig:subfig} 
+% \end{figure}
+
+% \begin{figure}
+%   \foreach \j in {13,...,24} {%
+%     \begin{subfigure}[p]{0.3\textwidth}
+%       \includegraphics[width=\linewidth]{4pop/L5\j/N4/K250/g1.00/RatesvsdI.pdf}
+%       \caption{\scriptsize L5 \j}\label{fig:subfig\j}
+%     \end{subfigure}\quad
+%   }
+%   % \caption{Main figure caption}\label{fig:subfig} 
+% \end{figure}
+
+% \begin{figure}
+%   \foreach \j in {13,...,24} {%
+%     \begin{subfigure}[p]{0.3\textwidth}
+%       \includegraphics[width=\linewidth]{4pop/L5\j/N4/K2500/g1.00/RatesvsdI.pdf}
+%       \caption{\scriptsize L5 \j}\label{fig:subfig\j}
+%     \end{subfigure}\quad
+%   }
+%   % \caption{Main figure caption}\label{fig:subfig} 
+% \end{figure}
+
+% \begin{figure}
+%   \foreach \j in {25,...,36} {%
+%     \begin{subfigure}[p]{0.3\textwidth}
+%       \includegraphics[width=\linewidth]{4pop/L5\j/N4/K250/g1.00/RatesvsdI.pdf}
+%       \caption{\scriptsize L5 \j}\label{fig:subfig\j}
+%     \end{subfigure}\quad
+%   }
+%   % \caption{Main figure caption}\label{fig:subfig} 
+% \end{figure}
+
+% \begin{figure}
+%   \foreach \j in {25,...,36} {%
+%     \begin{subfigure}[p]{0.3\textwidth}
+%       \includegraphics[width=\linewidth]{4pop/L5\j/N4/K2500/g1.00/RatesvsdI.pdf}
+%       \caption{\scriptsize L5 \j}\label{fig:subfig\j}
+%     \end{subfigure}\quad
+%   }
+%   % \caption{Main figure caption}\label{fig:subfig} 
+% \end{figure}
+
+% \begin{figure}
+%   \foreach \j in {1,...,12} {%
+%     \begin{subfigure}[p]{0.3\textwidth}
+%       \includegraphics[width=\linewidth]{4pop/Karnani\j/N4/K250/g1.00/RatesvsdI.pdf}
+%       \caption{\scriptsize Karnani \j}\label{fig:subfig\j}
+%     \end{subfigure}\quad
+%   }
+%   % \caption{Main figure caption}\label{fig:subfig} 
+% \end{figure}
+
+% \begin{figure}
+%   \foreach \j in {1,...,12} {%
+%     \begin{subfigure}[p]{0.3\textwidth}
+%       \includegraphics[width=\linewidth]{4pop/Karnani\j/N4/K2500/g1.00/RatesvsdI.pdf}
+%       \caption{\scriptsize Karnani \j}\label{fig:subfig\j}
+%     \end{subfigure}\quad
+%   }
+%   % \caption{Main figure caption}\label{fig:subfig} 
+% \end{figure}
+
+% \begin{figure}
+%   \foreach \j in {1,...,12} {%
+%     \begin{subfigure}[p]{0.3\textwidth}
+%       \includegraphics[width=\linewidth]{4pop/ItoI\j/N4/K250/g1.00/RatesvsdI.pdf}
+%       \caption{\scriptsize ItoI \j}\label{fig:subfig\j}
+%     \end{subfigure}\quad
+%   }
+%   % \caption{Main figure caption}\label{fig:subfig} 
+% \end{figure}
+
+% \begin{figure}
+%   \foreach \j in {1,...,12} {%
+%     \begin{subfigure}[p]{0.3\textwidth}
+%       \includegraphics[width=\linewidth]{4pop/L5ItoI\j/N4/K250/g1.00/RatesvsdI.pdf}
+%       \caption{\scriptsize L5ItoI \j}\label{fig:subfig\j}
+%     \end{subfigure}\quad
+%   }
+%   % \caption{Main figure caption}\label{fig:subfig} 
+% \end{figure}
+
+% \begin{figure}
+%   \foreach \j in {13,...,24} {%
+%     \begin{subfigure}[p]{0.3\textwidth}
+%       \includegraphics[width=\linewidth]{4pop/L5ItoI\j/N4/K250/g1.00/RatesvsdI.pdf}
+%       \caption{\scriptsize L5ItoI \j}\label{fig:subfig\j}
+%     \end{subfigure}\quad
+%   }
+%   % \caption{Main figure caption}\label{fig:subfig} 
+% \end{figure}
+
+% \begin{figure}
+%   \foreach \j in {13,...,24} {%
+%     \begin{subfigure}[p]{0.3\textwidth}
+%       \includegraphics[width=\linewidth]{4pop/L5\j/N4/K250/g1.00/RatesvsdI.pdf}
+%       \caption{\scriptsize L5 \j}\label{fig:subfig\j}
+%     \end{subfigure}\quad
+%   }
+%   % \caption{Main figure caption}\label{fig:subfig} 
+% \end{figure}
+
+% \begin{figure}
+%   \foreach \j in {13,...,24} {%
+%     \begin{subfigure}[p]{0.3\textwidth}
+%       \includegraphics[width=\linewidth]{4pop/L5\j/N4/K2500/g1.00/RatesvsdI.pdf}
+%       \caption{\scriptsize L5 \j}\label{fig:subfig\j}
+%     \end{subfigure}\quad
+%   }
+%   % \caption{Main figure caption}\label{fig:subfig} 
+% \end{figure}
+
+% \begin{figure}
+%   \foreach \j in {1,...,12} {%
+%     \begin{subfigure}[p]{0.3\textwidth}
+%       \includegraphics[width=\linewidth]{4pop/L5\j/N4/K2500/g1.00/RatesvsdI.pdf}
+%       \caption{\scriptsize L5 \j}\label{fig:subfig\j}
+%     \end{subfigure}\quad
+%   }
+%   % \caption{Main figure caption}\label{fig:subfig} 
+% \end{figure}
+
+% \begin{figure}
+%   \foreach \j in {25,...,36} {%
+%     \begin{subfigure}[p]{0.3\textwidth}
+%       \includegraphics[width=\linewidth]{4pop/L5\j/N4/K1000/g1.00/RatesvsdI.pdf}
+%       \caption{\scriptsize L5 \j}\label{fig:subfig\j}
+%     \end{subfigure}\quad
+%   }
+%   % \caption{Main figure caption}\label{fig:subfig} 
+% \end{figure}
+
+\end{document}

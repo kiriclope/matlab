@@ -7,7 +7,7 @@ function ProcessFigure(hFigure, fileName,h,paperSize)
     fontSize = 12 ;
     labelFntSize = 10 ;
     lw=1.5 ;
-    msz = 8 ;
+    msz = 16 ;
 
     if(nargin<3)
         h = 3 ;
@@ -15,11 +15,11 @@ function ProcessFigure(hFigure, fileName,h,paperSize)
         fontSize = 12 ;
         labelFntSize = 10 ;
         lw=.0001/3 ;
-        msz = .05 ;
+        msz = 16 ;
     end
     
     if(nargin<4)
-        paperSize = [1.33*h, h] ;
+        paperSize = [1.33*h, h] ; 
     end
 
     try
@@ -39,13 +39,13 @@ function ProcessFigure(hFigure, fileName,h,paperSize)
     
         set(hFigure, 'PaperPosition', [0, 0, paperSize]);
         set(hFigure, 'PaperSize', paperSize);
-        set(hFigure, 'MarkerSize', msz);
+        % set(hFigure, 'MarkerSize', msz) ;
         %    set(hFigure, 'Renderer', 'Painters');
     end    
     
+    % saveas(hFigure, [fileName '.svg'], 'svg');
     saveas(hFigure, [fileName '.pdf'], 'pdf');
-    saveas(hFigure, [fileName '.fig'], 'fig');
-    saveas(hFigure, [fileName '.svg'], 'svg');
+    %p saveas(hFigure, [fileName '.fig'], 'fig');
     % saveas(hFigure, [fileName '.png'], 'png');
 
 end

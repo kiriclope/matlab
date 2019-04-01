@@ -1,0 +1,19 @@
+Y = [] ;
+X=-6:.1:0 ;
+u=.8 ;
+
+for i=1:length(X)
+    Y = [Y STP_Stab(u,X(i))] ;
+end
+
+subplot(2,1,1)
+plot(X,real(Y(1,:)),'ro') ; hold on ;
+plot(X,real(Y(2,:)),'bo') ;
+ylabel('Re \lambda')
+
+subplot(2,1,2)
+plot(X,imag(Y(1,:)),'ro') ; hold on ;
+plot(X,imag(Y(2,:)),'bo') ;
+ylabel('Im \lambda')
+
+xlabel('E0')

@@ -1,0 +1,120 @@
+clear all ;
+GlobalVars
+
+Iext = ExternalInput(model,nbpop,dir) ;    
+nbN = nbNeuron(nbpop,N,IF_Nk,[]) ;
+Cpt = CptNeuron(nbpop,nbN) ;
+
+v_Iprtr = v_Iprtr(1):v_Iprtr(2):v_Iprtr(3) ;
+
+J = ImportJab(model,nbpop,dir) ;
+Rates = linsolve(J,-Iext.') ;
+
+for i=1:length(v_Iprtr)   
+    data = ImportData(model, nbpop, dir, 'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_DATA, prtrPop, Iext(prtrPop) + v_Iprtr(i) ) ;
+    try
+        for j=1:length(data(1,:))-1
+            IdvRates(i,j) = mean(data(:,j+1)) ;
+        end
+    catch
+        for j=1:nbN(nbpop)
+            IdvRates(i,j) = nan ;
+        end
+    end
+end 
+
+if(~FIGPERPOP) 
+    figtitle = sprintf('%s_SuppIdxVsIopto',dir) ; 
+    if( ishandle( findobj('type','figure','name',figtitle) ) )
+        fig = findobj('type','figure','name',figtitle) ; 
+        fig = figure(fig); hold on ; 
+    else
+        fig = figure('Name',figtitle,'NumberTitle','off') ; hold on ; 
+        xlabel('I_{opto}') 
+        ylabel('SI') 
+    end
+end
+
+% if(IF_POWER~=0) 
+%     if IF_POWER==1
+%         v_Iprtr = P0 .* ( exp( v_Iprtr ./ I0 ) - 1 )  ; % profile Moi
+%     else
+%         v_Iprtr = -P0 * log( 1 - v_Iprtr ./ I0 ) ; % Profile David
+%     end
+% end
+
+for i=1:nbpop
+
+    if(FIGPERPOP)
+        if(i==1 || i==2) 
+            figtitle = sprintf('%s_SuppIdxVsIopto_EI',dir) ; 
+        else 
+            figtitle = sprintf('%s_SuppIdxVsIopto_SV',dir) ; 
+        end
+        if(IF_POWER~=0) 
+            figtitle = sprintf('%s_%d',figtitle,IF_POWER) ; 
+            xlabel('P_{opto} (mW/mm^2)') 
+        end
+        fig = popPerFig(i,dir,figtitle) ;
+        xlabel('I_{opto}') 
+        ylabel('SI') 
+    end
+
+    id = IDX:length(v_Iprtr) ; 
+    
+    if( (i==2 || i==4 ) && IF_NORM) 
+        plot(v_Iprtr(IDX:end), zeros(1, length(v_Iprtr(IDX:end)) ),'--','Color','k') 
+    end 
+    
+    if(IF_IDVTraces) 
+        countUp = 1 ; 
+        countDown = 1 ; 
+        countMax = 1 ; 
+        
+        for j=1:nbN(i)
+            X(j) = L * mod( double(j), sqrt( double( nbN(i) ) ) ) / sqrt( double( nbN(i) ) ) ; 
+            Y(j) = L * floor( double(j) / sqrt( double( nbN(i) ) ) ) / sqrt( double( nbN(i) ) ) ; 
+        end 
+        
+        ROI = find( (X-L/2).^2 + (Y-L/2).^2 <= Cth.^2 / 4 ) ; 
+        
+        while countUp+countDown<nbIdv && countMax<30 
+            nId = randi( [ROI(1) ROI(end)] ) ; 
+            countMax = countMax + 1 ; 
+
+            SuppIdx = ( IdvRates(1,nId) - IdvRates(:,nId) ) / ( IdvRates(1,nId) + IdvRates(:,nId) ) ; 
+            patchline(v_Iprtr(id), SuppIdx(id),'linestyle','-','edgecolor',cl{i},'edgealpha',.5,'linewidth',1.5) 
+            % if IdvRates(1,nId)>THRESHOLD 
+            %     if IdvRates(2,nId)./IdvRates(1,nId) >= 1 && countUp<=nbIdv/2 
+            %         countUp = countUp+1 ; 
+            %         SuppIdx = ( IdvRates(1,nId) - IdvRates(:,nId) ) / ( IdvRates(1,nId) + IdvRates(:,nId) ) ; 
+            %         patchline(v_Iprtr(id), SuppIdx(id), ...
+            %                   'linestyle','-','edgecolor',cl{i},'edgealpha',.5,'linewidth',1.5) 
+                    
+            %     end                    
+            %     if IdvRates(2,nId)./IdvRates(1,nId) <= 1 && countDown<=nbIdv/2
+            %         countDown = countDown+1 ;
+            %         SuppIdx = ( IdvRates(1,nId) - IdvRates(:,nId) ) / ( IdvRates(1,nId) + IdvRates(:,nId) ) ; 
+            %         patchline(v_Iprtr(id), SuppIdx(id), 'linestyle','-','edgecolor',cl{i},'edgealpha',.5,'linewidth',1.5) 
+            %     end
+                
+            % end
+        end        
+    end
+    
+    xlim([.01 100])
+    set(gca,'Xscale', 'log')
+    ylim([-1 1])
+    
+    if(IF_SAVE & (i==2 | i==4))
+        figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_DATA) ; 
+        fprintf('Writing %s \n',figdir) 
+        try
+            mkdir(figdir) ; 
+        end
+        ProcessFigure(fig, fullfile(figdir,figtitle)) ; 
+    end
+    
+    hold off ;
+
+end

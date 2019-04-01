@@ -34,7 +34,7 @@ function CVDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec,Cf
         THRESHOLD = .1 ;
     end
          
-    Iprtr = [Iext(2) dIlim(2) dIlim(3)] ;
+    Iprtr = [Iext(2) dIlim(2) Iext(2)+dIlim(3)] ;
     nbN = nbNeuron(nbpop,n,IF_Nk,[]) ;
     Cpt = CptNeuron(nbpop,nbN) ;
     I = Iprtr(1):Iprtr(2):Iprtr(3) ;    

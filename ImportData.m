@@ -1,111 +1,98 @@
-function data = ImportData(model,nbpop,dir,file,n,k,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr,IF_PHI,PHI)
-
-    popList = ['E' 'I' 'S' 'X'] ;
-    if nargin<14
-        IF_PHI=false ;
-    end
+function data = ImportData(model,nbpop,dir,file,n,k,g,IF_RING,Crec,Cff,IF_Prtr,nPrtr,Xprtr)
     
-    if strcmp(model,'Rate')
-        dir = sprintf('%s/Threshold_Linear',dir) ;
-        separator = ';' ;
-    end
-    if strcmp(model,'Binary')
-        separator = ';' ;
-    end
-    if strcmp(model,'IF') | strcmp(model,'Bump') | strcmp(model,'LIF') | strcmp(model,'Rates')
-        separator = ' ' ;
-    end
-
-    if(length(k)==1)
-        path = sprintf(['../%s/Simulations/%dpop/%s/N%d/K%d/g%.2f'],model,nbpop,dir,n,k,g) ;
-    else
-        path = sprintf(['../%s/Simulations/%dpop/%s/N%d/KE%dKI%d/g%.2f'],model,nbpop,dir,n,k(1),k(2),g) ;
-    end 
-
-    if IF_RING & strcmp(model,'Binary')
-        
-        if(nbpop>1 & length(Crec)==1)
-            RING_path = sprintf(['Ring/Crec%.2fCff%.2f'], Crec, Cff) ;
-        elseif(nbpop==1)
-            RING_path = sprintf(['Ring/CrecI%.2fCff%.2f'], Crec(1), Cff) ;
-        elseif(nbpop==2)
-            if(length(Crec)==nbpop)
-                RING_path = sprintf(['Ring/CrecE%.2fCrecI%.2fCff%.2f'], Crec(1), Crec(2), Cff) ;
-            else
-                RING_path = sprintf(['CrecEE%.2fCrecEI%.2fCrecIE%.2fCrecII%.2fCff%.2f'], Crec(1), Crec(2), Crec(3), Crec(4), Cff) ;
+    if(nargin<12) 
+        nPrtr = 2 ;
+        if(nargin<10)
+            IF_Prtr = '' ;
+            Xprtr = [] ;
+            if(nargin<8)
+                IF_RING = '' ;
+                Crec = [] ;
+                Cff = [] ;
             end
         end
-        
-        path = sprintf(['%s/%s'],path,RING_path) ;
     end
+
+    popList = ['E' 'I' 'S' 'V'] ;
+    if(nbpop==1)
+        popList = 'I' ;
+    end
+
+    if strcmp(model,'Rate') 
+        dir = sprintf('%s/Threshold_Linear',dir) ; 
+        separator = ';' ; 
+    else 
+        separator = ' ' ; 
+    end 
     
-    if strcmpi(IF_RING,'Ring') | strcmpi(IF_RING,'Gauss') | ...
-            strcmpi(IF_RING,'Ring2D') | strcmpi(IF_RING,'Exp') | strcmpi(IF_RING,'Specific')
+    path = sprintf(['../%s/Simulations/%dpop/%s/N%d/K%d/g%.2f'],model,nbpop,dir,n,k,g) ; 
+    
+    if(~isempty(IF_RING))
         if(nbpop==1)
-            RING_path = sprintf(['%s/CrecI%.2fCff%.2f'], IF_RING, Crec(1), Cff) ;
+            RING_path = sprintf(['%s/CrecI%.4f'], IF_RING, Crec(1)) ;
         elseif(nbpop==2)
             if(length(Crec)==nbpop)
-                RING_path = sprintf(['%s/CrecE%.4fCrecI%.4fCff%.4f'], ...
-                                    IF_RING, Crec(1), Crec(2), Cff) ;
+                RING_path = sprintf(['%s/CrecE%.4fCrecI%.4f'], IF_RING, Crec(1), Crec(2)) ;
             else
-                RING_path = sprintf(['%s/CrecEE%.4fCrecEI%.4fCrecIE%.4fCrecII%.4fCff%.2f'], IF_RING,Crec(1), Crec(2), Crec(3), Crec(4), Cff) ;
+                RING_path = sprintf(['%s/CrecEE%.4fCrecEI%.4fCrecIE%.4fCrecII%.4f'], IF_RING, Crec(1), Crec(2), Crec(3), Crec(4)) ;
             end
         elseif(nbpop==3)
-            if(length(Crec)==nbpop)
-                RING_path = sprintf(['%s/CrecE%.4fCrecI%.4fCrecS%.4fCff%.2f'], IF_RING,Crec(1), Crec(2), Crec(3), Cff) ;
-            else
-                RING_path = sprintf(['%s/' ...
-                                    'CrecEE%.4fCrecEI%.4fCrecES%' ...
-                                    '.2fCrecIE%.2fCrecII%.2fCrecIS%.2fCrecSE%.2fCrecSI%.2fCrecSS%.2fCff%.2f'], ...
-                                    IF_RING,Crec(1), Crec(2), Crec(3), ...
-                                    Crec(4), Crec(5), Crec(6), ...
-                                    Crec(7), Crec(8), Crec(9), Cff) ;
-            end
+            RING_path = sprintf(['%s/CrecE%.4fCrecI%.4fCrecS%.4f'], IF_RING,Crec(1), Crec(2), Crec(3)) ;
         elseif(nbpop==4)
-            if(length(Crec)==nbpop)
-                RING_path = sprintf(['%s/CrecE%.4fCrecI%.4fCrecS%.4fCrecV%.4fCff%.2f'], IF_RING,Crec(1), Crec(2), Crec(3), Crec(4),Cff) ;
-            else
-                RING_path = sprintf(['%s/CrecEE%.2fCrecEI%.2fCrecIE%.2fCrecII%.2fCff%.2f'], IF_RING,Crec(1), Crec(2), Crec(3), Crec(4), Cff) ;
-            end
-        end
-
-        path = sprintf(['%s/%s'],path,RING_path) ;
-    end
-
-    if IF_RING==3 & strcmp(model,'IF')
-        % RING_path = sprintf(['Space2D/Crec%.2fCff%.2f'], Crec, Cff) ;
-        if(nbpop==1)
-            RING_path = sprintf(['Space2D/CrecI%.2fCff%.2f'], Crec(1), Cff) ;
-        elseif(nbpop==2)
-            if(length(Crec)==nbpop)
-                RING_path = sprintf(['Space2D/CrecE%.2fCrecI%.2fCff%.2f'], Crec(1), Crec(2), Cff) ;
-            else
-                RING_path = sprintf(['Space2D/CrecEE%.2fCrecEI%.2fCrecIE%.2fCrecII%.2fCff%.2f'], Crec(1), Crec(2), Crec(3), Crec(4), Cff) ;
-            end
-        end
-        path = sprintf(['%s/%s'],path,RING_path) ;
-    end
-
-    if IF_IEXT
-        if(nbpop>1)
-            IEXT_path = sprintf(['Prtr_%s/Iext_%s%.4f'],popList(nPrtr),popList(nPrtr),Iprtr) ;
-        else
-            IEXT_path = sprintf(['Prtr_I/Iext_I%.4f'],Iprtr) ; 
+            RING_path = sprintf(['%s/CrecE%.4fCrecI%.4fCrecS%.4fCrecV%.4f'], IF_RING, Crec(1), Crec(2), Crec(3), Crec(4)) ;
         end
         
-        path = sprintf(['%s/%s'],path,IEXT_path) ;
+        path = sprintf(['%s/%s'],path,RING_path) ;
+
+        if(~isempty(Cff))
+            path = sprintf(['%sCff%.4f'],path,Cff) ;
+        end
     end
 
-    if IF_PHI
-        PHI_path = sprintf(['PHI_%.2f'], PHI) ;
-        path = sprintf(['%s/%s'],path,PHI_path) ;
+    switch IF_Prtr
+        
+      case {'Delta','Gauss','DeltaGauss'}
+        % Iext = ExternalInput(model,nbpop,dir) ;
+        % Xprtr1 = Xprtr + Iext(nPrtr) ;
+        add_path = sprintf(['%sPrtr/Iext_%s%.4f'], IF_Prtr, popList(nPrtr), Xprtr) ;
+
+      case 'PHI'
+        add_path = sprintf(['PHI_%.2f'], Xprtr) ; 
+
+      case 'TIMECOURSE'
+        Iext = ExternalInput(model,nbpop,dir) ; 
+        Xprtr1 = Xprtr + Iext(nPrtr) ; 
+        add_path = sprintf(['DeltaPrtr/Iext_%s%.4f/TIMECOURSE'], popList(nPrtr), Xprtr1) ; 
+
+      case 'JabLoop' 
+        add_path = sprintf(['Jee%.4f'], Xprtr) ;
+
+      case 'AUTA'
+        if(nPrtr==0)
+            if(nbpop==1)
+                add_path = sprintf(['AutaI%.2f'], Xprtr) ; 
+            else
+                add_path = sprintf(['AutaE%.2f'], Xprtr) ; 
+            end
+        elseif(nPrtr==1)
+            add_path = sprintf(['AutaI%.2f'], Xprtr) ; 
+        elseif(nPrtr==2) 
+            add_path = sprintf(['AutaE%.2fI%.2f'], Xprtr(1), Xprtr(2) ) ; 
+        end
+            %add_path = sprintf(['AUTA_p%.2f'], Xprtr) ;                     
+      otherwise
+        add_path = '' ;
+    end
+
+    path = sprintf(['%s/%s'],path,add_path) ;     
+    file = sprintf(['%s/%s.txt'],path,file) ;
+    fprintf('Reading %s \n',file) 
+
+    data = [] ;
+    try
+        data = importdata(file,separator) ; 
+    catch
+        fprintf('DATA NOT FOUND\n') 
     end
     
-    file = sprintf(['%s/%s.txt'],path,file) ;
-    fprintf('Reading %s \n',file)
-    data = [] ;
-    fid = fopen(file,'r') ;
-    data = importdata(file,separator) ;
-    fclose(fid) ;
-
 end

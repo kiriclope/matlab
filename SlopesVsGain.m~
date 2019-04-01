@@ -1,0 +1,5 @@
+GlobalVars
+
+Iext = ExternalInput(model,nbpop,dir) ;    
+nbN = nbNeuron(nbpop,N,IF_Nk,[]) ;
+Cpt = CptNeuron(nbpop,nbN) ;

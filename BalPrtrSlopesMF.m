@@ -3,7 +3,6 @@ function dmdI = BalPrtrSlopesMF(model,nbpop,dir,Iext,J,IF_NUMERIC)
 % function dmdI = BalPrtrSlopesMF(model,nbpop,dir,Iext,J,IF_NUMERIC)
 % Compute susceptibility to a perturbation of the 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
    
     if(nargin<5 | isempty(J) )
         J = ImportJab(model,nbpop,dir) ;

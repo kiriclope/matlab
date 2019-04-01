@@ -1,4 +1,4 @@
-function figdir = FigDir(model,nbpop,dir,n,k,g,IF_RING,Crec,Cff)
+function figdir = FigDir(model,nbpop,dir,n,k,g,IF_RING,Crec,Cff,IF_IEXT)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % function FigDir(model,nbpop,dir,file,n,k,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -40,5 +40,15 @@ else
     figdir = path ;
 end
 
+switch IF_IEXT
+
+  case 1 
+    figdir = sprintf(['%s/DeltaPrtr'],figdir) ;    
+  case 2
+    figdir = sprintf(['%s/GaussPrtr'],figdir) ;
+  case 3
+    figdir = sprintf(['%s/DeltaGaussPrtr'],figdir) ;
+    
+end
 
 end

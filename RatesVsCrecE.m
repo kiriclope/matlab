@@ -7,7 +7,7 @@ function RatesVsCrecE(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Cre
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     IF_OPS = 0 ;
     ndI = 2 ;
-
+    
     if(isempty(Iext))
         Iext = ExternalInput(model,nbpop,dir) ;
     end
@@ -58,7 +58,7 @@ function RatesVsCrecE(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Cre
                         
             try
                 BL = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,1,ndI,Iext(ndI)) ;
-                data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,1,ndI,Iext(ndI)+.4) ;
+                data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,1,ndI,Iext(ndI)+.1);
                 for j=1:length(data(1,:))-1
                     IdvRates(i,j) = mean(data(:,j+1)) ;
                     IdvRatesBL(i,j) = mean(BL(:,j+1)) ;
@@ -84,7 +84,7 @@ function RatesVsCrecE(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Cre
 
                 if( length(idx)==0 )
                     m(j,i) = nan ;
-                    mBL(j,i) = 0 ;
+                    mBL(j,i) = nan ;
                 else
 
                     X = X(idx) ;
@@ -95,7 +95,7 @@ function RatesVsCrecE(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Cre
 
                     if( length(idx)==0 )
                         m(j,i) = nan ;
-                        mBL(j,i) = 0 ;
+                        mBL(j,i) = nan ;
                     else
                         
                         X = X(idx) ;
@@ -110,6 +110,7 @@ function RatesVsCrecE(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Cre
                     end
                 end
                 fprintf('%.3f ', m(j,i) )
+                fprintf('%.3f ', mBL(j,i) )
             end
             
             fprintf('\n')

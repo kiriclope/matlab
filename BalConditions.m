@@ -23,8 +23,14 @@ function C_Matrix = BalConditions(model,nbpop,dir,Iext,J,IF_SYM,IF_RETURN)
         Jsym = sym('J%d%d',nbpop) ;
         
         assume(Isym>0) ;
+        %assume(Jsym(:,2:end)<0) ;
+
         assume(Jsym(:,1)>0) ;
-        assume(Jsym(:,2:end)<0) ;
+        assume(Jsym(:,2)<0) ;
+        assume(Jsym(:,3)>0) ;
+        assume(Jsym(:,4)<0) ;
+
+        %assume(Jsym(:,2:end)<0) ;
 
         J = Jsym.*C ;
         Iext = Isym ;
@@ -34,9 +40,9 @@ function C_Matrix = BalConditions(model,nbpop,dir,Iext,J,IF_SYM,IF_RETURN)
         IF_RETURN = 1 ;
     end
 
-    if(nbpop>=3) % No external input onto SOM
-        Iext(3) = 0 ;
-    end
+    % if(nbpop>=3) % No external input onto SOM
+    %     Iext(3) = 0 ;
+    % end
     
     Conditions = sortrows(de2bi(1:2^(nbpop)-2 )) ; 
     Solutions = cell(1,length(Conditions) ) ; 

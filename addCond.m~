@@ -1,0 +1,11 @@
+clear all ; 
+GlobalVars
+
+Iext = ExternalInput(model,nbpop,dir) ;    
+nbN = nbNeuron(nbpop,N,IF_Nk,[]) ;
+Cpt = CptNeuron(nbpop,nbN) ;
+
+v_Iprtr = v_Iprtr(1):v_Iprtr(2):v_Iprtr(3) ;
+
+J = ImportJab(model,nbpop,dir) ;
+Rates = linsolve(J,-Iext.') ;

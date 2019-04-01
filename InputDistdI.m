@@ -7,8 +7,10 @@ function InputDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     IF_OPS = 0 ;
     ndI = 2 ;
+    L = 2 ;
+    IF_DATA = 0 ;
 
-    if(isempty(Iext))
+    if(isempty(Iext)) 
         Iext = ExternalInput(model,nbpop,dir) ;
     end
 
@@ -40,19 +42,16 @@ function InputDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec
     % cl = {[1 0 0] [0 0 1] [1 0 0] [0 0 1] [0 1 0]  [0.7 0.7 0.7]} ;
     
     if( strcmp(IF_RING,'Ring') | strcmp(IF_RING,'Gauss') | strcmp(IF_RING,'Exp') )
-        Cth = .125/2 ;
+        Cth = .125 ;
     else
         Cth = 100 ;
     end
 
     if strcmpi(model,'Rates') | IF_DATA == 0
-        figname=sprintf('RatesvsdI') ;
-        % figname=sprintf('RatesvsdI%.2f',Cff) ;
-        fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
 
         X = [] ;
-        Y = [] ;
-        
+        Y = [] ;        
+
         I = Iext ;
         for dI=dIlim(1):dIlim(2):dIlim(3)
             I(2) = Iext(2) + dI ;
@@ -70,6 +69,10 @@ function InputDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec
             fprintf('\r')
         end
         fprintf('\n')
+
+        figname=sprintf('RatesvsdI') ;
+        % figname=sprintf('RatesvsdI%.2f',Cff) ;
+        fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
         
         for i=1:nbpop
             plot(X,Y(i,:)./Y(i,1),'-','color',cl{i})
@@ -78,16 +81,16 @@ function InputDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec
         
         xlabel('I_{opto}')
         ylabel('Norm. Rates')
-        xlim([.01 100])
-        set(gca,'Xscale', 'log')
-        ylim([.01 10])
-        set(gca,'Yscale', 'log')
+        xlim([0 1])
+        % set(gca,'Xscale', 'log')
+        ylim([0 3])
+        % set(gca,'Yscale', 'log')
         
     end
 
     if(IF_SAVE & ~IF_DATA)
 
-        figdir = FigDir(model,nbpop,dir,n,K,g,IF_RING,Crec,Cff) ;
+        figdir = FigDir(model,nbpop,dir,n,K,g,IF_RING,Crec,Cff,0) ;
         fprintf('Writing %s \n',figdir)
         
         try
@@ -98,22 +101,23 @@ function InputDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec
         hold off ;
     end
 
-    if IF_DATA
-        Iprtr = [Iext(ndI) dIlim(2) dIlim(3)] ;
+    if IF_DATA~=0
+        Iprtr = [Iext(ndI) dIlim(2) Iext(ndI)+dIlim(3)] ;
+
         nbN = nbNeuron(nbpop,n,IF_Nk,[]) ;
         Cpt = CptNeuron(nbpop,nbN) ;
         I = Iprtr(1):Iprtr(2):Iprtr(3) ;
         nb=10 ;
 
         if IF_OPS            
-            OpsIdx = ImportData(model,nbpop,dir,'IdxFile',n,K,g,IF_RING,Crec,Cff,1,ndI,I(1)) ;
+            OpsIdx = ImportData(model,nbpop,dir,'IdxFile',n,K,g,IF_RING,Crec,Cff,IF_DATA,ndI,I(1)) ;
             OpsIdx = OpsIdx+1 ;
         end
 
         for i=1:length(I)
-                        
+            
+            data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,IF_DATA,ndI,I(i)) ;
             try
-                data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,1,ndI,I(i)) ;
                 for j=1:length(data(1,:))-1
                     IdvRates(i,j) = mean(data(:,j+1)) ;
                 end
@@ -127,8 +131,8 @@ function InputDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec
             fprintf(' Rates ')
 
             for j=1:nbpop
-
-                X = linspace(-pi,pi,length( IdvRates(i,Cpt(j)+1:Cpt(j+1) ) ) ) ;
+                
+                X = linspace(-L/2,L/2,length( IdvRates(i,Cpt(j)+1:Cpt(j+1) ) ) ) ;
                 Idv = IdvRates(i,Cpt(j)+1:Cpt(j+1) );
 
                 if(IF_OPS & j==2)
@@ -193,16 +197,17 @@ function InputDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec
         end
 
         for i=1:nbpop
+            figname=sprintf('%s_RatesvsdI',dir) ;
             if(i==1 | i==2)
-                figname=sprintf('%s_RatesvsdI_EI',dir) ;
-                if(IF_OPS)
-                    figname=sprintf('%s_RatesvsdI_EI_OPS',dir) ;
-                end
-            else
-                figname=sprintf('%s_RatesvsdI_SV',dir) ;
-                if(IF_OPS)
-                    figname=sprintf('%s_RatesvsdI_SV_OPS',dir) ;
-                end
+                 figname=sprintf('%s_RatesvsdI_EI',dir) ;
+                 if(IF_OPS)
+                     figname=sprintf('%s_RatesvsdI_EI_OPS',dir) ;
+                 end
+             else
+                 figname=sprintf('%s_RatesvsdI_SV',dir) ;
+                 if(IF_OPS)
+                     figname=sprintf('%s_RatesvsdI_SV_OPS',dir) ;
+                 end
             end
             if( ishandle( findobj('type','figure','name',figname) ) )
                 fig = findobj('type','figure','name',figname) ; 
@@ -214,39 +219,41 @@ function InputDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec
             end
 
             if(IF_OPS==0 | i==1)
-                plot(I-Iext(2),m(i,:)./m(i,1),'o','MarkerEdgeColor',cl{i},'MarkerSize',2,'MarkerFaceColor','none','LineWidth', 1)            
-                plot(I-Iext(2),m(i,:)./m(i,1),'-','Color',cl{i})
+                plot(I-Iext(ndI),m(i,:)./m(i,1),'o','MarkerEdgeColor',cl{i},'MarkerSize',2,'MarkerFaceColor','none','LineWidth', 1)
+                plot(I-Iext(ndI),m(i,:)./m(i,1),'-','Color',cl{i})
             end
 
             if(IF_OPS & i==2)
-                plot(I-Iext(2),mUp./mUp(1),'^','MarkerEdgeColor','m','MarkerSize',2,'MarkerFaceColor','none','LineWidth', 1) 
-                plot(I-Iext(2),mUp./mUp(1),'-','Color','m')
+                plot(I-Iext(ndI),mUp./mUp(1),'^','MarkerEdgeColor','m','MarkerSize',2,'MarkerFaceColor','none','LineWidth', 1) 
+                plot(I-Iext(ndI),mUp./mUp(1),'-','Color','m')
 
                 % plot(I-Iext(2),mDown./mDown(1),'v','MarkerEdgeColor','g','MarkerSize',2,'MarkerFaceColor','none','LineWidth', 1)
                 % plot(I-Iext(2),mDown./mDown(1),'-','Color','g')
                  
-                plot(I-Iext(2),m(i,:)./m(i,1),'o','MarkerEdgeColor','b','MarkerSize',2,'MarkerFaceColor','none','LineWidth', 1) 
-                plot(I-Iext(2),m(i,:)./m(i,1),'-','Color','b')
+                plot(I-Iext(ndI),m(i,:)./m(i,1),'o','MarkerEdgeColor','b','MarkerSize',2,'MarkerFaceColor','none','LineWidth', 1) 
+                plot(I-Iext(ndI),m(i,:)./m(i,1),'-','Color','b')
             end
 
-            X = linspace(-pi,pi,length( IdvRates(1,Cpt(i)+1:Cpt(i+1) ) ) ) ;
-            idx = find(abs(X)<=Cth) ; % Cff
+            X = linspace(-L/2,L/2,length( IdvRates(1,Cpt(i)+1:Cpt(i+1) ) ) ) ;
+            idx = find(abs(X)<=Cth) ; 
 
             for k=1:25
                 nId = randi([idx(1)+Cpt(i) idx(end)+Cpt(i)]) ;
                 if IdvRates(1,nId)>THRESHOLD
-                    patchline(I-Iext(2),IdvRates(:,nId)./IdvRates(1,nId),'linestyle','-','edgecolor',cl{i},'edgealpha',.1) 
+                    patchline(I-Iext(ndI),IdvRates(:,nId)./IdvRates(1,nId),'linestyle','-','edgecolor',cl{i},'edgealpha',.1) 
                 end
             end
-
+            
             xlim([.01 100])
             set(gca,'Xscale', 'log')
             ylim([.01 10])
-            set(gca,'Yscale', 'log')
+            set(gca,'Yscale', 'log') 
+            % xlim([0 2])
+            % ylim([0 3])
 
             if(IF_SAVE & (i==2 | i==4))
                 
-                figdir = FigDir(model,nbpop,dir,n,K,g,IF_RING,Crec,Cff) ;
+                figdir = FigDir(model,nbpop,dir,n,K,g,IF_RING,Crec,Cff,IF_DATA) ;
                 fprintf('Writing %s \n',figdir)
                 
                 try

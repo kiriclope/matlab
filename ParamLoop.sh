@@ -6,32 +6,32 @@ if [ $IF_p ]; then
     
     for p in $(seq ${pmin} ${pmax}); do
 	
-        mkdir -p ../${model}/Parameters/${nbpop}pop/$dir${p}/
-        file=../${model}/Parameters/${nbpop}pop/$dir${p}/Jparam.txt
+        mkdir -p ../${model}/Parameters/${nbpop}pop/${dir}_${p}/
+        file=../${model}/Parameters/${nbpop}pop/${dir}_${p}/Jparam.txt
     
         if [ ! -e "$file" ]; then
-    	    echo "Creating ../"${model}"/Parameters/"${nbpop}"pop/"$dir${p}"/Jparam.txt"
-    	    cp -R ../${model}/Parameters/${nbpop}pop/$dir/Jparam.txt ../${model}/Parameters/${nbpop}pop/$dir${p}/Jparam.txt
+    	    echo "Creating ../"${model}"/Parameters/"${nbpop}"pop/"${dir}_${p}"/Jparam.txt"
+    	    cp -R ../${model}/Parameters/${nbpop}pop/$dir/Jparam.txt ../${model}/Parameters/${nbpop}pop/${dir}_${p}/Jparam.txt
 	fi
 	
-	echo "Param"$nbpop$dir${p}
+	echo "Param"$nbpop${dir}_${p}
 	# ./run_disp.sh BalGenParamEIEI ${model} $nbpop $dir${p} true 
-	screen -dmS Param$nbpop$dir${p} ./run.sh BalGenParam ${model} $nbpop $dir${p} true
+	screen -dmS Param$nbpop${dir}_${p} ./run.sh BalGenParam ${model} $nbpop ${dir}_${p} true
     done
 else
     filename='paramList.txt '
     filelines=`cat $filename`
     for p in $filelines ; do
 	
-        mkdir -p ../${model}/Parameters/${nbpop}pop/$dir${p}/
-        file=../${model}/Parameters/${nbpop}pop/$dir${p}/Jparam.txt
+        mkdir -p ../${model}/Parameters/${nbpop}pop/${dir}_${p}/
+        file=../${model}/Parameters/${nbpop}pop/${dir}_${p}/Jparam.txt
 	
 	if [ ! -e "$file" ]; then
-    	    echo "Creating ../"${model}"/Parameters/"${nbpop}"pop/"$dir${p}"/Jparam.txt"
-    	    cp -R ../${model}/Parameters/${nbpop}pop/$dir/Jparam.txt ../${model}/Parameters/${nbpop}pop/$dir${p}/Jparam.txt
+    	    echo "Creating ../"${model}"/Parameters/"${nbpop}"pop/"${dir}_${p}"/Jparam.txt"
+    	    cp -R ../${model}/Parameters/${nbpop}pop/$dir/Jparam.txt ../${model}/Parameters/${nbpop}pop/${dir}_${p}/Jparam.txt
 	fi
-	echo "Param"$nbpop$dir${p}
+	echo "Param"$nbpop{dir}_${p}
 	# ./run_disp.sh BalGenParamEIEI ${model} $nbpop $dir${p} true 
-	screen -dmS Param$nbpop$dir${p} ./run.sh BalGenParam ${model} $nbpop $dir${p} true
+	screen -dmS Param$nbpop${dir}_${p} ./run.sh BalGenParam ${model} $nbpop ${dir}_${p} true
     done
 fi

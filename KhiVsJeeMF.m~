@@ -1,0 +1,99 @@
+clear all ;
+GlobalVars
+
+IextBL = ExternalInput(model,nbpop,dir) ; 
+nbN = nbNeuron(nbpop,N,IF_Nk,[]) ;
+Cpt = CptNeuron(nbpop,nbN) ;
+
+v_Jab = v_Jab(1):v_Jab(2):v_Jab(3) ; 
+nbIdv = 25 ;
+
+J = ImportJab(model,nbpop,dir) ; 
+Iext = IextBL ; 
+Iext(2) = IextBL(2) + Iprtr ; 
+
+for i=1:length(v_Jab) 
+    J(1,1) = v_Jab(i) ; 
+
+    Rates = linsolve(J,-IextBL.') ; 
+    RatesPrtr = linsolve(J,-Iext.') ; 
+    
+    % [u b] = RateInputDist(model,nbpop,dir,IextBL,100000,1,[],false) ;
+    % Rates = QchAvgTF(u,b) ;
+
+    % [u b] = RateInputDist(model,nbpop,dir,Iext,100000,1,[],false) ;
+    % RatesPrtr = QchAvgTF(u,b) ;
+    
+    fprintf('Jab ') 
+    fprintf('%.3f ', v_Jab(i)) 
+
+    fprintf(' Rates ') 
+    for j=1:nbpop 
+        m(j,i) = Rates(j) ; 
+        fprintf('%.3f ', m(j,i) ) 
+    end 
+    fprintf('\n') 
+
+    fprintf(' Khi ') 
+    for j=1:nbpop 
+        khi(j,i) = ( RatesPrtr(j) - Rates(j) ) ./ Iprtr ;
+        fprintf('%.3f ', khi(j,i) ) 
+    end 
+    fprintf('\n') 
+
+end
+
+figtitle = sprintf('%s_RatesVsJab_MF',dir) ; 
+fig = figure('Name',figtitle,'NumberTitle','off') ; hold on ; 
+xlabel('J_{EE}')
+ylabel('Rates ')
+
+    % xlim([.01 100])
+    % set(gca,'Xscale', 'log')
+    % ylim([.01 10])
+    % set(gca,'Yscale', 'log') 
+
+for i=1:nbpop   
+    NormRates = m(i,:) ;
+    plot(v_Jab, NormRates, '-','Color',cl{i})    
+end
+
+if(IF_SAVE)
+    figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_DATA) ;
+    fprintf('Writing %s \n',figdir)
+    try
+        mkdir(figdir) ;
+    end
+    ProcessFigure(fig, fullfile(figdir,figtitle)) ;
+end
+
+
+figtitle = sprintf('%s_KhiVsJab_MF',dir) ; 
+fig = figure('Name',figtitle,'NumberTitle','off') ; hold on ; 
+xlabel('J_{EE}')
+ylabel('\chi ')
+
+plot(v_Jab, zeros(1,length(v_Jab)), '--','Color','k')
+
+% xlim([.01 100])
+% set(gca,'Xscale', 'log')
+% ylim([.01 10])
+% set(gca,'Yscale', 'log') 
+
+for i=1:nbpop
+    NormKhi = khi(i,:) ; 
+    plot(v_Jab, NormKhi, '-','Color',cl{i}) 
+end
+
+% plot([0.05 0.05],[-2 2], '--','Color','k')
+% plot([0.4 0.4],[-2 2], '--','Color','k')
+
+    if(IF_SAVE)
+        figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_DATA) ;
+        fprintf('Writing %s \n',figdir)
+        try
+            mkdir(figdir) ;
+        end
+        ProcessFigure(fig, fullfile(figdir,figtitle)) ;
+    end
+

@@ -1,0 +1,66 @@
+function [] = AutaRing()
+
+    warning off ;
+    options = optimset('Display','off') ;
+
+    J = -2 ; 
+    I = 1 ; 
+    K = 50 ;
+
+    N = 100 ;
+    Phi = linspace(0,pi,N) ;
+    dPhi = abs(Phi(1)-Phi(2)) ;
+
+    % Kappa = .5 ;
+    % flag = 0 ; 
+    % while flag<=0 
+    %     x0 = rand(1,N) ;
+    %     [x,fval,flag] = fsolve(@RatesEqs,x0,options) ; 
+    % end
+
+    % m_Phi = sum(x) * dPhi / pi ;
+    % m_Phi = mean(x) ;
+    % fprintf('flag %d Kappa %.3f m_Phi %.3f \n', flag, Kappa, m_Phi ) ; 
+
+    Kappa = 0:.25:1 ; 
+    r = [] ;
+    m_Phi = [] ;
+    for i=1:length(Kappa)
+        flag=0 ;
+        while flag<=0 
+            x0 = [rand(1,N) Kappa(i)] ;
+            [x,fval,flag] = fsolve(@RatesEqs,x0,options) ;
+        end
+        r = [r x(1:end-1).'] ; 
+        m_Phi = [m_Phi mean(x(1:end-1))] ; 
+        fprintf('flag %d Kappa %.3f m_Phi %.3f \n', flag, Kappa(i), mean(x(1:end-1)) ) ; 
+    end
+    fprintf('\n')
+
+    figure(1) ; hold on ;
+    plot(Kappa,m_Phi,'r')
+
+    ylabel('m')
+    xlabel('\kappa')
+    
+function Eq = RatesEqs(m)
+
+    pb = m(end) ;
+
+    Eq = [] ;
+    m_Avg = mean(m(1:end-1)) ;
+    
+    for j=1:length(Phi) 
+        u(j) = sqrt(K) * ( I + J * m_Avg ) + J * pb * m(j) / pi ;
+        alpha(j) = J.^2 * ( m_Avg + pb / sqrt(K) / pi * m(j) ) ; 
+        
+        if(alpha(j)>0) 
+            Eq = [Eq ; m(j) - erfc( -u(j) / sqrt( alpha(j) ) ) ] ;
+        else 
+            Eq = [Eq ; 1 ] ;
+        end
+    end
+    Eq = [Eq ; 0 ] ;    
+end
+
+end

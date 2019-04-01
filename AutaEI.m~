@@ -1,0 +1,24 @@
+function [] = AutaEI()
+    
+
+    for Pb_Aut=0:.1:1 
+        flag=0 ;
+        while flag<=0
+            x0 = rand(1,2) ;
+            [x,fval,flag] = fsolve(@RatesEqs,x0,options) ;
+        end
+        m = [m x] ;
+        fprintf('Kappa %.3f m %.3f \n', Kappa, m) ;
+    end
+
+function [m_E m_I] = RatesEqs(m) 
+    
+    mu_E = sqrt(K) *( I_E + J(1,1) * m(1) + J(1,2) * m(2) ) ;
+    mu_I = sqrt(K) *( I_I + J(2,1) * m(1) + J(2,2) * m(2) ) + J(2,2) * Kappa * m(2) ; 
+
+    var_E = J(1,1).^2 * m(1) + J(1,2).^2 * m(2) ;
+    var_I = J(2,1).^2 * m(1) + J(2,2).^2 * (1 + Kappa / sqrt(K) ) * m(2) ; 
+    
+    m_E = erfc( -mu_E/sqrt(var_E) ) ;
+    m_I = erfc( -mu_I/sqrt(var_I) ) ;
+end

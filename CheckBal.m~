@@ -740,65 +740,29 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
                 MeanRate(i) = mean(m) ;
                 VarRate(i) = var(m) ; 
                 
-                mLeft = fliplr( m(1:popLength/2) );
-                mRight = m(popLength/2+1:end) ;
-                mTot = mLeft + mRight ;
-
-                MeanRate(i) = mean(mTot) ;
-                VarRate(i) = var(mTot) ; 
-
-                X = linspace(0,pi,popLength/2) ; 
-
-                % length(mLeft) 
-                % length(mRight)
-                % length(X) 
-
-                mTot = mTot(idx)./mBL ;
-                X = X(idx) ;
-
-                idxMax = max( find(X<=Cff/2) ) ;
-
-                fit = smooth(idx(1:idxMax),mTot(1:idxMax),.001,'lowess') ;
-                patchline(X(1:idxMax),fit,'linestyle','-','edgecolor',cl{i},'edgealpha',.1)
-
-                fit = smooth(idx(idxMax+1:end),mTot(idxMax+1:end),.001,'lowess') ;
-                patchline(X(idxMax+1:end),fit,'linestyle','-','edgecolor',cl{i},'edgealpha',.1)
-                
-                fit = smooth(idx(1:idxMax),mTot(1:idxMax),.05,'lowess') ;
-                plot(X(1:idxMax),fit,'linewidth',2,'color',cl{i})
-
-                fit = smooth(idx(idxMax+1:end),mTot(idxMax+1:end),.05,'lowess') ;
-                plot(X(idxMax+1:end),fit,'linewidth',2,'color',cl{i})
-                
-                % % X = linspace(-pi,pi,length( IdvRates(Cpt(i)+1:Cpt(i+1) ) ) ) ; 
-                % % idx = find( abs(X)<=pi ) ;
-                % % X = X(idx) ;
-                % % fprintf(' %d %d \n',idx(1),idx(length(idx)))
-                
-                % % m = IdvRates(idx(1)+Cpt(i):idx(end)+Cpt(i) ) ;
-                % % fprintf('Rates %.3f \n',mean(m))
-                            
-                % X = linspace(-pi,pi,nbN(i)) ;
+                X = linspace(-pi,pi,length( IdvRates(Cpt(i)+1:Cpt(i+1) ) ) ) ; 
+                idx = find( abs(X)<=pi ) ;
                 % X = X(idx) ;
+                % fprintf(' %d %d \n',idx(1),idx(length(idx)))
                 
-                % fit = smooth(idx,m,.001,'lowess') ;
-                % patchline(X,fit,'linestyle','-','edgecolor',cl{i},'edgealpha',.1) 
+                % m = IdvRates(idx(1)+Cpt(i):idx(end)+Cpt(i) ) ;
+                % fprintf('Rates %.3f \n',mean(m))
+                            
+                X = linspace(-pi,pi,nbN(i)) ;
+                X = X(idx) ;
                 
-                % fit = smooth(idx,m,.05,'lowess') ;
-                % plot(X,fit,'linewidth',2,'color',cl{i})
-                % b = fitsine(X,fit.') ;
-                % Sol = @(x)  b(1).*(sin(2*pi*x./b(2) + 2*pi/b(3))) + b(4);
-                % plot(X,Sol(X),'--k')
+                fit = smooth(idx,m,.001,'lowess') ;
+                patchline(X,fit,'linestyle','-','edgecolor',cl{i},'edgealpha',.1) 
                 
-                % patchline(X(idx),m,'linestyle','-','edgecolor',cl{i},'edgealpha',.25) 
-                % fit = smooth(idx,m,.1,'sgolay') ;
-                % plot(X(idx),fit,'linewidth',.2,'color',cl{i})
-                xlim([0 2])
-                ylim([0 2.5])
+                fit = smooth(idx,m,.05,'lowess') ;
+                plot(X,fit,'linewidth',2,'color',cl{i})
+                b = fitsine(X,fit.') ;
+                Sol = @(x)  b(1).*(sin(2*pi*x./b(2) + 2*pi/b(3))) + b(4);
+                plot(X,Sol(X),'--k')
                 
-                plot([4*Crec(1) 4*Crec(1)],[0 3],'--r', 'linewidth', 1)
-                plot([4*Crec(2) 4*Crec(2)],[0 3],'--b', 'linewidth', 1)
-                plot([Cff/2 Cff/2],[0 3],'--k', 'linewidth', 1)
+                patchline(X(idx),m,'linestyle','-','edgecolor',cl{i},'edgealpha',.25) 
+                fit = smooth(idx,m,.1,'sgolay') ;
+                plot(X(idx),fit,'linewidth',.2,'color',cl{i})
                 
                 if(IF_SAVE & (i==2 | i==4))
                     

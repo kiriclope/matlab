@@ -1,0 +1,19 @@
+    function out = phi(x)
+        out = exp(-x.^2./2)./sqrt(2.*pi);
+    end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    function out = Phi(x)
+        out = .5.*(1+erf( x./sqrt(2) ) ) ;
+    end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    function out = QchAvgTF(u,b)
+        if(b>0)
+            out = u.*Phi( u./sqrt(b) ) + sqrt(b).*phi( u./sqrt(b) ) ;
+        else
+            out = u ;
+        end
+    end
