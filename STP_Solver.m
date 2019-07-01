@@ -16,7 +16,7 @@ function [r J] = STP_Solver(nbpop,dir,IF_WRITE)
         Iext = [ 1 .5 ] ;
         Trec = [.2 0; 0 0] ;
         Tfac = [.6 0; 0 0] ;
-        U = [.05 1; 1 1] ;
+        U = [.05 1; 1 1] ; 
 
         % Trec = [ .1 .1 ;.8 .8 ] ;
         % Tfac = [ .5 .5 ;.003 .003 ] ;
@@ -25,10 +25,10 @@ function [r J] = STP_Solver(nbpop,dir,IF_WRITE)
       case 3
 
         Iext = [ 1 .5 0 ] ;
-        Trec = [ 0 0 .2 ; 0 0 0 ; .2 0 0 ]  ;
-        Tfac = [ 0 0 .6 ; 0 0 0 ; .6 0 0] ;
-        U = [ 1 1 .05 ; 1 1 1 ; .05 1 1 ] ;
-        
+        Trec = [ 0 0 0 ; 0 0 0 ; .2 .2 0 ]  ;
+        Tfac = [ 0 0 0 ; 0 0 0 ; .6 .6 0] ;
+           U = [ 1 1 1 ; 1 1 1 ; .2 .05 1 ] ;
+                
       case 4
 
         Iext = [ 1 .5 0 1] ;
@@ -50,22 +50,31 @@ function [r J] = STP_Solver(nbpop,dir,IF_WRITE)
         r0 = rand(1,nbpop)+.1 ;
         
         J = rand(nbpop,nbpop)+.1 ;
-        J = double( (rand(nbpop,nbpop)+.1).*C ) ; 
+        J = double( (rand(nbpop,nbpop)+.1).*C ) ;
         if(nbpop>=2) 
             J(:,2:nbpop) = -J(:,2:nbpop) ; 
         end 
+
         if(nbpop>=3) 
             %J(nbpop,nbpop) = 0 ; 
             Iext(3) = 0 ; 
         end                             
         
         r = fsolve(@SelfCstEq,r0,options) ; 
+
+        for i=1:nbpop
+            fprintf('%.3f | ', r(i) ) ; 
+        end            
+        fprintf('\r') ; 
+
         if(nbpop>=2) 
-            if( r(1)>r(2) || r(1)<1 )  
+            if( r(1)>r(2) || r(1)<1 ) 
                 r(1) = -10 ; 
-            end
+            end 
         end 
-    end
+    end 
+
+    fprintf('\n') ; 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
@@ -130,12 +139,12 @@ function [r J] = STP_Solver(nbpop,dir,IF_WRITE)
     function Eq = SelfCstEq(r)
         Eq = [] ;
         for i=1:nbpop
-            Eq_i = 1 ;
+            Eq_i =  Iext(i) ;
             for j=1:nbpop                
                 u_ij = U(i,j) * ( 1 + Tfac(i,j) * r(j) ) / ( 1 + U(i,j) * Tfac(i,j) * r(j) ) ; 
                 x_ij = 1 / ( 1 + Trec(i,j) * u_ij * r(j) ) ; 
                 
-                Eq_i = Eq_i + J(i,j) * u_ij * x_ij * r(j) ./ Iext(i) ;
+                Eq_i = Eq_i + J(i,j) * u_ij * x_ij * r(j) ;
             end
             Eq = [Eq ; Eq_i] ;
         end

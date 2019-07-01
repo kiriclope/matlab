@@ -2,8 +2,8 @@ function [] = CheckMat(model,nbpop,n,K,IF_SPACE,Sigma,IF_Nk,DisplayOn,IF_SAVE)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % function [] = Space_CheckMat(model,nbpop,n,K,Sigma,IF_Nk,DisplayOn,IF_SAVE)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    L = 1 ;
-    SCALING = 1. ;
+    L = 1. ; 
+    SCALING = 1. ; 
 
     N = n*10000 ;
     nbN = nbNeuron(nbpop,n,IF_Nk,[]) ;
@@ -42,7 +42,6 @@ function [] = CheckMat(model,nbpop,n,K,IF_SPACE,Sigma,IF_Nk,DisplayOn,IF_SAVE)
     M = fread(fMatrix,'*float') ;
     size(M) 
     M = reshape(M,N,N) ;
-    % nbN(1) = 15000 ;
     M = double(M) ; 
     size(M) 
 
@@ -71,7 +70,7 @@ function [] = CheckMat(model,nbpop,n,K,IF_SPACE,Sigma,IF_Nk,DisplayOn,IF_SAVE)
 
             fprintf('Average nbPreS %s%s: meanX %.3f meanY %.3f \n',popList(j),popList(i),meanX./nbN(j),meanY./nbN(j))
             
-            for k=1:nbN(i)
+            for k=1:nbN(j)
                 P(i,j,k) = sum(diag(A,-k)) + sum(diag(A,nbN(j)-k)) ; % P(i,j) j to i
             end
         end
@@ -99,8 +98,8 @@ function [] = CheckMat(model,nbpop,n,K,IF_SPACE,Sigma,IF_Nk,DisplayOn,IF_SAVE)
             end
             % plot(X,squeeze(P(i,j,:))./nbN(j),'color',cl{i})
 
-            plot(X(1:Np/2),Pij(Np/2+1:end)./Np,'color',cl{i})
-            plot(X(Np/2+1:end),Pij(1:Np/2)./Np,'color',cl{i})
+            % plot(X(1:Np/2),Pij(Np/2+1:end)./Np,'color',cl{i})
+            % plot(X(Np/2+1:end),Pij(1:Np/2)./Np,'color',cl{i})
              
             fit = smooth(X,Pij./Np,.1,'sgolay') ;
 

@@ -22,6 +22,8 @@ b=[];
 for i=1:length(v_Iprtr) 
 
     Iext(prtrPop) = IextBL(prtrPop) + v_Iprtr(i) ; 
+    Iext(prtrPop+1) = IextBL(prtrPop+1) + v_Iprtr(i) ; 
+    Iext(prtrPop+2) = IextBL(prtrPop+2) + v_Iprtr(i) ; 
     
     % for j=1:nbpop-1
     %     Iext(j) = max(( C(j) - A(j) ) * v_Iprtr(i) + B(j) , 0) ; 
@@ -32,9 +34,9 @@ for i=1:length(v_Iprtr)
     % end
     % [u b] = RateInputDist(model,nbpop,dir,g.*Iext,K,g,[],false) ; 
 
-    [RatesMF DetJ]= BalRatesMF(model,nbpop,dir,Iext,J,0) ; 
-    [u b] = RateInputDist(model,nbpop,dir,Iext,K,g,[],false,u,b) ; 
-    Rates = QchAvgTF(u,b) ; 
+    RatesMF = BalRatesMF(model,nbpop,dir,Iext*.01,J,0) ; 
+    [u b] = RateInputDist(model,nbpop,dir,Iext*.01,K,g,J,false,u,b) ; 
+    Rates = QchAvgTF(u,b)*1000 ; 
     
     fprintf('I_opto ') 
     fprintf('%.3f ', v_Iprtr(i)) 
@@ -45,7 +47,7 @@ for i=1:length(v_Iprtr)
     if(IF_POWER==1)
         %fprintf('%.3f ',  P0 .* ( exp(  v_Iprtr(i) ./ I0 ) - 1 ) ) ;
         fprintf('%.3f ', Pinf ./ ( 1 + exp(-( v_Iprtr(i)*2 - I0 )/Iinf ) ) ) ;
-    elseif(IF_POWER==2)        
+    elseif(IF_POWER==2)  
         fprintf('%.3f ',  P0 .* ( exp( v_Iprtr(i)*20 ./ I0 ) - 1 ) ) ; 
     end
 
@@ -59,8 +61,8 @@ for i=1:length(v_Iprtr)
 
     fprintf('MF Rates ') 
     for j=1:nbpop 
-        MF(j,i) = RatesMF(j) ; 
-        fprintf('%.3f ', MF(j,i) ) 
+        MFrates(j,i) = RatesMF(j)*1000 ; 
+        fprintf('%.3f ', MFrates(j,i) ) 
     end 
     fprintf('\n') 
 
@@ -119,7 +121,7 @@ for i=nbpop:-1:1
     end
     
     if(IF_NORM)
-        NormRates = m(i,:) ./ m(i,1) ;  
+        NormRates = m(i,:) ./ m(i,1) ; 
     else 
         NormRates = m(i,:) ;  
         ylabel('Activity (Hz)') 
@@ -127,12 +129,24 @@ for i=nbpop:-1:1
 
     if( (i==2 || i==4 ) && IF_NORM) 
         plot(v_Iprtr(IDX:end),ones(1, length(v_Iprtr(IDX:end)) ),'--','Color','k')
+    
+        if(IF_MF_RATES)
+            if(i==2)
+                for j=1:2
+                    MFpop = MFrates(j,:)./MFrates(j,1) ;
+                    plot(v_Iprtr, MFpop, '--','Color',cl{j}) 
+                end
+            elseif(i==4)
+                for j=3:4
+                    MFpop = MFrates(j,:)./MFrates(j,1) ;
+                    plot(v_Iprtr, MFpop, '--','Color',cl{j}) 
+                end
+            end
+
+        end
+
     end
 
-    %plot(v_Iprtr(IDX:ITR:end), MF(i,IDX:ITR:end)./MF(i,1), 'd','Color',cl{i},'MarkerSize',2) 
-    if(i==4)
-        %plot(v_Iprtr(IDX:ITR:end), MF(i,IDX:ITR:end)./MF(i,1), '-','Color',cl{i}) 
-    end
     if(i==1 && IF_NORM)
         plot(v_Iprtr(IDX:end)  , NormRates(IDX:end), '-','Color',cl{i})
         % if(FIGPERPOP || nbpop==2) 

@@ -4,7 +4,7 @@ function [Rates Det] = BalRatesMF(model,nbpop,dir,Iext,J,DisplayOn)
 % Computes Balance state rates in the large N, large K limit.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    if( nargin<6 )
+    if(nargin<6)
         DisplayOn = 0 ; 
         if(nargin<5 || isempty(J))
             J = ImportJab(model,nbpop,dir) ; 
@@ -30,7 +30,7 @@ function [Rates Det] = BalRatesMF(model,nbpop,dir,Iext,J,DisplayOn)
     
         Rates = cell(1,nbpop) ;
         
-        for i=1:nbpop+1
+        for i=1:nbpop+2
             Rates{i} = zeros(1,nbpop) ;
         end
 
@@ -40,13 +40,16 @@ function [Rates Det] = BalRatesMF(model,nbpop,dir,Iext,J,DisplayOn)
 
         if(nbpop>2)
             if(nbpop==4)
-                if strfind(dir,'S1L5') 
-                    Rates{1}(4) = linsolve(J(4,4),-Iext(4).') ;
-                    Rates{1}(2) = linsolve(J(2,2), - ( Iext(2) - J(2,4)./ J(4,4) * Iext(4) ).') ; 
-                else
-                    Rates{1}(4) = 0 ;
-                    Rates{1}(2) = linsolve(J(2,2),-Iext(2).') ;
-                end
+                % if strfind(dir,'S1L5') 
+                %     Rates{1}(4) = linsolve(J(4,4),-Iext(4).') ;
+                %     Rates{1}(2) = linsolve(J(2,2), - ( Iext(2) - J(2,4)./ J(4,4) * Iext(4) ).') ; 
+                % else
+                %     Rates{1}(4) = 0 ;
+                %     Rates{1}(2) = linsolve(J(2,2),-Iext(2).') ;
+                % end
+                Rates{1}(4) = 0 ;
+                Rates{1}(2) = linsolve(J(2,2),-Iext(2).') ;
+
             else
                 Rates{1}(2) = linsolve(J(2,2),-Iext(2).') ;
             end
@@ -55,6 +58,7 @@ function [Rates Det] = BalRatesMF(model,nbpop,dir,Iext,J,DisplayOn)
             I = Iext ;
             
             if strfind(dir,'S1L5') 
+
                 G(3,:) = [] ;
                 G(:,3) = [] ;
                 I(3) = [] ;
@@ -65,6 +69,26 @@ function [Rates Det] = BalRatesMF(model,nbpop,dir,Iext,J,DisplayOn)
                     % fprintf('\n') ;
                 end
                 Rates{nbpop+1} = [ R(1) R(2) 0 R(3) ] ;
+
+                G = J ;
+                I = Iext ;
+            
+                G(3,:) = [] ;
+                G(:,3) = [] ;
+                I(3) = [] ;
+
+                G(1,:) = [] ;
+                G(:,1) = [] ;
+                I(1) = [] ;
+
+                R = linsolve(G,-I.') ;
+                if(all(R>0)) 
+                    % fprintf('YOUPI') ; 
+                    % fprintf('%.3f ', R) ;
+                    % fprintf('\n') ;
+                end
+                Rates{nbpop+2} = [ 0 R(1) 0 R(2) ] ;
+
             else
 
                 if(nbpop==4)
@@ -102,17 +126,32 @@ function [Rates Det] = BalRatesMF(model,nbpop,dir,Iext,J,DisplayOn)
 
             if strfind(dir,'S1L5') 
                 if(nb~=nbpop)
-                    alt = Rates{nbpop+1} ;
-                    alt(3) = [] ; 
+                    alt = Rates{nbpop+1} ;                    
+                    if(nbpop>2)
+                        alt(3) = [] ; 
+                    end 
                     if(all(alt>0)) 
                         % fprintf('YOUPI 2 %d ', all(alt>0) ) ;
                         % fprintf('%.3f ',alt) ; 
                         % fprintf('\n') ;
                         out = Rates{nbpop+1} ;
-                    else
-                        % fprintf('YOUPI 3' ) ;
-                        % fprintf('\n') ;
-                        out = Rates{1} ; 
+                    else 
+                        alt = Rates{nbpop+2} ;
+                        if(nbpop==4)
+                            alt(3) = [] ;
+                            alt(1) = [] ; 
+                        end 
+
+                        if( all(alt>0) ) 
+                            % fprintf('YOUPI 2 %d ', all(alt>0) ) ;
+                            % fprintf('%.3f ',alt) ; 
+                            % fprintf('\n') ; 
+                            out = Rates{nbpop+2} ; 
+                        else
+                            % fprintf('YOUPI 3' ) ;
+                            % fprintf('\n') ;
+                            out = Rates{1} ; 
+                        end
                     end
                 end
             else
@@ -125,14 +164,14 @@ function [Rates Det] = BalRatesMF(model,nbpop,dir,Iext,J,DisplayOn)
                     alt(1) = [] ; 
                     
                     if( all(alt>0) && D>0 ) 
-                        fprintf('YOUPI 2 %d ', all(alt>0) ) ;
-                        fprintf('%.3f ',alt) ; 
-                        fprintf('\n') ; 
+                        % fprintf('YOUPI 2 %d ', all(alt>0) ) ;
+                        % fprintf('%.3f ',alt) ; 
+                        % fprintf('\n') ; 
                         out = Rates{nbpop+1} ; 
                     else
-                        % fprintf('YOUPI 3' ) ;
-                        % fprintf('\n') ;
-                        out = Rates{1} ;
+                            % fprintf('YOUPI 3' ) ;
+                            % fprintf('\n') ;
+                            out = Rates{1} ;
                     end
                 end
             end

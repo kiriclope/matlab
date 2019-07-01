@@ -26,8 +26,8 @@ for k=1:RNDMAX
         % rnd = DX * rand()  + Xmin ; 
         % Iext(i) = Iext(i) * rnd ; 
         for j=1:nbpop
-             rnd = DX * rand() + Xmin ; 
-             J(i,j) = J(i,j) * rnd ; 
+            rnd = DX * rand() + Xmin ; 
+            J(i,j) = J(i,j) * rnd ; 
             
             % rnd = 2 * rand() - 1 ;
             % J(i,j) = (1 + per * rnd)* J(i,j) ;
@@ -59,8 +59,10 @@ for k=1:RNDMAX
         Relbd = real(lbd) ; 
         if( all(Relbd<0) ) 
             cpt = cpt + 1 ; 
-            dirRND = sprintf('%s_RND_%d',dir,k) ; 
-            WriteParam(model,nbpop,dirRND,Iext,J,Rates) ; 
+            dirRND = sprintf('%s/RND/%d',dir,k) ; 
+            if(IF_SAVE)
+                WriteParam(model,nbpop,dirRND,Iext,J,Rates) ; 
+            end
         end
     end
 end

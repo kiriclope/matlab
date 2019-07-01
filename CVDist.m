@@ -1,11 +1,12 @@
-clear all ; 
+%clear all ; 
 GlobalVars 
 
 Iext = ExternalInput(model,nbpop,dir) ;    
 nbN = nbNeuron(nbpop,N,IF_Nk,[]) ;
 Cpt = CptNeuron(nbpop,nbN) ;
-
-Iext(prtrPop) = Iext(prtrPop)+Iprtr ;
+Iext(prtrPop) = Iext(prtrPop) ;
+Cth=1000;
+IF_IEXT='' ;
 
 try
     data = ImportData(model,nbpop,dir,'Raster',N,K,g,IF_RING,Crec,Cff,IF_IEXT,prtrPop,Iext(prtrPop)) ; 
@@ -38,7 +39,7 @@ for j=1:nbpop
     for i=1:nbN(j) 
         X(i) = L * mod( double(i), sqrt( double( nbN(j) ) ) ) / sqrt( double( nbN(j) ) ) ; 
         Y(i) = L * floor( double(i) / sqrt( double( nbN(j) ) ) ) / sqrt( double( nbN(j) ) ) ; 
-    end    
+    end 
     ROI{j} = find( (X-L/2).^2 + (Y-L/2).^2 <= Cth.^2 / 4 ) ; 
     fprintf('%d ',length(ROI{j}))
 end
@@ -85,22 +86,23 @@ for i=1:nbpop
     CVx(isnan(CVx)) = [] ;
     fprintf('%.2f ', mean( CVx ) ) 
     
-    if( ishandle( findobj('type','figure','name',figname) ) ) 
-        fig = findobj('type','figure','name',figname) ; 
-        figure(fig); hold on ; 
-    else
+    % if( ishandle( findobj('type','figure','name',figname) ) ) 
+    %     fig = findobj('type','figure','name',figname) ; 
+    %     figure(fig); hold on ; 
+    % else
         fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
         xlabel('CV') 
         ylabel('pdf') 
-    end
+    % end
     
-    h = histogram( CVx , 30, 'Normalization', 'pdf' ,'DisplayStyle','stairs','EdgeColor','k','EdgeAlpha',alp,'Linewidth',2) ; 
-    xlim([0 3]) 
+    h = histogram( CVx , 30, 'Normalization', 'pdf' ,'DisplayStyle','stairs','EdgeColor',cl{i},'EdgeAlpha',alp,'Linewidth',2) ; 
+    xlim([0 2]) 
     drawnow ; 
     
     if(IF_SAVE) 
         figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_IEXT) ;
-        fprintf('Writing %s \n',figdir)
+        figdir= sprintf('%s/Baseline',figdir) ;
+        fprintf('Writing %s \n',figdir) 
         try
             mkdir(figdir)
         end
@@ -112,30 +114,30 @@ for i=1:nbpop
 end
 fprintf('\n')
     
-try
-    data = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,IF_IEXT,prtrPop,Iext(prtrPop)) ;
-catch
-    return ;
-end
+% try
+%     data = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,IF_IEXT,prtrPop,Iext(prtrPop)) ;
+% catch
+%     return ;
+% end
 
-for i=1:length(data(1,:))-1
-    IdvRates(i) = mean(data(:,i+1)) ;
-end
+% for i=1:length(data(1,:))-1
+%     IdvRates(i) = mean(data(:,i+1)) ;
+% end
 
-for i=1:nbpop
+% for i=1:nbpop
     
-    X = IdvRates(Cpt(i)+1:Cpt(i+1) ) ; 
-    Y = CVpop(Cpt(i)+1:Cpt(i+1) ) ; 
+%     X = IdvRates(Cpt(i)+1:Cpt(i+1) ) ; 
+%     Y = CVpop(Cpt(i)+1:Cpt(i+1) ) ; 
     
-    IDX = ~isnan(Y) ; 
-    Y = Y(IDX) ; 
-    X = X(IDX) ;     
-    fprintf('%.2f ', mean(Y) ) ;
+%     IDX = ~isnan(Y) ; 
+%     Y = Y(IDX) ; 
+%     X = X(IDX) ;     
+%     fprintf('%.2f ', mean(Y) ) ;
     
-    figname = sprintf('RatesVsCV%s',popList(i)) ; 
-    fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
-    xlabel('Rates') 
-    ylabel('CV') 
-    plot(X,Y,'+','color',cl{i}) 
-end
-fprintf('\n')
+%     figname = sprintf('RatesVsCV%s',popList(i)) ; 
+%     fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
+%     xlabel('Rates') 
+%     ylabel('CV') 
+%     plot(X,Y,'+','color',cl{i}) 
+% end
+% fprintf('\n')

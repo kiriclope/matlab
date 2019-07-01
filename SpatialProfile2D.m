@@ -2,6 +2,7 @@ clear all ;
 GlobalVars
 
 Iext = ExternalInput(model,nbpop,dir) ;
+Iprtr = .25
 IextPrtr = Iext(prtrPop) + Iprtr ;
 
 nbN = nbNeuron(nbpop,N,IF_Nk,[]) ;
@@ -33,6 +34,8 @@ for i=1:nbpop
 
     MeanRates = MeanRates ./ MeanBL ;
     MeanRates(find(MeanBL==0)) = 0 ; 
+    MeanRates(find(MeanRates==-Inf)) = 0 ;
+    MeanRates(find(MeanRates==Inf)) = 0 ;
 
     fprintf('%.3f | ', mean(MeanRates(:)) ) ;
 

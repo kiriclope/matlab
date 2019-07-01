@@ -1,4 +1,4 @@
-clear all ; 
+%clear all ; 
 GlobalVars
 
 Iext = ExternalInput(model,nbpop,dir) ;    
@@ -8,27 +8,36 @@ Cpt = CptNeuron(nbpop,nbN) ;
 v_Iprtr = v_Iprtr(1):v_Iprtr(2):v_Iprtr(3) ;
 
 J = ImportJab(model,nbpop,dir) ; 
-Rates = linsolve(J,-Iext.') ; 
 
 for i=1:length(v_Iprtr)   
-    data = ImportData(model, nbpop, dir, 'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_DATA, prtrPop, Iext(prtrPop) + v_Iprtr(i) ) ;
+    data = ImportData(model, nbpop, dir, 'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_IEXT, prtrPop, Iext(prtrPop) + v_Iprtr(i) ) ;
     try
-        for j=1:length(data(1,:))-1
+        for j=1:length(data(1,:))-1 
             IdvRates(i,j) = mean(data(:,j+1)) ;
         end
-
+        
         fprintf(' Rates ') 
         for j=1:nbpop 
-            m(j,i) = 0 ;
+            m(j,i) = 0 ; 
             Rates = IdvRates(i, Cpt(j)+1:Cpt(j+1)) ; 
-            if(i==1)
+            if(i==1) 
                 BL = IdvRates(i, Cpt(j)+1:Cpt(j+1)) ; 
             end
-            m(j,i) = ratesCutOff(Rates, BL, THRESHOLD, Cth, DIM, L) ; 
-            fprintf('%.3f ', m(j,i) ) 
+            m(j,i) = ratesCutOff(Rates, BL, THRESHOLD, Cth, DIM, L) ;
+            fprintf('%.3f ', round(m(j,i),3) ) 
         end 
         fprintf('\n')
-        
+
+        Gext = Iext ;
+        Gext(prtrPop) = Iext(prtrPop) + v_Iprtr(i) ;
+        fprintf('MF Rates ') 
+        RatesMF = BalRatesMF(model,nbpop,dir,Gext*.01,J,0) ; 
+        for j=1:nbpop 
+            MFrates(j,i) = RatesMF(j)*1000 ; 
+            fprintf('%.2f ', round(MFrates(j,i),2) ) 
+        end
+        fprintf('\n')
+
     catch
         for j=1:nbN(nbpop)
             IdvRates(i,j) = nan ;
@@ -83,7 +92,7 @@ if(IF_POWER~=0)
     end
 end
 
-for i=1:nbpop 
+for i=1:nbpop
     
     if(FIGPERPOP)
         if(i==1 || i==2) 
@@ -112,28 +121,48 @@ for i=1:nbpop
             xlabel('\Gamma_{opto} (mW/mm^2)') 
         end
     end
-    
-    if(IF_NORM)
+
+    if(IF_CORRECTION)       
+        NormRates = abs(m(i,:)-MFrates(i,:) ) ./ MFrates(i,:) ; 
+    elseif(IF_NORM)
         NormRates = m(i,:)./m(i,1) ;
     else
         NormRates = m(i,:) ;
     end
 
-    id = find( ~isnan(NormRates) ) ; 
+    id = find( ~isnan(NormRates) ) ;
     id = IDX:length(v_Iprtr) ; 
 
     if(~IF_COUNTPIF && ~IF_ROBUST)
-        plot(v_Iprtr(id), NormRates(id), '-','Color',cl{i}) 
-        plot(v_Iprtr(id), NormRates(id), 'o','MarkerEdgeColor',cl{i},'MarkerSize',1,'MarkerFaceColor','none','LineWidth', 1) 
+        % plot(abs(v_Iprtr(id)), NormRates(id), '-','Color',cl{i}) 
+        % plot(abs(v_Iprtr(id)), NormRates(id), '+','MarkerEdgeColor',cl{i},'MarkerSize',5,'MarkerFaceColor','none','LineWidth', 1) 
+        
+        patchline(abs(v_Iprtr(id)), NormRates(id), 'linestyle','-','edgecolor',cl{i},'edgealpha',alp,'linewidth',1.5) 
+        plot(abs(v_Iprtr(id)), NormRates(id), mk,'MarkerEdgeColor',cl{i},'MarkerSize',mkSize,'MarkerFaceColor','none','LineWidth', alp) 
     elseif(IF_ROBUST)
-        patchline(v_Iprtr(id), NormRates(id), ...
-                  'linestyle','-','edgecolor',cl{i},'edgealpha',alp,'linewidth',1.5) 
-        plot(v_Iprtr(id), NormRates(id), mk,'MarkerEdgeColor',cl{i},'MarkerSize',1,'MarkerFaceColor','none','LineWidth', 1)
+        patchline(v_Iprtr(id), NormRates(id), 'linestyle','-','edgecolor',cl{i},'edgealpha',alp,'linewidth',1.5) 
+        plot(v_Iprtr(id), NormRates(id), mk,'MarkerEdgeColor',cl{i},'MarkerSize',mkSize,'MarkerFaceColor','none','LineWidth', alp) 
     end
     
-    if( (i==2 || i==4 ) && IF_NORM)
-        plot(v_Iprtr(IDX:end),ones(1, length(v_Iprtr(IDX:end)) ),'--','Color','k') 
 
+    if( (i==2 || i==4 ) && IF_NORM)
+        if(IF_MF_RATES)
+            if(i==2)
+                for j=1:2
+                    MFpop = MFrates(j,:)./MFrates(j,1) ;
+                    plot(abs(v_Iprtr(id)), MFpop(id), '--','Color',cl{j}) 
+                end
+            elseif(i==4)
+                for j=3:4
+                    MFpop = MFrates(j,:)./MFrates(j,1) ;
+                    plot(abs(v_Iprtr(id)), MFpop(id), '--','Color',cl{j}) 
+                end
+            end
+
+        end
+        
+        plot(abs(v_Iprtr(IDX:end)),ones(1, length(v_Iprtr(IDX:end)) ),'--','Color','k') 
+        
     %     X=[ 0.0955    0.1592    0.3183    0.4775    0.6366    1.0504    1.5915    2.5465    4.7746] ;
 
     %     if( strfind(dir,'L23') ) 
@@ -157,13 +186,12 @@ for i=1:nbpop
             nId = randi([Cpt(i)+1 Cpt(i+1)]) ; 
             countMax = countMax + 1 ;
             
-            if IdvRates(1,nId)>THRESHOLD
+            if IdvRates(1,nId)>=0
                 
                 if IdvRates(4,nId)./IdvRates(1,nId) >= 1 && countUp<=nbIdv/2
                     countUp = countUp+1 ;
                     IdvNormRates = IdvRates(:,nId)./IdvRates(1,nId) ;
-                    patchline(v_Iprtr(id), IdvNormRates(id), ...
-                              'linestyle','-','edgecolor',cl{i},'edgealpha',.2,'linewidth',1.5) 
+                    patchline(v_Iprtr(id), IdvNormRates(id), 'linestyle','-','edgecolor',cl{i},'edgealpha',.2,'linewidth',1.5) 
                     
                 end                    
                 if IdvRates(4,nId)./IdvRates(1,nId) <= 1 && countDown<=nbIdv/2
@@ -183,7 +211,7 @@ for i=1:nbpop
         normRatePif = 0 ; 
         while countPif<=nbPif(i) 
             nId = randi([Cpt(i)+1 Cpt(i+1)]) ; 
-            if IdvRates(1,nId)>THRESHOLD 
+            if IdvRates(1,nId)>=THRESHOLD
                 normRatePif = normRatePif + IdvRates(:,nId)./IdvRates(1,nId) ; 
                 countPif = countPif + 1 ; 
             end 
@@ -204,17 +232,23 @@ for i=1:nbpop
         end
         set(gca,'Yscale', 'log') 
     else
-        xlim([.01 100])
-        set(gca,'Xscale', 'log')
-        if(i==2)
-            ylim([0 3])
-        elseif(i==4)
-            ylim([0 2])
+        if(IF_LOGSCALEX)
+            if(nbpop==2)
+                xlim([.01 2])
+            else
+                xlim([.01 100])
+            end
+            set(gca,'Xscale', 'log')
+        end
+        if(i==2) 
+            ylim([0 3]) 
+        elseif(i==4) 
+            ylim([0 4]) 
         end
     end
 
-    if(IF_SAVE & (i==2 | i==4))
-        figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_DATA) ;
+    if(IF_SAVE & (i==2 || i==4)) 
+        figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_IEXT) ;
         fprintf('Writing %s \n',figdir)
         try
             mkdir(figdir) ;

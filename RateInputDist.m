@@ -1,4 +1,4 @@
-function [u b] = RateInputDist(model,nbpop,dir,Iext,K,g,J,IF_DISP,u,b)
+function [u b] = RateInputDist(model,nbpop,dir,Iext,K,g,J,IF_DISP,u,b) 
 
     rng('shuffle') ;
     warning off ;

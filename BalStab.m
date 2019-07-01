@@ -8,7 +8,7 @@ function [Relbd Imlbd] = BalStab(model,nbpop,dir,Iext,n,K,g,J,IF_Nk,IF_IDV,Displ
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     if(isempty(Iext) || nargin<4) 
-        Iext = ExternalInput(model,nbpop,dir) ;
+        Iext = ExternalInput(model,nbpop,dir)*.01 ;
     end
     if( nargin<8 | isempty(J) )
         J = ImportJab(model,nbpop,dir) ;
@@ -30,7 +30,7 @@ function [Relbd Imlbd] = BalStab(model,nbpop,dir,Iext,n,K,g,J,IF_Nk,IF_IDV,Displ
     Tr(1,1) = 4 ; 
     Tr(2,1) = 2 ; 
     Tr(3,1) = 2 ; 
-    Tr(4,1) = 2 ; 
+    Tr(4,1) = 4 ; 
 
     Tr(1,2) = 2 ; 
     Tr(2,2) = 2 ; 
@@ -47,24 +47,15 @@ function [Relbd Imlbd] = BalStab(model,nbpop,dir,Iext,n,K,g,J,IF_Nk,IF_IDV,Displ
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% MF limit
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    J = g .* J ;
+    J = g .* J ; 
     
-    Id = eye(nbpop) ;
-    for i = 1:nbpop
-        for j = 1:nbpop
+    Id = eye(nbpop) ; 
+    for i = 1:nbpop 
+        for j = 1:nbpop 
             A(i,j) = J(i,j) / Tr(i,j) ; 
             Id(i,j) = Id(i,j) / Tr(i,j) ; 
         end
     end
-
-    % J(4,1)+J(4,2)+J(4,3)
-
-    % A = [ A(1,1) A(1,2) A(1,3) ; A(2,1) A(2,2) A(2,3) ; A(4,1) A(4,2) ...
-    %       A(4,3)] 
-
-    % Id = [ Id(1,1) Id(1,2) Id(1,3) ; Id(2,1) Id(2,2) Id(2,3) ; Id(4,1) Id(4,2) ...
-    %       Id(4,3) ] ;
-    
 
     try
         lbd = eig(-Id ./  sqrt(K) + A ) ;
@@ -80,18 +71,18 @@ function [Relbd Imlbd] = BalStab(model,nbpop,dir,Iext,n,K,g,J,IF_Nk,IF_IDV,Displ
     
     if(DisplayOn)
         
-        fprintf('MF\n Rates ')
-        Rates = linsolve(J,-Iext.') ;
-        for i=1:nbpop
-            fprintf('%.3f | ', Rates(i)) ;
+        fprintf('MF\n Rates ') 
+        Rates = linsolve(J,-Iext.')*1000 ; 
+        for i=1:nbpop 
+            fprintf('%.3f | ', Rates(i)) ; 
         end
-        fprintf('\n') ;
+        fprintf('\n') ; 
 
-        fprintf(' lbd ') ;
+        fprintf(' lbd ') ; 
         for i=1:nbpop
-            fprintf('%.3f + %.3fi | ', RelbdMF(i), ImlbdMF(i)) ;
+            fprintf('%.3f + %.3fi | ', RelbdMF(i), ImlbdMF(i)) ; 
         end
-        fprintf('\n') ;
+        fprintf('\n') ; 
 
     end
     
@@ -123,7 +114,7 @@ function [Relbd Imlbd] = BalStab(model,nbpop,dir,Iext,n,K,g,J,IF_Nk,IF_IDV,Displ
         % fprintf('%.3f ',b) 
         % fprintf('\n') 
         fprintf('Finite K\n Rates ') 
-        fprintf('%.3f | ', QchAvgTF(u,b))
+        fprintf('%.3f | ', QchAvgTF(u,b) * 1000 )
         fprintf('\n')
     end
 

@@ -2,58 +2,65 @@ clear all ;
 GlobalVars
 
 Iext = ExternalInput(model,nbpop,dir) ; 
-Iprtr = Iext(prtrPop) + Iprtr ;
-
-nbN = nbNeuron(nbpop,N,IF_Nk,[]) ;
-Cpt = CptNeuron(nbpop,nbN) ;
-
-data = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,1,prtrPop,Iprtr) ; 
+nbN = nbNeuron(nbpop,N,IF_Nk,[]) ; 
+Cpt = CptNeuron(nbpop,nbN) ; 
 
 if(Iprtr~=0) 
-    baseline = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,1,prtrPop,Iext(prtrPop)) ; 
+    Iprtr = Iext(prtrPop) + Iprtr ; 
+    data = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,IF_IEXT,prtrPop,Iprtr) ; 
+    baseline = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,IF_IEXT,prtrPop,Iext(prtrPop)) ; 
 else
+    data = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,IF_IEXT,prtrPop,Iext(prtrPop)) ;
     baseline = data ;
 end
 
 binLength = min( length(data(:,1)), length(baseline(:,1)) ) ;
-neuronLength = length(data(1,:))-1 ;
+neuronLength = length(data(1,:))-1 ; 
 
 fprintf('Norm Rates ')
 
 for i=1:nbpop
 
-    MeanRates = zeros(1, nbN(i) ) ;
-    MeanBL = zeros(1,  nbN(i) ) ;
-    
+    MeanRates = zeros(1, nbN(i) ) ;     
     for j=1:binLength
         Rates = data(j,Cpt(i)+2:Cpt(i+1)+1) ; 
-        BL = baseline(j,Cpt(i)+2:Cpt(i+1)+1) ;
-
+        BL = baseline(j,Cpt(i)+2:Cpt(i+1)+1) ; 
         MeanRates = MeanRates + Rates ; 
-        MeanBL = MeanBL + BL ;
     end
 
-    MeanRates = MeanRates ./ MeanBL ;
+    if(Iprtr~=0)
+        MeanBL = zeros(1,  nbN(i) ) ;     
+        for j=1:binLength
+            BL = baseline(j,Cpt(i)+2:Cpt(i+1)+1) ; 
+            MeanBL = MeanBL + BL ; 
+        end
+        MeanRates = MeanRates ./ MeanBL ;
+    else
+        MeanRates = MeanRates ./ binLength ;
+    end
+    
     MeanRates(find(MeanRates==Inf)) = 0 ;
     MeanRates(find(MeanRates==NaN)) = 0 ;
+    MeanRates(find(MeanRates==-Inf)) = 0 ;
 
     fprintf('%.3f | ', mean(MeanRates(:)) ) ; 
 
-    figname = sprintf('SpatialProfie_I%s%.3f', popList(i),Iprtr(prtrPop));
-    fig = figure('Name',figname,'NumberTitle','off') ;
-    
-    
-    h = colorbar ;
-    xlabel('X (mm)')
-    ylabel('Y (mm)')
-    
-    xlim([0 length(M(:,1))])
-    ylim([0 length(M(:,1))])
-    caxis([0 2]) 
+    figtitle = sprintf('SpatialProfie_I%s%.3f', popList(i),Iprtr);
 
-    set(gca,'xtick',[0 length(M(:,1))/4 length(M(:,1))/2 3*length(M(:,1))/4 length(M(:,1))],'xticklabel',{-L/2, -L/4, 0, L/4, L/2})
-    set(gca,'ytick',[0 length(M(:,1))/4 length(M(:,1))/2 3*length(M(:,1))/4 length(M(:,1))],'yticklabel',{L/2, L/4, 0, -L/4, -L/2})
-    
+    if( ishandle( findobj('type','figure','name',figtitle) ) )
+        fig = findobj('type','figure','name',figtitle) ; 
+        fig = figure(fig); hold on ; 
+    else
+        fig = figure('Name',figtitle,'NumberTitle','off') ; hold on ;
+        xlabel('X (mm)') 
+        ylabel('Rates') 
+    end
+    X = linspace(-L/2,L/2,nbN(i)) ; 
+    idx = 1:nbN(i) ;
+
+    fit = smooth(idx,MeanRates,.05,'lowess') ;
+    plt = patchline(X,fit,'linestyle','-','edgecolor',cl{i},'edgealpha',.25,'linewidth',2) ; 
 end
 
 fprintf('\n') ;
+

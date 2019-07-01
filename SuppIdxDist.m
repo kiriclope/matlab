@@ -5,7 +5,7 @@ Iext = ExternalInput(model,nbpop,dir) ;
 nbN = nbNeuron(nbpop,N,IF_Nk,[]) ;
 Cpt = CptNeuron(nbpop,nbN) ;
 
-baseline = ImportData(model, nbpop, dir,'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_DATA, prtrPop, Iext(prtrPop) ) ;
+baseline = ImportData(model, nbpop, dir,'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_IEXT, prtrPop, Iext(prtrPop) ) ;
 
 try
     for i=1:length(baseline(1,:))-1
@@ -16,7 +16,7 @@ catch
     return ;
 end
 
-prtr = ImportData(model, nbpop, dir,'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_DATA, prtrPop, Iext(prtrPop) + Iprtr);
+prtr = ImportData(model, nbpop, dir,'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_IEXT, prtrPop, Iext(prtrPop) + Iprtr);
 
 try
     for i=1:length(prtr(1,:))-1
@@ -48,6 +48,14 @@ for i=1:nbpop
     Baseline = Baseline(ROI1) ; 
     RatesPrtr = RatesPrtr(ROI2) ; 
     
+    ROI1 = find(Baseline<.1) ; 
+    Baseline(ROI1)=.1 ; 
+    ROI2 = find(RatesPrtr<.1) ; 
+    RatesPrtr(ROI2)=.1 ; 
+
+    sc = scatter(Baseline,RatesPrtr,8,cl{i},'MarkerEdgeAlpha',.5, ...
+                 'MarkerFaceColor', 'None','LineWidth',.5) ; 
+
     % ROI1 = find(Baseline>=THRESHOLD) ; 
     % ROI2 = find(RatesPrtr>=THRESHOLD) ; 
     % ROI = intersect(ROI1,ROI2) ; 
@@ -72,39 +80,39 @@ for i=1:nbpop
     propSum = propUp + propDn + propNc ;
     fprintf('%s propUp %.0f propDn %.0f propZo %.0f propNc %.0f sum %.0f\n', popList(i) , propUp, propDn, propZo, propNc, propSum ) 
  
-    figtitle=sprintf('SupIndex%s',popList(i)) ; 
-    %figtitle=sprintf('SupIndex%s_Iprtr%.3f',popList(i),Iprtr) ; 
+    % figtitle=sprintf('SupIndex%s',popList(i)) ; 
+    % %figtitle=sprintf('SupIndex%s_Iprtr%.3f',popList(i),Iprtr) ; 
 
-    if( ishandle( findobj('type','figure','name',figtitle) ) )
-        fig = findobj('type','figure','name',figtitle) ; 
-        fig = figure(fig); hold on ; 
-    else
-        fig = figure('Name',figtitle,'NumberTitle','off') ; hold on ;
-        xlabel('SI')
-        ylabel('Probability')
-    end
-    histogram(SupIdx,30,'Normalization', 'probability' ,'DisplayStyle','stairs','EdgeColor',cl{i},'LineWidth',1) ;
-    %histogram(-log(SupIdx)/log(10),27,'Normalization', 'pdf' ,'DisplayStyle','stairs','EdgeColor',cl{i},'LineWidth',1) ;
+    % if( ishandle( findobj('type','figure','name',figtitle) ) )
+    %     fig = findobj('type','figure','name',figtitle) ; 
+    %     fig = figure(fig); hold on ; 
+    % else
+    %     fig = figure('Name',figtitle,'NumberTitle','off') ; hold on ;
+    %     xlabel('SI')
+    %     ylabel('Probability')
+    % end
+    % histogram(SupIdx,30,'Normalization', 'probability' ,'DisplayStyle','stairs','EdgeColor',cl{i},'LineWidth',1) ;
+    % %histogram(-log(SupIdx)/log(10),27,'Normalization', 'pdf' ,'DisplayStyle','stairs','EdgeColor',cl{i},'LineWidth',1) ;
    
-    xlim([-1 1])
-    if(i==1 || i==2) 
-        ylim([0 .25]) 
-    else 
-        ylim([0 .4]) 
-    end   
-    drawnow ;
+    % xlim([-1 1])
+    % if(i==1 || i==2) 
+    %     ylim([0 .25]) 
+    % else 
+    %     ylim([0 .4]) 
+    % end   
+    % drawnow ;
 
-    if(IF_SAVE)
-        figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_DATA) ;
-        fprintf('Writing %s \n',figdir)
-        try
-            mkdir(figdir)
-        end
+    % if(IF_SAVE)
+    %     figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_DATA) ;
+    %     fprintf('Writing %s \n',figdir)
+    %     try
+    %         mkdir(figdir)
+    %     end
         
-        ProcessFigure(fig, fullfile(figdir,figtitle)) ;
-        %ProcessFigure(fig, fullfile(figdir,figtitle),1.5,[1.33*1.5,1.5]) ;
-    end
-    hold off ; 
+    %     ProcessFigure(fig, fullfile(figdir,figtitle)) ;
+    %     %ProcessFigure(fig, fullfile(figdir,figtitle),1.5,[1.33*1.5,1.5]) ;
+    % end
+    % hold off ; 
 
     figtitle=sprintf('Pie_SupIndex%s_Iprtr%.3f',popList(i),Iprtr) ; 
     fig = figure('Name',figtitle,'NumberTitle','off') ; hold on ;
@@ -112,8 +120,15 @@ for i=1:nbpop
     labels = {'Up','Down','Zero','NC'} ;
     labels = {'','','',''} ; 
     %pie(X,labels) 
-    pie(X)
-    colormap gray ;
+    p = pie(X) ;
+    colormap([1 0 0;     %// red 
+              0 0 1;      %// blue
+              0 1 0; %// green
+             ])
+
+    for j=1:length(p) 
+        p(j).EdgeColor = 'None' ;
+    end
     axis off ;
     drawnow ;
    

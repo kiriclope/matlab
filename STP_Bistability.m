@@ -4,7 +4,7 @@ function out = STP_Bistability(nbpop)
     IF_DISP = 0 ;
     IF_SAVE = 0 ;
     options = optimset('Display','off') ; 
- 
+    
     function out = InvGauss(t,lbd,mu) %% ISI probability distribution 
         out =  sqrt( lbd / 2 * pi * t.^3 ) * exp( -0.5 * lbd * (t-mu).^2 / t / mu.^2 ) ; 
     end

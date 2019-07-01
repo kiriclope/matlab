@@ -43,8 +43,8 @@ function ProcessFigure(hFigure, fileName,h,paperSize)
         %    set(hFigure, 'Renderer', 'Painters');
     end    
     
-    % saveas(hFigure, [fileName '.svg'], 'svg');
-    saveas(hFigure, [fileName '.pdf'], 'pdf');
+    saveas(hFigure, [fileName '.svg'], 'svg');
+    % saveas(hFigure, [fileName '.pdf'], 'pdf');
     %p saveas(hFigure, [fileName '.fig'], 'fig');
     % saveas(hFigure, [fileName '.png'], 'png');
 

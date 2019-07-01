@@ -6,7 +6,7 @@ function [m idx RatesOut ROI] = ratesCutOff(Rates1, Rates2, THRESHOLD, Cth, DIM,
     RatesOut = [] ;
 
     if( length(idx)==0 ) 
-        m = 0 ; 
+        m = .01 ; 
         return ; 
     else
         if(DIM==1)
@@ -18,7 +18,7 @@ function [m idx RatesOut ROI] = ratesCutOff(Rates1, Rates2, THRESHOLD, Cth, DIM,
             ROI = find(abs(X)<=Cth) ;
             
             if( length(ROI)==0 )
-                m = 0 ;
+                m = .01 ;
             else                
                 RatesOut = RatesCO(ROI) ;
                 % fprintf(' %d %d ', idx(1), idx(length(idx)))                
@@ -44,13 +44,13 @@ function [m idx RatesOut ROI] = ratesCutOff(Rates1, Rates2, THRESHOLD, Cth, DIM,
             ROI = find( (X-L/2).^2 + (Y-L/2).^2 <= Cth.^2 / 4 ) ; 
             
             if( length(ROI)==0 ) 
-                m = nan ;
+                m = .01 ;
             else                
                 RatesOut = RatesCO(ROI) ;
                 % RatesOut = RatesOut(RatesOut>=THRESHOLD) ;
                 % fprintf(' %d %d ', idx(1), idx(length(idx))) 
                 % m = sum(Rates) ./ sizeROI ; 
-                m = mean(RatesOut) ; 
+                m = max(mean(RatesOut),.01) ; 
             end
             
         end

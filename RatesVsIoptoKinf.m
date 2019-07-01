@@ -11,7 +11,7 @@ Iext = IextBL ;
 
 for i=1:length(v_Iprtr) 
     Iext(prtrPop) = IextBL(prtrPop) + v_Iprtr(i) ; 
-    [RatesMF DetJ]= BalRatesMF(model,nbpop,dir,Iext,J,0) ; 
+    [RatesMF DetJ]= BalRatesMF(model,nbpop,dir,Iext*.01,J,0) ; 
 
     fprintf('I_opto ') 
     fprintf('%.3f ', v_Iprtr(i)) 
@@ -21,7 +21,7 @@ for i=1:length(v_Iprtr)
 
     fprintf(' Rates ') 
     for j=1:nbpop 
-        m(j,i) = RatesMF(j) ; 
+        m(j,i) = RatesMF(j)*1000 ; 
         fprintf('%.3f ', m(j,i) ) 
     end 
     fprintf('\n') 
@@ -75,7 +75,7 @@ for i=nbpop:-1:1
         if(FIGPERPOP || nbpop==2) 
             plot(v_Iprtr(IDX:end)  , NormRates(IDX:end), '-','Color',cl{i})
         else
-            plot(v_Iprtr(IDX:40:end), NormRates(IDX:40:end), '+', ...
+            plot(v_Iprtr(IDX:length(v_Iprtr)/20:end), NormRates(IDX:length(v_Iprtr)/20:end), '+', ...
                  'MarkerEdgeColor',cl{i},'MarkerSize',6,'MarkerFaceColor', ...
                  cl{i},'LineWidth', 1) 
         end

@@ -29,31 +29,44 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
     dI = Iext ;
     Iext = ExternalInput(model,nbpop,dir) ; 
 
+    IextMF = Iext ;
     switch IF_IEXT
 
       case {'Delta','Gauss','DeltaGauss'}
-        if( isempty(Iext) )
+        if( isempty(dI) || dI==0)
             Iprtr = Iext(nPrtr) ;
         else
             Iprtr = Iext(nPrtr) + dI ; 
+            IextMF(nPrtr) = Iprtr ;
         end
 
     end
 
+
     cl = {[1 0 0] [0 0 1] [0 1 0]  [0.7 0.7 0.7]} ;
     p = [] ;
     THRESHOLD = .1 ;
+    m0=.01 ;
     
     nbN = nbNeuron(nbpop,n,IF_Nk,p) ;
     Cpt = CptNeuron(nbpop,nbN) ;
 
-    MF = BalRatesMF(model,nbpop,dir,Iext,[]) ;
-    fprintf('MF : ')
-    fprintf('%.3f | ', MF)
-    fprintf('\n')
+    J = ImportJab(model,nbpop,dir) ;
     
-    nb = 5 ;
-    L = 1.5 ;
+    MF = BalRatesMF(model,nbpop,dir,IextMF*m0,J) ;
+
+    fprintf('MF : ')
+    fprintf('%.3f | ', MF*1000)
+    fprintf('\n')
+
+    [u b] = RateInputDist(model,nbpop,dir,Iext*m0,K,1,J,0) ; 
+    
+    fprintf('Finite K Rates : ') 
+    fprintf('%.3f ', QchAvgTF(u,b) *1000) 
+    fprintf('\n') 
+    
+    nb = 5 ; 
+    L = 1.5 ; 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Rate toy model rates
@@ -288,7 +301,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
         end
         
         for i=1:nbpop
-            Spikes( Spikes(:,1)<=Cpt(i+1) & Spikes(:,1)>Cpt(i+1)-0.6*nbN(i), : ) = [] ;
+            Spikes( Spikes(:,1)<=Cpt(i+1) & Spikes(:,1)>Cpt(i+1)-0.8*nbN(i), : ) = [] ;
         end
 
         reSizeIdx = 1:length( unique( Spikes ) ) ;
@@ -333,7 +346,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
 
         xlabel('t (s)')
         ylabel('#')
-        xlim([0 2])
+        xlim([0 .25])
         drawnow ;
 
         hold off ;
@@ -790,12 +803,6 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
             hold off ;
         end
 
-
-        MF = BalRatesMF(model,nbpop,dir,Iext,[]) ;
-        fprintf('MF : ')
-        fprintf('%.3f | ', MF)
-        fprintf('\n')
-
         fprintf('Simuls : ')
         fprintf('%.3f | ', MeanRate)
         fprintf('\n')
@@ -1000,12 +1007,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
                     ProcessFigure(fig, fullfile(figdir,figname), 1.5, [1.33*3,1.5] ) ;
                 end
             end
-              
-            MF = BalRatesMF(model,nbpop,dir,Iext,[]) ;
-            fprintf('MF : ')
-            fprintf('%.3f | ', MF)
-            fprintf('\n')
-            
+                          
             fprintf('Simuls : ')
             fprintf('%.3f | ', MeanRate)
             fprintf('\n')
@@ -1016,48 +1018,54 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     if strcmp(file,'MeanRates')
-        try
-            data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
-            for i=2:length(data(1,:))
-                IdvRates(i) = mean(data(:,i)) ;
-            end
-            tps = data(:,1)/1000 ;
-            for i=1:nbpop
-                for j=1:length(data(:,1))
-                    PopRate(i,j) = mean(data(j,Cpt(i)+2:Cpt(i+1)+1)) ;
-                end
-            end
-        catch
-            fprintf(' FILE NOT FOUND \n')
-            if(strfind(dir,'2pop'))
-                for i=1:n*2/3*10000
-                    IdvRates(i) = nan ;
-                end
-            else
-                for i=1:n*10000
-                    IdvRates(i) = nan ;
-                end
-            end
-            tps = [] ;
-            PopRate = [] ;
+        % try
+        %     data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
+        %     for i=2:length(data(1,:))
+        %         IdvRates(i) = mean(data(:,i)) ;
+        %     end
+        %     tps = data(:,1)/1000 ;
+        %     for i=1:nbpop
+        %         for j=1:length(data(:,1))
+        %             PopRate(i,j) = mean(data(j,Cpt(i)+2:Cpt(i+1)+1)) ;
+        %         end
+        %     end
+        % catch
+        %     fprintf(' FILE NOT FOUND \n')
+        %     if(strfind(dir,'2pop'))
+        %         for i=1:n*2/3*10000
+        %             IdvRates(i) = nan ;
+        %         end
+        %     else
+        %         for i=1:n*10000
+        %             IdvRates(i) = nan ;
+        %         end
+        %     end
+        %     tps = [] ;
+        %     PopRate = [] ;
+        % end
+
+        data = ImportData(model,nbpop,dir,'Mean',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
+        tps = data(:,1)/1000 ;
+        for i=1:nbpop
+            PopRate(i,:) = data(:,i+1) ;
         end
-        
         figname=sprintf('MeanRates') ;
         fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
 
         for i=1:nbpop
-            MeanRate(i) = mean( IdvRates( Cpt(i)+1:Cpt(i+1)+1 ) ) ;
-            VarRate(i) = var( IdvRates( Cpt(i)+1:Cpt(i+1)+1 ) ) ;
+            % MeanRate(i) = mean( IdvRates( Cpt(i)+1:Cpt(i+1)+1 ) ) ;
+            % VarRate(i) = var( IdvRates( Cpt(i)+1:Cpt(i+1)+1 ) ) ;
             plot(tps,PopRate(i,:),'color',cl{i})
         end   
         xlabel('t (s)')
         ylabel('<m>_i')
         % ylabel('<m>_i')
         ylabel('Activities (Hz)')
-
+        
         drawnow ;
         hold off ;
-
+        xlim([0 2])
+        ylim([0 10])
         % figname=sprintf('AC') ;
         % fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
         % for i=1:nbpop
@@ -1075,20 +1083,14 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
         % end
         % xlabel('Frequency')
         % ylabel('Magnitude')
-        
-        MF = BalRatesMF(model,nbpop,dir,Iext,[]) ;
-
-        fprintf('MF : ')
-        fprintf('%.3f | ', MF)
-        fprintf('\n')
-        
-        fprintf('Simuls : ')
-        fprintf('%.3f | ', MeanRate)
-        fprintf('\n')
+                
+        % fprintf('Simuls : ')
+        % fprintf('%.3f | ', MeanRate)
+        % fprintf('\n')
 
         if(IF_SAVE)
             
-            figdir = FigDir(model,nbpop,dir,n,K,g,IF_RING,Crec,Cff) ;
+            figdir = FigDir(model,nbpop,dir,n,K,g,IF_RING,Crec,Cff,IF_IEXT) ;
             fprintf('Writing %s \n',figdir)
             
             try
@@ -1380,5 +1382,61 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    if strfind(file,'file')
+        try
+            data = ImportData(model,nbpop,dir,file,n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
+        catch
+            fprintf(' FILE NOT FOUND \n')
+            return ;
+        end
+
+        for i=2:length(data(1,:))
+            IdvRates(i) = mean(data(:,i)) ;
+        end
+        tps = data(:,1)/1000 ;
+        for i=1:nbpop
+            for j=1:length(data(:,1))
+                PopRate(i,j) = mean(data(j,Cpt(i)+2:Cpt(i+1)+1)) ;
+            end
+        end
+        
+        figname=sprintf('MeanRates') ;
+        fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
+
+        for i=1:nbpop
+            MeanRate(i) = mean( IdvRates( Cpt(i)+1:Cpt(i+1)+1 ) ) ;
+            VarRate(i) = var( IdvRates( Cpt(i)+1:Cpt(i+1)+1 ) ) ;
+            plot(tps,PopRate(i,:),'color',cl{i})
+            for j=1:10
+                patchline(tps,data(:,Cpt(i)+2+j),'linestyle','-','edgecolor',cl{i},'edgealpha',.25) 
+            end
+        end 
+  
+        xlabel('t (s)')
+        ylabel('<m>_i')
+        % ylabel('<m>_i')
+        ylabel('Activities (Hz)')
+
+        drawnow ;
+        hold off ;
+                
+        fprintf('Simuls : ')
+        fprintf('%.3f | ', MeanRate)
+        fprintf('\n')
+
+        if(IF_SAVE)
+            
+            figdir = FigDir(model,nbpop,dir,n,K,g,IF_RING,Crec,Cff) ;
+            fprintf('Writing %s \n',figdir)
+            
+            try
+                mkdir(figdir) ;
+            end
+            
+            ProcessFigure(fig, fullfile(figdir,figname)) ;
+        end
+        
+    end
 
 end

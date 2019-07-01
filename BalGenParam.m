@@ -18,20 +18,21 @@ function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
     
     J = ImportJab(model,nbpop,dir) ;
     C = CreateCab(J) ;
-    
+
+    m0 = .01 ;
     ntrial = 0 ;
     lbdSign = 0 ;
     
     IF_SLOPES = 1 ; 
-    SLOPES_SIGNS = [-1 -1 1 1] ;
+    SLOPES_SIGNS = [-1 1 1 -1 1] ; 
 
-    IF_COND = 0 ; 
+    IF_COND = 1 ; 
     IF_STAB = 1 ; 
     IF_FINITE_K = 0 ; 
     IF_INPUTSOM = 0 ; 
 
     IS_BALANCE = 0 ; 
-    while( IS_BALANCE == 0 )
+    while( IS_BALANCE == 0 ) 
 
         ntrial = ntrial + 1 ;
 
@@ -46,15 +47,14 @@ function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
         IS_SLOPES = 1 ; 
 
         Relbd = zeros(1,nbpop) ;
-        Imlbd = zeros(1,nbpop) ;
+        Imlbd = zeros(1,nbpop) ; 
         
         %% Create from random array Iext and Jab
         
-        rd_array = round(rand(nbpop+1,nbpop)+.1,2)  ; 
-        Iext = rd_array(1,:) ;
-        %rd_array = rd_array./2+.05 ;
+        rd_array = round(.25+1.75*rand(nbpop+1,nbpop),2) ; 
+        Iext = rd_array(1,:) * m0 ; 
         
-        if(~IF_INPUTSOM)
+        if(~IF_INPUTSOM && nbpop>2)
             Iext(3) = 0 ; 
             %Iext(4) = 0 ; 
         end
@@ -74,7 +74,7 @@ function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
             [RatesMF Det] = BalRatesMF(model,nbpop,dir,Iext,J) ; 
 
             fprintf('Rates MF ')
-            fprintf('%.3f ',RatesMF)
+            fprintf('%.3f ',RatesMF*1000)
             fprintf('\n')
 
             fprintf('Det ')
@@ -85,8 +85,17 @@ function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
         end
         
         %% Check Rates and Det signs
-        InhibRates = [ RatesMF(1) RatesMF(3:nbpop) ];
-        RateSign = ( all(RatesMF>0) && all( RatesMF(1) < RatesMF(2) ) ) ; 
+        InhibRates = [ RatesMF(2:nbpop) ];
+        
+        if(nbpop>=3)
+            notPVrates = [RatesMF(3:nbpop)] ;
+        else
+            notPVrates = [] ;
+        end
+
+        RateSign = ( all(RatesMF>0) && all( RatesMF(1) < InhibRates ) && all( RatesMF(2) > notPVrates ) ) ; 
+        % RateSign = ( all(RatesMF>0) && all( RatesMF(1) < RatesMF(2) ...
+        %                                     ) && all(RatesMF<20/1000)) ; 
         DetSign = Det*(-1).^nbpop>0 ; 
         
         if( RateSign && DetSign ) 
@@ -147,7 +156,7 @@ function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
         if(IF_SLOPES && IS_BALANCE )
             %% Compute MF susceptibility 
             fprintf('Computing MF Slopes ...\n')
-            IF_SLOPES = 0 ;
+            IS_SLOPES = 0 ;
             % try
             %     Slopes = BalPrtrSlopesMF(model,nbpop,dir,Iext,J,true) ;
             %     fprintf('Slopes ')
@@ -157,43 +166,56 @@ function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
             %     fprintf('Error Computing Slopes\n')
             %     Slopes = NaN(1,nbpop) ;
             % end
-            
-            
-            if strfind(dir,'ALML23') 
-                fprintf('%%%%%%%% ALML23 %%%%%%%%%%\n') 
-                Slopes(1) = J(1,2) * J(4,3) - J(1,3) * J(4,2) ; % chiEI 
-                Slopes(2) = J(1,1) * J(4,3) + J(1,3) * J(4,1) ; % -chiII 
-                Slopes(3) = J(2,3) * J(4,2) - J(2,2) * J(4,3) ; % chiEE 
-                Slopes(4) = J(2,3) * J(4,1) - J(2,1) * J(4,3) ; % -chiIE 
-                
-            elseif strfind(dir,'ALML5')
-                fprintf('%%%%%%%% ALML5 %%%%%%%%%%\n')
-                Slopes(1) = J(1,2) * J(4,3) - J(1,3) * J(4,2) ; % chiEI
-                Slopes(2) = - ( J(1,1) * J(4,3) - J(1,3) * J(4,1) ) ; % chiII
-                Slopes(3) = J(2,3) * J(4,2) - J(2,2) * J(4,3) ; % chiEE
-                Slopes(4) = 1 ; % chiIE
-                
-                %% chiEI = Jei Jvs - Jes Jvi 
-                %% chiII = Jee Jvs - Jes Jve
-                %% chiEE = Jis Jvi - Jii Jvs
-                
-            elseif strfind(dir,'S1L5')
-                fprintf('%%%%%%%% S1L5 %%%%%%%%%%\n') 
-                Slopes(1) = J(1,3) * J(4,4) - J(1,4) * J(4,3) ; 
-                Slopes(2) = J(2,4) * J(4,3) - J(2,3) * J(4,4) ;  
+            if(nbpop==4)                        
+
+                if strfind(dir,'S1')
+                    fprintf('%%%%%%%% S1L5 %%%%%%%%%%\n') 
+                    Slopes(1) = J(1,3) * J(4,4) - J(1,4) * J(4,3) ; % chiEI = chiII 
+                    Slopes(2) = J(2,4) * J(4,3) - J(2,3) * J(4,4) ; % chiEE = chiIE 
+                    Slopes(3) = 1 ; 
+                    Slopes(4) = 1 ; 
+                    Slopes(5) = 1 ; 
+                    
+                    %% chiEI = chiII = Jes Jxx - Jex Jxs 
+                    %% chiEE = chiIE = Jix Jxs - Jis Jxx 
+                elseif strfind(dir,'L23') 
+                    fprintf('%%%%%%%% ALML23 %%%%%%%%%%\n') 
+                    Slopes(1) = J(1,2) * J(4,3) - J(1,3) * J(4,2) ; % chiEI
+                    Slopes(2) = - ( J(1,1) * J(4,3) - J(1,3) * J(4,1) ) ; % chiII
+                    Slopes(3) = J(2,3) * J(4,2) - J(2,2) * J(4,3) ; % chiEE
+                    Slopes(4) = - ( J(2,3) * J(4,1) - J(2,1) * J(4,3) ) ; % chiIE
+                    Slopes(5) = 1 ;
+                    
+                elseif strfind(dir,'L5')
+                    fprintf('%%%%%%%% ALML5 %%%%%%%%%%\n')
+                    Slopes(1) = J(1,2) * J(4,3) - J(1,3) * J(4,2) ; % chiEI 
+                    Slopes(2) = - ( J(1,1) * J(4,3) - J(1,3) * J(4,1) ) ; % chiII 
+                    Slopes(3) = J(2,3) * J(4,2) - J(2,2) * J(4,3) ; % chiEE 
+                    Slopes(4) = - ( J(2,3) * J(4,1) - J(2,1) * J(4,3) ) ; % chiIE 
+                    Slopes(5) = 1 % -( J(1,2) * J(4,1) - J(1,1) * J(4,2) ) ; % chiSI 
+                    
+                    %% chiEI = Jei Jvs - Jes Jvi 
+                    %% chiII = Jee Jvs - Jes Jve
+                    %% chiEE = Jis Jvi - Jii Jvs
+                    %% chiIE = Jis Jve - Jie Jvs                    
+                    %% chiSI = Jei Jve - Jee Jvi
+                else
+                    Slopes(1) = J(1,3) * J(3,2) - J(1,2) * J(3,3) ; 
+                    Slopes(2) = -( J(1,3) * J(3,1) - J(1,1) * J(3,3) ) ; 
+                    Slopes(3) =  -( J(1,1) * J(3,2) - J(1,2) * J(3,1) ) ;
+                    Slopes(4) = 1 ;
+                    Slopes(5) = 1 ;
+                    %% chiEI = Jes Jsi - Jei Jss ;
+                    %% chiII = Jes Jse - Jee Jss ;
+                    %% chiSI = Jee Jsi - Jei Jse  ;
+                end           
+            else
+                Slopes(1) = -1 ;
+                Slopes(2) = -1 ;
                 Slopes(3) = 1 ;
                 Slopes(4) = 1 ;
-                %% chiEI = chiII = Jes Jxx - Jex Jxs 
-                %% chiEE = chiIE = Jix Jxs - Jis Jxx 
-            else
-                Slopes(1) = J(1,3) * J(3,2) - J(1,2) * J(3,3) ; 
-                Slopes(2) = -( J(1,3) * J(3,1) - J(1,1) * J(3,3) ) ; 
-                Slopes(3) =  -( J(1,1) * J(3,2) - J(1,2) * J(3,1) ) ;
-                Slopes(4) = 1 ;
-                %% chiEI = Jes Jsi - Jei Jss ;
-                %% chiII = Jes Jse - Jee Jss ;
-                %% chiSI = Jee Jsi - Jei Jse  ;
-            end           
+                Slopes(5) = 1 ;
+            end
 
             IS_SLOPES = ( ~any(isnan(Slopes)) && all(sign(Slopes)==SLOPES_SIGNS) ) ; 
             
@@ -205,31 +227,34 @@ function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
                 fprintf(' #### WRONG SLOPES SIGNS #### \n') 
                 fprintf(' #### #### ####\n') 
                 IS_BALANCE = 0 ;
-            end            
+            end 
         end 
         
-        if(IF_COND && IS_SLOPES && IS_BALANCE) 
+        if(IF_COND && IS_BALANCE) 
             fprintf('Checking Balance Conditions ...') 
             IS_COND = 0 ;
             try 
                 %Cond = BalConditions(model,nbpop,dir,Iext,J,0,0) ; 
-                IS_COND = all( BalCond(model,nbpop,dir,Iext,J,0) == 1 ) ;
+                IS_COND = all( BalCond(model,nbpop,dir,Iext,J,0) == 1 ) 
             catch
                 fprintf('\nError Checking Balance Conditions !\n') 
                 IS_COND = 0 ;
             end
+
             if(IS_COND)
                 fprintf(' TRUE \n')            
-                IS_BALANCE = 1 ;
+                IS_BALANCE = 1 ; 
             else 
                 fprintf(' #### #### ####\n') 
-                fprintf(' #### WRONG SLOPES SIGNS #### \n') 
+                fprintf(' #### WRONG BAL COND #### \n') 
                 fprintf(' #### #### ####\n') 
                 IS_BALANCE = 0 ;
             end
+
+            pause ;
         end
 
-        if( IF_STAB && IS_COND && IS_BALANCE)
+        if( IF_STAB && IS_BALANCE)
             fprintf('Checking Steady-State Stability ...\n')                    
             lbdSign = 0 ;
             try 
@@ -274,7 +299,7 @@ function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
         Jfile = fopen(Jparam,'w') ;
         
         fprintf(file, 'Iext ') ;
-        fprintf(file, '%.3f ', Iext) ;
+        fprintf(file, '%.3f ', Iext / m0) ; 
         fprintf(file, '\n') ;
         
         fprintf(file, 'Connectivity Matrix \n') ;
@@ -290,7 +315,7 @@ function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
         
         fprintf(file,'Det %.3f\n', Det) ;
         fprintf(file,'MF Rates ') ;
-        fprintf(file,'%.3f | ', RatesMF) ;
+        fprintf(file,'%.3f | ', RatesMF*1000) ;
         fprintf(file,'\n') ;
         fprintf(file,'MF Slopes ') ;
         fprintf(file,'%.3f | ', Slopes) ;

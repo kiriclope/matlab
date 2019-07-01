@@ -5,13 +5,13 @@ function InputDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec
 % perturbed input Iext(2)+dI.
 % utils : Rate_InputDist(nbpop,dir,I,K)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    IF_OPS = 0 ;
-    ndI = 2 ;
-    L = 2 ;
-    IF_DATA = 0 ;
+    IF_OPS = 0 ; 
+    ndI = 2 ; 
+    L = 2 ; 
+    IF_DATA = 0 ; 
 
     if(isempty(Iext)) 
-        Iext = ExternalInput(model,nbpop,dir) ;
+        Iext = ExternalInput(model,nbpop,dir) ; 
     end
 
     warning off ;
@@ -54,7 +54,7 @@ function InputDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec
 
         I = Iext ;
         for dI=dIlim(1):dIlim(2):dIlim(3)
-            I(2) = Iext(2) + dI ;
+            I(ndI) = Iext(ndI) + dI ;
             [u b] = RateInputDist(model,nbpop,dir,I,K,g,[],false) ;
             
             X = [X dI] ;
@@ -81,10 +81,10 @@ function InputDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec
         
         xlabel('I_{opto}')
         ylabel('Norm. Rates')
-        xlim([0 1])
-        % set(gca,'Xscale', 'log')
-        ylim([0 3])
-        % set(gca,'Yscale', 'log')
+        xlim([.01 100])
+        set(gca,'Xscale', 'log')
+        ylim([.01 100])
+        set(gca,'Yscale', 'log')
         
     end
 

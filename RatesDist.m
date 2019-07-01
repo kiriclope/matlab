@@ -1,11 +1,12 @@
-clear all ;
+%clear all ;
 GlobalVars
 
-Iext = ExternalInput(model,nbpop,dir) ;    
+Iext = ExternalInput(model,nbpop,dir) ; 
 nbN = nbNeuron(nbpop,N,IF_Nk,[]) ;
 Cpt = CptNeuron(nbpop,nbN) ;
 
-Iext(prtrPop) = Iext(prtrPop) + Iprtr ; 
+Iext(prtrPop) = Iext(prtrPop) ; 
+IF_IEXT='' ;
 
 try
     data = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,IF_IEXT,prtrPop,Iext(prtrPop)) ; 
@@ -36,14 +37,14 @@ for i=1:nbpop
         figname='RatesDistV' ;
     end
             
-    if( ishandle( findobj('type','figure','name',figname) ) )
-        fig = findobj('type','figure','name',figname) ; 
-        figure(fig); hold on ; 
-    else
+    % if( ishandle( findobj('type','figure','name',figname) ) )
+    %     fig = findobj('type','figure','name',figname) ; 
+    %     figure(fig); hold on ; 
+    % else
         fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
         xlabel('log(Rates)')
         ylabel('pdf')
-    end
+    % end
     
     alp = 1 ; 
     
@@ -51,7 +52,7 @@ for i=1:nbpop
     VarRate(i) = var( IdvRates( Cpt(i)+1:Cpt(i+1) ) ) ; 
     m = IdvRates( Cpt(i)+1:Cpt(i+1) ) ; 
 
-    m = m(m>THRESHOLD) ; 
+    m = m(m>=.05) ; 
     
     if(strfind(model,'Binary')) 
         h = histogram(m,27,'Normalization', 'pdf' ,'DisplayStyle','stairs','EdgeColor',cl{i},'EdgeAlpha',.2,'Linewidth',2) ;
@@ -73,6 +74,7 @@ for i=1:nbpop
     drawnow;
     if(IF_SAVE)
         figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_IEXT) ;
+        figdir = sprintf(['%s/Baseline'],figdir) ;
         fprintf('Writing %s \n',figdir)
         try 
             mkdir(figdir) 

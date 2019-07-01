@@ -2,7 +2,7 @@ function [Cond C_Matrix] = BalCond(model,nbpop,dir,Iext,J,IF_DISPLAY)
            
     warning off ;
 
-    % only want 3 optional inputs at most    
+    % only want 3 optional inputs at most 
     if(nargin<4 || isempty(Iext) ) 
         Jparam = sprintf(['../%s/Parameters/%dpop/%s/Jparam.txt'],model,nbpop,dir);
         Jdata = importdata(Jparam) ;
@@ -14,36 +14,40 @@ function [Cond C_Matrix] = BalCond(model,nbpop,dir,Iext,J,IF_DISPLAY)
         IF_DISPLAY=1
     end
 
-    % if(nbpop>=3)
-    %     Iext(3) = 0 ;
-    % end
-
-    % C = CreateCab(Jdata) ;
-    % J = sym('J%d%d',nbpop).*C ;
-    % J(:,1)= ones([1 nbpop]) ;
-
-    % assume(J(:,2:nbpop)<=0) ;
-
-    % Iext = sym('I',[1 nbpop]) ;
-    % assume(Iext>=0) ;
-
-    % Rates = sym('m%d',[1 nbpop]) ;
-    % assume(Rates>=0) ;
-
-    % Isym = sym('I%d',[1 nbpop]) ; 
-    % Jsym = sym('J%d%d',nbpop) ;
+    IF_SYM = 0 ;
+    if(IF_SYM)
+        if(nbpop>=3)
+            Iext(3) = 0 ;
+        end
+        
+        C = CreateCab(Jdata) ;
+        J = sym('J%d%d',nbpop).*C ;
+        J(:,1)= ones([1 nbpop]) ;
+        
+        assume(J(:,2:nbpop)<=0) ;
+        
+        Iext = sym('I',[1 nbpop]) ;
+        assume(Iext>=0) ;
+        
+        Rates = sym('m%d',[1 nbpop]) ;
+        assume(Rates>=0) ;
+        
+        Isym = sym('I%d',[1 nbpop]) ; 
+        Jsym = sym('J%d%d',nbpop) ;
     
-    % assume(Isym>0) ;  
-    % assume(Jsym>0) ;
-    % % assume(Jsym(:,2)<0) ;
-    % % assume(Jsym(:,3)>0) ;
-    % % assume(Jsym(:,4)<0) ;
-    
-    % J = Jsym.*C ;
-    % J(:,2:nbpop) = -J(:,2:nbpop) ;
-    % Iext = Isym ;
-    % Iext(3) = 0 ;
+        assume(Isym>0) ;  
+        assume(Jsym>0) ;
+        % assume(Jsym(:,2)<0) ;
+        % assume(Jsym(:,3)>0) ;
+        % assume(Jsym(:,4)<0) ;
+        
+        J = Jsym.*C ;
+        J(:,2:nbpop) = -J(:,2:nbpop) ;
+        Iext = Isym ;
+        Iext(3) = 0 ;
+    end
 
+    det(J)
     Conditions = (de2bi(1:2^(nbpop)-2 )) ;
     Solutions = cell(1,length(Conditions) ) ;
         
@@ -232,21 +236,23 @@ function [Cond C_Matrix] = BalCond(model,nbpop,dir,Iext,J,IF_DISPLAY)
     C_Matrix(isnan(C_Matrix))=0 ;
 
 
-    fprintf('add Cond \n')
-    J2pop = J(1:2,1:2) ;
-    I2pop = Iext(1:2) ;
-    Rates2pop = linsolve(J2pop,-I2pop.') ;
-    
-    Rates1pop = -Iext(2) / J(2,2) ;
-    
-    fprintf('Cond 1 1 0 sqrtK: ')
-    C1 = Iext(4) + J(4,1) * Rates2pop(1) - J(4,2) * Rates2pop(2) <0 || any(Rates2pop<0) ;
-    fprintf('%d \n',C1) 
-    
-    fprintf('Cond 0 1 0 sqrtK: ')
-    C2 = Iext(4) - J(4,2) * Rates2pop(2) <0  ||  Iext(1) - J(1,2) * Rates1pop >0  || Rates1pop<0 ;
-    fprintf('%d \n',C2) 
 
-    %Cond = [ Cond, C1 , C2 ] ;
+    if(nbpop>3) 
+        fprintf('add Cond \n')
+        J2pop = J(1:2,1:2) ;
+        I2pop = Iext(1:2) ;
+        Rates2pop = linsolve(J2pop,-I2pop.') ;
+    
+        Rates1pop = -Iext(2) / J(2,2) ;
+
+        fprintf('Cond 1 1 0 sqrtK: ')
+        C1 = Iext(4) + J(4,1) * Rates2pop(1) + J(4,2) * Rates2pop(2) <0 || any(Rates2pop<0) ;
+        fprintf('%d \n',C1) 
+    
+        fprintf('Cond 0 1 0 sqrtK: ')
+        C2 = Iext(4) + J(4,2) * Rates2pop(2) <0  ||  Iext(1) + J(1,2) * Rates1pop >0  || Rates1pop<0 ;
+        fprintf('%d \n',C2) 
+        Cond = [ Cond, C1 , C2 ] ; 
+    end
 
 end
