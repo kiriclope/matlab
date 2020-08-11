@@ -1,4 +1,4 @@
-function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
+function [] = BalGenParam(model,nbpop,dir,IF_WRITE) 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % function [] = Bal_GenParam(model,nbpop,dir,IF_WRITE)
 % Generates balance set of parameters [Iext J] and if IF_WRITE 
@@ -23,13 +23,13 @@ function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
     ntrial = 0 ;
     lbdSign = 0 ;
     
-    IF_SLOPES = 1 ; 
-    SLOPES_SIGNS = [-1 1 1 -1 1] ; 
+    IF_SLOPES = 0 ; 
+    SLOPES_SIGNS = [-1 -1 1 -1 1] ; 
 
     IF_COND = 1 ; 
     IF_STAB = 1 ; 
     IF_FINITE_K = 0 ; 
-    IF_INPUTSOM = 0 ; 
+    IF_INPUTSOM = 1 ; 
 
     IS_BALANCE = 0 ; 
     while( IS_BALANCE == 0 ) 
@@ -51,14 +51,20 @@ function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
         
         %% Create from random array Iext and Jab
         
-        rd_array = round(.25+1.75*rand(nbpop+1,nbpop),2) ; 
+        % rd_array = round(.25+1.75*rand(nbpop+1,nbpop),2) ; 
+        rd_array = round(.25+1.5*rand(nbpop+1,nbpop),2) ; 
         Iext = rd_array(1,:) * m0 ; 
-        
+
+
         if(~IF_INPUTSOM && nbpop>2)
             Iext(3) = 0 ; 
             %Iext(4) = 0 ; 
         end
-        
+
+        if(IF_INPUTSOM==-1 && nbpop>2)        
+            Iext(3) = -Iext(3) ;        
+        end
+
         rd_array(2:end,2:end) = -rd_array(2:end,2:end) ; % standard balance
 
         %% Bump EI    EI interacting 
@@ -80,20 +86,21 @@ function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
             fprintf('Det ')
             fprintf('%.3f ',Det)
             fprintf('\n')
-        catch
-            fprintf('\nError Computing MF Rates and Det !\n')
+        catch 
+            fprintf('\nError Computing MF Rates and Det !\n') 
         end
         
         %% Check Rates and Det signs
         InhibRates = [ RatesMF(2:nbpop) ];
         
         if(nbpop>=3)
-            notPVrates = [RatesMF(3:nbpop)] ;
+            notPVrates = RatesMF(3:nbpop) ;
         else
-            notPVrates = [] ;
+            notPVrates = [RatesMF(1)] ; 
         end
 
-        RateSign = ( all(RatesMF>0) && all( RatesMF(1) < InhibRates ) && all( RatesMF(2) > notPVrates ) ) ; 
+        % RateSign = ( all(RatesMF>0) && all( RatesMF(1) < InhibRates ) && all( RatesMF(2) > notPVrates ) ) ; 
+        RateSign = ( all(RatesMF>0) && all(RatesMF(2)>notPVrates) && all( InhibRates > RatesMF(1) ) && RatesMF(1) < 5./1000 ) ; 
         % RateSign = ( all(RatesMF>0) && all( RatesMF(1) < RatesMF(2) ...
         %                                     ) && all(RatesMF<20/1000)) ; 
         DetSign = Det*(-1).^nbpop>0 ; 
@@ -102,7 +109,7 @@ function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
 
             fprintf(' TRUE \n')
             IS_BALANCE = 1 ; 
-
+            
             fprintf('Iext ')
             fprintf('%.3f ',Iext)
             fprintf('\n')
@@ -120,7 +127,7 @@ function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
             fprintf(' #### WRONG RATES OR DET SIGNS #### \n') 
             fprintf(' #### #### ####\n') 
         end
-
+        
         if(IF_FINITE_K && IS_BALANCE) 
             try 
                 [u b] = RateInputDist(model,nbpop,dir,double(Iext),3000,1,double(J),0) ; 
@@ -235,7 +242,7 @@ function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
             IS_COND = 0 ;
             try 
                 %Cond = BalConditions(model,nbpop,dir,Iext,J,0,0) ; 
-                IS_COND = all( BalCond(model,nbpop,dir,Iext,J,0) == 1 ) 
+                IS_COND = all( BalCond(model,nbpop,dir,Iext,J,0) == 1 ) ;
             catch
                 fprintf('\nError Checking Balance Conditions !\n') 
                 IS_COND = 0 ;
@@ -250,8 +257,6 @@ function [] = BalGenParam(model,nbpop,dir,IF_WRITE)
                 fprintf(' #### #### ####\n') 
                 IS_BALANCE = 0 ;
             end
-
-            pause ;
         end
 
         if( IF_STAB && IS_BALANCE)

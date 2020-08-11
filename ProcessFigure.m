@@ -39,13 +39,13 @@ function ProcessFigure(hFigure, fileName,h,paperSize)
     
         set(hFigure, 'PaperPosition', [0, 0, paperSize]);
         set(hFigure, 'PaperSize', paperSize);
-        % set(hFigure, 'MarkerSize', msz) ;
-        %    set(hFigure, 'Renderer', 'Painters');
+        set(hFigure, 'MarkerSize', msz) ;
+        set(hFigure, 'Renderer', 'Painters');
     end    
     
     saveas(hFigure, [fileName '.svg'], 'svg');
     % saveas(hFigure, [fileName '.pdf'], 'pdf');
-    %p saveas(hFigure, [fileName '.fig'], 'fig');
+    % saveas(hFigure, [fileName '.fig'], 'fig');
     % saveas(hFigure, [fileName '.png'], 'png');
 
 end

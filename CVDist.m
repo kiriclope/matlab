@@ -4,12 +4,11 @@ GlobalVars
 Iext = ExternalInput(model,nbpop,dir) ;    
 nbN = nbNeuron(nbpop,N,IF_Nk,[]) ;
 Cpt = CptNeuron(nbpop,nbN) ;
-Iext(prtrPop) = Iext(prtrPop) ;
-Cth=1000;
-IF_IEXT='' ;
+
+Cth=1000 ;
 
 try
-    data = ImportData(model,nbpop,dir,'Raster',N,K,g,IF_RING,Crec,Cff,IF_IEXT,prtrPop,Iext(prtrPop)) ; 
+    data = ImportData(model,nbpop,dir,'Raster',N,K,g,IF_RING,Crec,Cff,IF_IEXT,prtrPop,Iprtr) ; 
     Spikes = sortrows(data) ; 
     Spikes(:,2) = Spikes(:,2)./1000. ;
 catch

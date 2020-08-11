@@ -5,7 +5,8 @@ IextBL = ExternalInput(model,nbpop,dir) ;
 nbN = nbNeuron(nbpop,N,IF_Nk,[]) ;
 Cpt = CptNeuron(nbpop,nbN) ;
 
-v_Jab = v_Jab(1):v_Jab(2):v_Jab(3) ; 
+
+v_Jab = .1:.1:1 ; 
 nbIdv = 10 ;
 
 J = ImportJab(model,nbpop,dir) ; 

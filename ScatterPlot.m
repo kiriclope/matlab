@@ -1,11 +1,7 @@
 clear all ;
 GlobalVars
 
-Iext = ExternalInput(model,nbpop,dir) ;    
-nbN = nbNeuron(nbpop,N,IF_Nk,[]) ;
-Cpt = CptNeuron(nbpop,nbN) ;
-
-baseline = ImportData(model, nbpop, dir,'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_DATA, prtrPop, Iext(prtrPop) ) ;
+baseline = ImportData(model, nbpop, dir,'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_IEXT, prtrPop, Iext ) ;
 
 try
     for i=1:length(baseline(1,:))-1
@@ -16,7 +12,7 @@ catch
     return ;
 end
 
-prtr = ImportData(model, nbpop, dir,'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_DATA, prtrPop, Iext(prtrPop) + Iprtr) ; 
+prtr = ImportData(model, nbpop, dir,'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_IEXT, prtrPop, Iprtr) ; 
 
 try
     for i=1:length(prtr(1,:))-1
@@ -27,7 +23,7 @@ catch
     return ;
 end
 
-for i=1:nbpop
+for i=1:2
             
     figname=sprintf('Scatter%s_Iprtr%.3f',popList(i),Iprtr) ;
     fig = figure('Name',figname,'NumberTitle','off') ; hold on ;
@@ -56,8 +52,15 @@ for i=1:nbpop
     ROI2 = find(RatesPrtr<.1) ; 
     RatesPrtr(ROI2)=.1 ; 
 
-    sc = scatter(Baseline,RatesPrtr,8,cl{i},'MarkerEdgeAlpha',.5, ...
+    whos Baseline
+    whos RatesPrtr
+    
+    plot([.1 100],[.1 100],'--k','Linewidth',.5) 
+
+    Idx = randi([1,length(Baseline)],300,1) ;
+    sc = scatter(Baseline(Idx),RatesPrtr(Idx),8,cl{i},'MarkerEdgeAlpha',.5, ...
                  'MarkerFaceColor', 'None','LineWidth',.5) ; 
+    % sc = scatterhist(Baseline(Idx),RatesPrtr(Idx),'MarkerSize',1,'Color',cl{i}) ; 
 
      % [coeff,score,latent] = pca([Rates.',RatesPrtr.']) ;
      % sc = scatter(score(:,1),score(:,2),.1,cl{i},'MarkerEdgeAlpha',1) ;
@@ -71,14 +74,25 @@ for i=1:nbpop
     ylim([.1 100])
     set(gca,'yscale','log')
     set(gca,'xscale','log')
-    %ylim(yLimits)
+
+    % set(sc(2),'xdir','reverse')
+    % set(sc(3),'xdir','reverse')
+
+    % set(sc(2),'ydir','reverse')
+    % set(sc(3),'ydir','normal')
+
+    % set(sc(2),'xscale','log')
+    % set(sc(3),'xscale','log')
+
+         
+    %Aylim(yLimits)
     
-    xlabel('Baseline')
-    ylabel('Perturbartion')
+    xlabel('Baseline (Hz)')
+    ylabel('Perturbartion (Hz)')
     drawnow ;
 
     if(IF_SAVE)
-        figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_DATA) ;
+        figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_IEXT) ;
         fprintf('Writing %s \n',figdir)
         try
             mkdir(figdir)

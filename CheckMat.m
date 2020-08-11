@@ -1,159 +1,122 @@
-function [] = CheckMat(model,nbpop,n,K,IF_SPACE,Sigma,IF_Nk,DisplayOn,IF_SAVE)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% function [] = Space_CheckMat(model,nbpop,n,K,Sigma,IF_Nk,DisplayOn,IF_SAVE)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    L = 1. ; 
-    SCALING = 1. ; 
+clear all ; 
+GlobalVars
 
-    N = n*10000 ;
-    nbN = nbNeuron(nbpop,n,IF_Nk,[]) ;
-    Cpt = CptNeuron(nbpop,nbN) ;
+str_Matrix = ImportData('Connectivity', nbpop, dir, 'Cij_Matrix', N, K, g, IF_RING, Crec, [], '', 1, 1) 
+n = N ;
+[nbN N] = nbNeuron(nbpop,N,IF_Nk,[]) ; 
+Cpt = CptNeuron(nbpop,nbN) ; 
 
-    if strcmpi(IF_SPACE,'Ring') | strcmpi(IF_SPACE,'Gauss2D')  | ...
-            strcmpi(IF_SPACE,'Exp') | strcmpi(IF_SPACE,'Ring/Spec') | strcmpi(IF_SPACE,'Gauss/Spec')
-        if(length(Sigma)==1 & nbpop==1)
-            str_Matrix = sprintf(['../Connectivity/%dpop/N%d/K%d/%s/CrecI%.4f/Cij_Matrix.dat'],nbpop,n,K,IF_SPACE,Sigma)
-        else
-            if(nbpop==1)
-                str_Matrix = sprintf(['../Connectivity/%dpop/N%d/K%d/%s/CrecI%.4f/Cij_Matrix.dat'],nbpop,n,K,IF_SPACE,Sigma)
-            elseif(nbpop==2)
-                if(length(Sigma)==nbpop)
-                    if(length(K)==1)
-                        str_Matrix = sprintf(['../Connectivity/%dpop/N%d/' ...
-                                            'K%d/%s/CrecE%.4fCrecI%.4f/Cij_Matrix.dat'],nbpop,n,K,IF_SPACE,Sigma(1),Sigma(2)) 
-                    else
-                        str_Matrix = sprintf(['../Connectivity/%dpop/N%d/' ...
-                                            'KE%dKI%d/%s/CrecE%.4fCrecI%.4f/Cij_Matrix.dat'],nbpop,n,K(1),K(2),IF_SPACE,Sigma(1),Sigma(2)) 
-                    end
-                elseif(length(Sigma)>=nbpop)
-                    str_Matrix = sprintf(['../Connectivity/%dpop/N%d/' ...
-                                        'K%d/%s/CrecEE%.4fCrecEI%.4fCrecIE%.4fCrecII%.4f/Cij_Matrix.dat'],nbpop,n,K,IF_SPACE,Sigma(1),Sigma(2),Sigma(3),Sigma(4)) 
-                end
-            else
-                str_Matrix = sprintf(['../Connectivity/%dpop/N%d/' ...
-                                    'K%d/%s/CrecE%.4fCrecI%.4fCrecS%.4fCrecV%.4f/Cij_Matrix.dat'],nbpop,n,K,IF_SPACE,Sigma(1),Sigma(2),Sigma(3),Sigma(4)) 
-            end
+fMatrix = fopen(str_Matrix,'rt') ; 
+M = fread(fMatrix,'*float') ; 
+size(M) ; 
+M = reshape(M,N,N) ; 
+M = double(M)' ; 
+size(M) ;
+
+popList = ['E','I','S','X'] ;
+cl = {[1 0 0] [0 0 1] [0 1 0] [0.7 0.7 0.7]} ;
+if(nbpop==1) 
+    popList = 'I' ; 
+    cl = {[0 0 1]} ; 
+end
+
+if(~FIGPERPOP)
+    figname=sprintf('Connection_Probability_CrecE_%.4fCrecI%.4f',Crec(1),Crec(2));
+    fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
+    xlabel('X (mm)')
+    ylabel('Pb')
+end
+
+for i=1:nbpop
+    for j=1:nbpop
+        meanX = 0 ; 
+        meanY = 0 ; 
+        
+        A = M(Cpt(i)+1:Cpt(i+1),Cpt(j)+1:Cpt(j+1)) ; % A(i,j) j Pres to i Post, 
+
+        % figname=sprintf('Connection Matrix %s%s ',popList(i),popList(j) );
+        % fig = figure('Name',figname,'NumberTitle','off') ; hold on ;
+        % xlabel('Post') 
+        % ylabel('Pre') 
+        % imagesc(A) ; 
+        
+        for k=1:nbN(i)
+            % meanX = meanX + sum(A(:,k)) ; 
+            meanY = meanY + sum(A(k,:)) ; 
         end
-    else
-        str_Matrix = sprintf(['../Connectivity/%dpop/N%d/K%d/Cij_Matrix.dat'],nbpop,n,K)
-    end
+        
+        % fprintf('Average nbPreS %s%s: %.3f %.3f \n',popList(i),popList(j),meanX./nbN(i),meanY./nbN(j))
+        fprintf('Average nbPreS %s%s: %.3f \n',popList(i),popList(j),meanY./nbN(i))         
+        fprintf('Pb diag %.2f\n', sum(diag(A))/nbN(j) ) 
+        
+        Pb = [] ; 
+        Pk = [] ; 
+        IdvCorr = [] ;
 
-    fMatrix = fopen(str_Matrix,'rt') ;
-    M = fread(fMatrix,'*float') ;
-    size(M) 
-    M = reshape(M,N,N) ;
-    M = double(M) ; 
-    size(M) 
+        for k=1:nbN(i)
+            % Pb(k) = (mean(diag(A,k)) + mean(diag(A,nbN(i)-k)) )/2 ; 
+            Pb(k) = (sum(diag(A,k)) + sum(diag(A,nbN(i)-k)) ) ./ nbN(i) ; 
+            % IdvCorr = [ IdvCorr; xcorr( A(k,:) ) ];
+            Pk(k) = sum(A(k,:)) ; 
+        end 
+        
+        fprintf('Pk size %d\n', length(Pk) ) 
 
-    popList = ['E','I','S','X'] ;
-    cl = {[1 0 0] [0 0 1] [0 1 0] [0.7 0.7 0.7]} ;
-    
-    for i=1:nbpop
-        for j=1:nbpop
-            meanX = 0 ;
-            meanY = 0 ;
-            
-            A = M(Cpt(i)+1:Cpt(i+1),Cpt(j)+1:Cpt(j+1)) ; % A(i,j) j Pres to i Post, 
-            
-            figname=sprintf('Connection Matrix %s%s ',popList(j),popList(i) );
-            fig = figure('Name',figname,'NumberTitle','off') ; hold on ;
-            imagesc(A) ; 
-            xlabel('Post') 
-            ylabel('Pre') 
+        % Pb = mean(IdvCorr) ; 
 
-            for k=1:nbN(i)
-                meanY = meanY + sum(A(k,:) ) ;
-            end
-            for k=1:nbN(j)
-                meanX = meanX + sum(A(:,k)) ;
-            end
 
-            fprintf('Average nbPreS %s%s: meanX %.3f meanY %.3f \n',popList(j),popList(i),meanX./nbN(j),meanY./nbN(j))
-            
-            for k=1:nbN(j)
-                P(i,j,k) = sum(diag(A,-k)) + sum(diag(A,nbN(j)-k)) ; % P(i,j) j to i
-            end
+        if(FIGPERPOP)
+            figname=sprintf('Connection_Probability_%s%s_Crec_%.4f',popList(i),popList(j),Crec(j));
+            fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
+            xlabel('X (mm)')
+            ylabel('Pb')
         end
+
+        X = linspace(-L/2,L/2,length(Pb)) ; 
+        
+        plot(X(1:length(Pb)/2),Pb(length(Pb)/2+1:end),'color',cl{j}) 
+        plot(X(length(Pb)/2+1:length(Pb)),Pb(1:length(Pb)/2),'color',cl{j}) 
+
+        plot(4*Crec(j) *[1 1],[0 1], '--','Color',cl{i}) 
+        plot(-4*Crec(j) *[1 1],[0 1], '--','Color',cl{i}) 
+        
+        % figname=sprintf('In-degree_%s%s',popList(i),popList(j)) ;
+        % fig = figure('Name',figname,'NumberTitle','off') ; hold on ;
+        % xlabel('Neuron')
+        % ylabel('K_i')
+        
+        % plot(1:length(Pk),Pk,'color',cl{j}) 
+
+        % if(IF_SAVE) 
+        %     figdir = sprintf(['./Paper/%dpop/Connections/N%dK%dg%.2f'],nbpop,n,K,1) ; 
+        %     fprintf('Writing %s \n',figdir) 
+        %     try
+        %         mkdir(figdir) ;
+        %     end
+        %     ProcessFigure(fig, fullfile(figdir,figname)) ;
+        % end
+        
+        % figname=sprintf('In-degree_Dist_%s%s',popList(i),popList(j)) ;
+        % fig = figure('Name',figname,'NumberTitle','off') ; hold on ;
+        
+        % xlabel('K_i') 
+        % ylabel('pdf') 
+        
+        % h = histogram( Pk , 27, 'Normalization', 'pdf'
+        % ,'DisplayStyle','stairs','EdgeColor',cl{j},'EdgeAlpha',1,'Linewidth',2)
+        % ;        
     end
+end
+
+ylim([0 1])
+xlim([0 L/2])
+
+if(IF_SAVE) 
+    figdir = sprintf(['./Paper/%dpop/Connections/N%dK%dg%.2f/%s/CrecE%.4fCrecI%.4f'],nbpop,n,K,1,IF_RING,Crec(1),Crec(2)) ; 
     
-    for i=1:nbpop        
-        for j=1:nbpop
-            
-            Np = nbN(j) ;
-            
-            X = linspace(-pi,pi,Np)./L*SCALING ;                
-
-            Pij = squeeze(P(i,j,1:Np)) ;
-            % length(Pij)
-            % length(X(1:Np/2)) 
-            % length(X(Np/2+1:end))
-            
-            %figname=sprintf('Connection Probability %s%s Sigma %.4f',popList(j),popList(i),Sigma) ;
-            if(length(Sigma)>1)
-                figname=sprintf('Connection Probability %s%s Sigma %.4f',popList(j),popList(i),Sigma(i)) ;
-                fig = figure('Name',figname,'NumberTitle','off') ; hold on ;
-            else
-                figname=sprintf('Connection Probability %s%s Sigma %.4f',popList(j),popList(i),Sigma) ;
-                fig = figure('Name',figname,'NumberTitle','off') ; hold on ;
-            end
-            % plot(X,squeeze(P(i,j,:))./nbN(j),'color',cl{i})
-
-            % plot(X(1:Np/2),Pij(Np/2+1:end)./Np,'color',cl{i})
-            % plot(X(Np/2+1:end),Pij(1:Np/2)./Np,'color',cl{i})
-             
-            fit = smooth(X,Pij./Np,.1,'sgolay') ;
-
-            % plot(X,fit,'linewidth',1,'color','k')
-
-            plot(X(1:Np/2),fit(Np/2+1:end),'linewidth',1,'color','k')
-            plot(X(Np/2+1:end),fit(1:Np/2),'linewidth',1,'color','k')
-
-            xlabel('x')
-            ylabel('Connection Probability')
-
-            yLimits = get(gca,'YLim') ;
-            
-            if(length(Sigma)>1)
-                SigScale = Sigma(i)./L*SCALING ;
-            elseif(length(Sigma)>nbpop)                
-                SigScale = Sigma(i+(j-1)*nbpop)./L*SCALING ;
-            else
-                SigScale = Sigma./L*SCALING ;
-            end
-
-            % plot([SigScale SigScale],[yLimits(1) yLimits(2)],'--','color',cl{i},'linewidth',1) 
-            % plot([3*SigScale 3*SigScale],[yLimits(1) yLimits(2)],'--','color',cl{i},'linewidth',1) 
-            % plot([-SigScale -SigScale],[yLimits(1) yLimits(2)],'--','color',cl{i},'linewidth',1) 
-            % plot([-3*SigScale -3*SigScale],[yLimits(1) yLimits(2)],'--','color',cl{i},'linewidth',1) 
-             
-            if(strfind(model,'Binary'))
-                xlabel('\phi')
-                set(gca,'xtick',[-pi/2:pi/4:pi/2],'xticklabel',{'-\pi/2','-\pi/4', '0', '\pi/4', '\pi/2'})
-                xlim([-pi/2,pi/2])
-            end
-
-            if(strfind(model,'IF'))
-                xlabel('x')
-                % set(gca,'xtick',[-1 0 1],'xticklabel',{'-L/2', '0', 'L/2'})
-                % set(gca,'xtick',sort([ round(3*SigScale,2) round(-3*SigScale,2) -SCALING 0 SCALING] ))
-                set(gca, 'FontSize', 10) 
-                
-                xlim([-SCALING,SCALING]) 
-            end
-
-            drawnow ;
-            hold off ; 
-
-            if(IF_SAVE)
-                set(gca,'FontSize',2)
-                figdir = sprintf(['./Figs/IF/%dpop/Connectivity/'],nbpop);
-                try
-                    mkdir(figdir)
-                end
-                ProcessFigure(fig, fullfile(figdir,figname),1.25) ;
-            end
-
-        end
+    fprintf('Writing %s \n',figdir) 
+    try
+        mkdir(figdir) ;
     end
-    
+    ProcessFigure(fig, fullfile(figdir,figname)) ;
 end

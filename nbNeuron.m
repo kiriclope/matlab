@@ -1,6 +1,7 @@
-function nbN = nbNeuron(nbpop,n,IF_Nk,p)
+function [nbN N]= nbNeuron(nbpop,n,IF_Nk,p)
 
     nbN = zeros(nbpop,1) ;
+
     N = n*10000 ;
     %N= n*2500 ;
 
@@ -13,7 +14,7 @@ function nbN = nbNeuron(nbpop,n,IF_Nk,p)
         if(nbpop==2)
             % nbN(1)= N*75/100 ;
             % nbN(2)= N*25/100 ;
-
+            
             nbN(1)= 57600 ; 
             nbN(2)= 19200 ;             
         end

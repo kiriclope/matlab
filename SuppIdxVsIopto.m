@@ -7,8 +7,8 @@ Cpt = CptNeuron(nbpop,nbN) ;
 
 v_Iprtr = v_Iprtr(1):v_Iprtr(2):v_Iprtr(3) ;
 
-J = ImportJab(model,nbpop,dir) ;
-Rates = linsolve(J,-Iext.') ;
+J = ImportJab(model,nbpop,dir) ; 
+Rates = linsolve(J,-Iext.') ; 
 
 for i=1:length(v_Iprtr)   
     data = ImportData(model, nbpop, dir, 'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_DATA, prtrPop, Iext(prtrPop) + v_Iprtr(i) ) ;

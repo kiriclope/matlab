@@ -5,6 +5,7 @@ function figdir = FigDir(model,nbpop,dir,n,k,g,IF_RING,Crec,Cff,IF_IEXT)
 
 popList = ['E' 'I' 'S' 'X'] ;
 figdir = sprintf(['./Paper/%dpop/%s/N%dK%dg%.2f'],nbpop,dir,n,k,g) ;
+ %figdir = sprintf(['./Space/%dpop/%s/N%dK%dg%.2f'],nbpop,dir,n,k,g) ;
 
 % if(length(k)==1)
 %     path = sprintf(['../%s/Figures/%dpop/%s/N%d/K%d/g%.2f'],model,nbpop,dir,n,k,g) ;

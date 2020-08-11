@@ -1,8 +1,15 @@
 clear all ;
 GlobalVars 
 
-Iext = 20 * ExternalInput(model,nbpop,dir) *.01 ; 
-J = g*20 * ImportJab(model,nbpop,dir) ; 
+Iext = ExternalInput(model,nbpop,dir) *.01 ; 
+J = g * ImportJab(model,nbpop,dir) ; 
+
+J(:,1) = J(:,1)*55 ;
+J(:,2) = J(:,2)*(80-55) ;
+Iext = Iext*5.5 ;
+
+fprintf('Ie/Ii %.2f \n', Iext(1)/J(1,1) / (Iext(2)/J(2,1) ) )
+fprintf('Je/Ji %.2f \n', J(1,2)/J(1,1) / (J(2,2)/J(2,1) ) )
 
 fprintf('det J %.2f \n', det(J) /20 ) ; 
 Tm = [20 10 20 20] ; 
@@ -28,7 +35,7 @@ fprintf('MF Rates : ')
 fprintf('%.2f ', round(Rates,2) ) 
 fprintf('\n') 
 
-[u b] = RateInputDist(model,nbpop,dir,Iext/20,K,1,J/20,0) ; 
+[u b] = RateInputDist(model,nbpop,dir,Iext,K,1,J,0) ; 
 
 fprintf('Finite K Rates : ') 
 fprintf('%.2f ', round(QchAvgTF(u,b) *1000,2) )
@@ -39,7 +46,7 @@ if(nbpop==4)
     % Slopes(1) = ( J(1,2) * J(4,3) - J(1,3) * J(4,2) )  / det(J) ; ...
     % % chiEI 
     % Slopes(2) = - ( J(1,1) * J(4,3) - J(1,3) * J(4,1) ) / det(J)  ; % chiII 
-    % Slopes(3) = -( J(1,2) * J(4,1) - J(1,1) * J(4,2) ) /det(J) ;
+    % Slopes(3) = -( J(1,2) * J(4,1) - J(1,1) * J(4,2) ) /det(J) ; 
     % %chiSI 
     Slopes(1) = ( J(1,2) * J(4,3) - J(1,3) * J(4,2) ) / Rates(1) / det(J) ; ...
     % chiEI 

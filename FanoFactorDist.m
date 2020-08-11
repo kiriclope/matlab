@@ -5,10 +5,10 @@ Iext = ExternalInput(model,nbpop,dir) ;
 nbN = nbNeuron(nbpop,N,IF_Nk,[]) ;
 Cpt = CptNeuron(nbpop,nbN) ;
 
-Iext(prtrPop) = Iext(prtrPop)+Iprtr ;
+% Iext(prtrPop) = Iext(prtrPop)+Iprtr ;
 
 try
-    data = ImportData(model,nbpop,dir,'Raster',N,K,g,IF_RING,Crec,Cff,IF_IEXT,prtrPop,Iext(prtrPop)) ; 
+    data = ImportData(model,nbpop,dir,'Raster',N,K,g,IF_RING,Crec,Cff,IF_IEXT,prtrPop,Iprtr) ; 
     Spikes = sortrows(data) ; 
     Spikes(:,2) = Spikes(:,2)./1000. ;
 catch
@@ -16,7 +16,7 @@ catch
     return ;
 end
 
-Tw = 2 ;
+Tw = .5 ;
 WinSize = ceil( Spikes(end,2) ) / Tw ;
 fprintf('Duration %ds Tw %ds \n', WinSize*Tw, Tw) 
 

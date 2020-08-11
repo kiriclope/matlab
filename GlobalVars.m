@@ -1,215 +1,144 @@
 warning off ; 
+clear all ;
+
+%%%%%%%%%%%%%%%%%%%%%
+
+popList = ['E' 'I' 'S' 'V'] ;
+cl = {[1 0 0] [0 0 1] [0 1 0]  [0.7 0.7 0.7]} ; 
+
+%%%%%%%%%%%%%%%%%%%%%
 
 model = 'LIF' ; 
+nbpop = 2 ; 
+dir = 'L5' ; 
+file = 'MeanRates' ; 
 
-popList = ['E' 'I' 'S' 'V'] ; 
+Vl = -55. ; 
+Vth = -40. ; 
+Vr=[0.0 -80.] ; 
+m0 = .001 ; 
 
-IF_PAPERMAIN = 0 ; 
-
-if(~IF_PAPERMAIN)
-    nbpop = 2 ; 
-    dir = 'EULERI' ; 
-    Iprtr = 0 ; 
-end 
+%%%%%%%%%%%%%%%%%%%%% 
 
 N = 2 ; 
-K = 500 ; 
 g = 1 ; 
 IF_Nk = 0 ; 
 
-IF_IEXT = 'Delta' ; 
-IF_DATA = '' ; 
-IF_RING = '' ; 
-DIM = 2 ; 
-Cff = [] ; 
-Crec = [] ; 
-Cth = 100 ;  
+J = ImportJab(model,nbpop,dir) ; 
+Iext = ExternalInput(model,nbpop,dir) ; 
 
-mkSize = 5 ; 
-IF_MF_RATES = 0 ; 
-IF_ROBUST = 0 ; 
+for i=1:nbpop
+    for j=1:nbpop
+        G(i,j) = -(Vl-Vr(j))* abs(J(i,j)) ; 
+    end
+end
+
+G0 = -Iext.*(Vl-Vr(1)) * m0 * 1000. ;
+meanfield_rates = linsolve(G,-G0.') ;
+
+fprintf('Mean field rates: ')
+fprintf('%.3f ', meanfield_rates)
+fprintf('\n')
+
+if(nbpop==2)
+    fprintf('Ie/Ii>Je/Ji')
+    fprintf(' %.2f>', G0(1)/G(1,1) / (G0(2)/G(2,1) ) )
+    fprintf('%.2f \n', G(1,2)/G(1,1) / (G(2,2)/G(2,1) ) )
+end
+
+nbN = nbNeuron(nbpop,N,IF_Nk,[]) ; 
+Cpt = CptNeuron(nbpop,nbN) ; 
+
+%%%%%%%%%%%%%%%%%%%%%
+IF_CONDUCTANCES = 1 ;
+RHO = 0.0 ;
+%%%%%%%%%%%%%%%%%%%%%
+
+nbIdv = [10 10 10 10] ; 
+
+%%%%%%%%%%%%%%%%%%%%%
+
+IF_LOOP = 0 ;
+if(~IF_LOOP) 
+    K = 400 ; 
+    mkSize = 5 ;     
+    IF_ROBUST = 0 ; 
+    mk = 'o' ; 
+    alp = 1 ; 
+end
+
 mk = 'o' ; 
-alp = 1 ; 
 
-THRESHOLD = .01 ; 
+%%%%%%%%%%%%%%%%%%%%%
+
+THRESHOLD = .1 ; 
 CV_THRESHOLD = .1 ; 
 
-prtrPop = 2 ; 
+%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% model = 'Binary' ; 
-% nbpop = 2 ; 
-% dir = 'Test' ; 
-
-% N = 1 ; 
-% K = 500 ; 
-% g = 1 ; 
-
-% IF_Nk = 0 ; 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-
-L = 1. ; 
-
-if(N==0 || N==5)
-    IF_Nk = 1 ; 
-    IF_RING = 'Gauss2D' ; 
-    DIM = 2 ; 
-    Crec = [.375 .125 .375 .25] ; 
-    Crec = [.15 .12 .15 .12] ; 
-    if(nbpop==2) 
-        Crec = [.2 .1] ; 
-    end
-    Cff = 2 ; 
-    Cth = .500 ; 
-% else
-%     IF_RING = '' ; 
-%     DIM = 1 ; 
-%     Cff = 2 ; 
-%     Crec = [] ; 
-%     Cth = 100 ; 
-end
-
-m0 = .20 ; 
-r_Neuron = .003 ; % cm
-A_Neuron = 4*pi*r_Neuron*r_Neuron * 4 ; 
-
-%v_Iprtr = [0 -.025 -.3] ; 
-%v_Iprtr = [0 -.025 -.2] ;
-%v_Iprtr = [0 .001 .311] ; 
-%v_Iprtr = [.311 .1 .657] ; 
-ITR = 2 ;                               
-v_Iprtr = [0 .01 1] ;  
-
-v_Jab = [0 .05 1.45] ; 
-
-IF_CORRECTION = 0 ;
 IF_NORM = 1 ; 
-IF_IDVTraces = 0 ; 
+FIGPERPOP = 0 ; 
+IF_IDVTraces = 1 ; 
 IF_COUNTPIF = 0 ; 
-IF_LOGSCALE = 0 ; 
+
+IF_POWER = 2 ; 
+I0 = 8. ; 
+P0 = .5 ; 
+
+IDX = 2 ; 
+IF_CORRECTION = 0 ; 
+IF_LOGSCALE = 1 ; 
 IF_LOGSCALEX = 0 ; 
-FIGPERPOP = 1 ; 
-IF_POWER = 0 ; 
 
-if K==Inf
-    v_Iprtr = [0 .0025 .2] ; 
-    IF_IDVTraces = 0 ; 
-    IF_COUNTPIF = 0 ; 
-    IF_LOGSCALE = 0 ; 
-    IF_LOGSCALEX = 0 ; 
-    FIGPERPOP = 0 ; 
-    IF_POWER = 0 ; 
-end
-    
-nbIdv = 10 ; 
-IDX = 1 ; 
-
-if IF_POWER==1 
-    if strfind(dir,'L23') 
-
-        P0 = 1.25*.25 ; 
-        I0 = 5*.25 ; 
-        IDX = 1 ;
-
-        Pinf = 4641 ;
-        I0 = 9.221 ;
-        Iinf= 0.8546 ;
-
-        Pinf = 1490 ;
-        I0 = 14.66 ;
-        Iinf= 1.625 ; 
-
-        Pinf = 3082 ;
-        I0 = 3.792 ;
-        Iinf= 0.3512 ;
-       
-    elseif strfind(dir,'S1L5')
-        P0 = 3.75 ; 
-        I0 = 2.5 ;
-        IDX = 1 ;
-
-        Pinf = 4641 ;
-        I0 = 9.221 ;
-        Iinf= 0.8546 ;
-
-        Pinf = 4641 ;
-        I0 = 9.221 ;
-        Iinf= 0.8546 ;
-        
-    elseif( strfind(dir,'L5') ) 
-        P0 = 3.75 ; 
-        I0 = 2.5 ;
-        IDX = 1 ;
-        
-        Pinf = 4641 ;
-        I0 = 9.221 ;
-        Iinf= 0.8546 ;
-
-        Pinf = 2432 ;
-        I0 = 4.94 ;
-        Iinf= 0.4699 ;
-        
-        Pinf = 3082 ;
-        I0 = 3.792 ;
-        Iinf= 0.3512 ;
-        
-    end
-elseif IF_POWER==2
-    if strfind(dir,'L23') 
-
-        P0 = .1 ; 
-        I0 = 1 ;
-        IDX = 1 ;
-
-        P0 = 1.25*.25 ; 
-        I0 = 5*.25 ; 
-        IDX = 1 ;
-        
-        I0 = 8.006 ;
-        P0 = 0.4281 ;
-
-        I0 = 24.0 ;
-        P0 = 1.5 ;
-
-        I0 = 8. ;
-        P0 = .5 ;
-
-    elseif strfind(dir,'S1')
-        P0 = 3.75 ; 
-        I0 = 2.5 ;
-        IDX = 1 ;
-
-        P0 = .5 ; 
-        I0 = 10 ;
-        IDX = 1 ;
-
-        I0 = 24.0 ;
-        P0 = 1.5 ;
-
-        % P0 = 1.25*.25 ; 
-        % I0 = 5*.25 ; 
-        % IDX = 1 ;
-        
-        % I0 = 8.006 ;
-        % P0 = 0.4281 ;
-
-        I0 = 8. ;
-        P0 = .5 ;
-    else
-        IDX = 1 ;
-        I0 = 2.64 ;
-        P0 = 0.13 ;
-
-        I0 = 8.006 ;
-        P0 = 0.4281 ;
-
-        I0 = 8. ;
-        P0 = .5 ;
-    end
-end
-
-cl = {[1 0 0] [0 0 1] [0 1 0]  [0.7 0.7 0.7]} ; 
-
+IF_MF_RATES = 0 ; 
 IF_SAVE = 1 ; 
+
+%%%%%%%%%%%%%%%%%%%%%
+
+IF_PROP = 0 ; 
+IF_PROPWEAK = 0 ; 
+
+%%%%%%%%%%%%%%%%%%%%%
+
+IF_IEXT = '' ; 
+prtrPop = 2 ; 
+Iprtr = Iext ; 
+
+prtrAmp = 0 ; %.5 ; % .28 et .45
+
+if(prtrPop>0)
+    Iprtr(prtrPop) = Iprtr(prtrPop) + prtrAmp ; 
+else
+    Iprtr = prtrAmp * ones(1,nbpop) ;
+end
+
+v_Iprtr = 0:.1:1. ; 
+%v_Iprtr = [.1:.1:.9,1:1:10 ]; 
+
+%%%%%%%%%%%%%%%%%%%%%
+
+IF_RING = '' ; 
+L = 3 ; 
+DIM = 1 ; 
+
+IF_SPACELOOP = exist('IF_SPACELOOP') ;
+if(~IF_SPACELOOP)
+    Cff = [.1] ; 
+end
+
+Cff=.075;
+Crec = [.125 .075 0.125 .075] ; 
+
+IF_Dij = 0 ; 
+Dij = [1.0 1.0 1.6667 1.0] ; 
+
+Cth = 100 ; 
+
+% Cff = [] ; 
+% Crec = [.25 .25 .25 .075] ; 
+% Cth = 100 ; 
+
+v_Cff = .075:.025:.375 ;  
+%v_Cff = .2:.025:.375 ; 
+
+%%%%%%%%%%%%%%%%%%%%%

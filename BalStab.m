@@ -27,22 +27,22 @@ function [Relbd Imlbd] = BalStab(model,nbpop,dir,Iext,n,K,g,J,IF_Nk,IF_IDV,Displ
     end
 
     Tr = ImportTsyn(model,nbpop,dir) ;
-    Tr(1,1) = 4 ; 
-    Tr(2,1) = 2 ; 
-    Tr(3,1) = 2 ; 
-    Tr(4,1) = 4 ; 
+    % Tr(1,1) = 4 ; 
+    % Tr(2,1) = 2 ; 
+    % Tr(3,1) = 2 ; 
+    % Tr(4,1) = 4 ; 
 
-    Tr(1,2) = 2 ; 
-    Tr(2,2) = 2 ; 
-    Tr(4,2) = 2 ; 
+    % Tr(1,2) = 2 ; 
+    % Tr(2,2) = 2 ; 
+    % Tr(4,2) = 2 ; 
 
-    Tr(1,3) = 2 ; 
-    Tr(2,3) = 4 ; 
-    Tr(4,3) = 4 ; 
+    % Tr(1,3) = 2 ; 
+    % Tr(2,3) = 4 ; 
+    % Tr(4,3) = 4 ; 
     
-    Tr(1,4) = 4 ; 
-    Tr(2,4) = 4 ; 
-    Tr(3,4) = 4 ; 
+    % Tr(1,4) = 4 ; 
+    % Tr(2,4) = 4 ; 
+    % Tr(3,4) = 4 ; 
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% MF limit
@@ -58,7 +58,7 @@ function [Relbd Imlbd] = BalStab(model,nbpop,dir,Iext,n,K,g,J,IF_Nk,IF_IDV,Displ
     end
 
     try
-        lbd = eig(-Id ./  sqrt(K) + A ) ;
+        lbd = eig(-Id ./  sqrt(K) + A ) ; 
         % lbd = eig( A ) ; 
         RelbdMF = real(lbd) ; 
         ImlbdMF = imag(lbd) ; 
@@ -67,7 +67,6 @@ function [Relbd Imlbd] = BalStab(model,nbpop,dir,Iext,n,K,g,J,IF_Nk,IF_IDV,Displ
         RelbdMF = real(lbd) ; 
         ImlbdMF = imag(lbd) ; 
     end
-    
     
     if(DisplayOn)
         
@@ -86,7 +85,6 @@ function [Relbd Imlbd] = BalStab(model,nbpop,dir,Iext,n,K,g,J,IF_Nk,IF_IDV,Displ
 
     end
     
-
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Self Consistent Sol
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -102,8 +100,8 @@ function [Relbd Imlbd] = BalStab(model,nbpop,dir,Iext,n,K,g,J,IF_Nk,IF_IDV,Displ
             [u b] = RateInputDist(model,nbpop,dir,Iext,K,1,J,false) ;
         catch
             fprintf('Error computing inputs\n') 
-            u = zeros(1,nbpop) ;
-            b = zeros(1,nbpop) ;
+            u = zeros(1,nbpop) ; 
+            b = zeros(1,nbpop) ; 
         end
     end
 

@@ -5,7 +5,7 @@ Iext = ExternalInput(model,nbpop,dir) ;
 nbN = nbNeuron(nbpop,N,IF_Nk,[]) ;
 Cpt = CptNeuron(nbpop,nbN) ;
 
-baseline = ImportData(model, nbpop, dir,'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_IEXT, prtrPop, Iext(prtrPop) ) ;
+baseline = ImportData(model, nbpop, dir,'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_IEXT, prtrPop, Iext ) ;
 
 try
     for i=1:length(baseline(1,:))-1
@@ -16,7 +16,7 @@ catch
     return ;
 end
 
-prtr = ImportData(model, nbpop, dir,'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_IEXT, prtrPop, Iext(prtrPop) + Iprtr);
+prtr = ImportData(model, nbpop, dir,'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_IEXT, prtrPop, Iprtr);
 
 try
     for i=1:length(prtr(1,:))-1
@@ -27,7 +27,7 @@ catch
     return ;
 end
 
-for i=1:nbpop
+for i=1:2
                 
     MeanRate(i) = mean( IdvRates( Cpt(i)+1:Cpt(i+1) ) ) ;
     VarRate(i) = var( IdvRates( Cpt(i)+1:Cpt(i+1) ) ) ; 
@@ -47,10 +47,10 @@ for i=1:nbpop
     % Baseline = Baseline(ROI1) ; 
     % RatesPrtr = RatesPrtr(ROI2) ;  
 
-    ROI1 = find(Baseline<=.1) ; 
-    Baseline(ROI1)=.1 ; 
-    ROI2 = find(RatesPrtr<=.1) ; 
-    RatesPrtr(ROI2)=.1 ; 
+    ROI1 = find(Baseline<=.01) ; 
+    Baseline(ROI1)=.01 ; 
+    ROI2 = find(RatesPrtr<=.01) ; 
+    RatesPrtr(ROI2)=.01 ; 
 
     ROI = intersect(ROI1,ROI2) ; 
     ZeroIdx = union(ROI,ROI2) ; 
@@ -73,8 +73,8 @@ for i=1:nbpop
         IdxZo = [] ;
     end
 
-    if(any(abs(Ratio)<=0.1))
-        IdxNc = setdiff(find(abs(Ratio)<=0.1),IdxZo) ; 
+    if(any(abs(Ratio)<=0.01))
+        IdxNc = setdiff(find(abs(Ratio)<=0.01),IdxZo) ; 
     else
         IdxNc = [] ; 
     end
@@ -132,8 +132,9 @@ for i=1:nbpop
     fprintf('%s propUp %.0f propDn %.0f propZo %.0f propNc %.0f sum %.0f\n', popList(i) , propUp, propDn, propZo, propNc, propSum ) 
 
 
-    Baseline = IdvRates( Cpt(i)+1: Cpt(i)+1+300 ); 
-    RatesPrtr = IdvRatesPrtr( Cpt(i)+1: Cpt(i)+1+300  ) ; 
+    Idx = randi([Cpt(i)+1 Cpt(i+1)],300,1) ; 
+    Baseline = IdvRates(Idx) ; 
+    RatesPrtr = IdvRatesPrtr(Idx) ; 
 
     % [m idx a ROI1] = ratesCutOff(Baseline, Baseline, THRESHOLD, Cth, DIM, L) ; 
     % [m idx b ROI2] = ratesCutOff(RatesPrtr, RatesPrtr, THRESHOLD, Cth, DIM, L) ; 
@@ -144,10 +145,10 @@ for i=1:nbpop
     % Baseline = Baseline(ROI1) ; 
     % RatesPrtr = RatesPrtr(ROI2) ;  
 
-    ROI1 = find(Baseline<=.1) ; 
-    Baseline(ROI1)=.1 ; 
-    ROI2 = find(RatesPrtr<=.1) ; 
-    RatesPrtr(ROI2)=.1 ; 
+    ROI1 = find(Baseline<=.01) ; 
+    Baseline(ROI1)=.01 ; 
+    ROI2 = find(RatesPrtr<=.01) ; 
+    RatesPrtr(ROI2)=.01 ; 
 
     ROI = intersect(ROI1,ROI2) ; 
     ZeroIdx = union(ROI,ROI2) ; 
@@ -170,8 +171,8 @@ for i=1:nbpop
         IdxZo = [] ;
     end
 
-    if(any(abs(Ratio)<=0.1))
-        IdxNc = setdiff(find(abs(Ratio)<=0.1),IdxZo) ; 
+    if(any(abs(Ratio)<=0.01))
+        IdxNc = setdiff(find(abs(Ratio)<=0.01),IdxZo) ; 
     else
         IdxNc = [] ; 
     end
@@ -187,7 +188,7 @@ for i=1:nbpop
         IdxDn = [] ;
     end
  
-    figtitle=sprintf('Scatter%s_Iprtr%.2f',popList(i),Iprtr) ; 
+    figtitle=sprintf('Scatter%s_Iprtr%.2f',popList(i),Iprtr(prtrPop)) ; 
 
     % if( ishandle( findobj('type','figure','name',figtitle) ) )
     %     fig = findobj('type','figure','name',figtitle) ; 
@@ -198,22 +199,22 @@ for i=1:nbpop
     ylabel('Light On (Hz)')
     % end
 
-    scatter(Baseline,RatesPrtr,10,cl{i},'filled','MarkerFaceAlpha',.5,'LineWidth',.5) ; 
+    scatter(Baseline,RatesPrtr,20,cl{i},'filled','MarkerFaceAlpha',.5,'LineWidth',.5) ; 
     % scatter(Baseline(IdxUp),RatesPrtr(IdxUp),10,'r','filled','MarkerFaceAlpha',.5,'LineWidth',.5) ; 
     % scatter(Baseline(IdxDn),RatesPrtr(IdxDn),10,'b','filled','MarkerFaceAlpha',.5,'LineWidth',.5) ; 
     % scatter(Baseline(IdxNc),RatesPrtr(IdxNc),10,'g','filled','MarkerFaceAlpha',.5,'LineWidth',.5) ;
     % scatter(Baseline(IdxZo),RatesPrtr(IdxZo),10,'w','filled','MarkerFaceAlpha',.5,'MarkerEdgeColor','b','LineWidth',.1) ; 
     
-    plot([.1 100],[.1 100],'--k','Linewidth',.5) 
-    xlim([.1 100])
-    ylim([.1 100])
+    plot([.01 100],[.01 100],'--k','Linewidth',.5) 
+    xlim([.01 100])
+    ylim([.01 100])
     set(gca,'yscale','log')
     set(gca,'xscale','log')
 
     drawnow ;
 
     if(IF_SAVE)
-        figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_DATA) ;
+        figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_IEXT) ;
         figdir = sprintf('%s/PieChart',figdir) ;
 
         fprintf('Writing %s \n',figdir)
@@ -226,69 +227,50 @@ for i=1:nbpop
     end
     hold off ; 
 
-    figtitle=sprintf('PieProp%s_Iprtr%.3f',popList(i),Iprtr) ; 
+    figtitle=sprintf('PieProp%s_Iprtr%.3f',popList(i),Iprtr(prtrPop)) ; 
     fig = figure('Name',figtitle,'NumberTitle','off') ; hold on ;
-    X = [propUp, propNc, propDn, propZo] ; 
+    X = [propUp, propNc, propDn, propZo] ;
     labels = {'Up','NC','Down','Zero'} ;
     labels = {'','','',''} ; 
     %pie(X,labels) 
-    p = pie(X) ;
-    
-    % colormap([1 0 0; %// red 
-    %           0 1 0; %// green
-    %           0 0 1; %// blue
+    p = pie(X) ; 
+    pieColor = gray(4) ; 
+    isProp = logical([propUp propNc propDn propZo]) ;
+    for l=4:-1:1
+        if(~isProp(l))
+            pieColor(l,:) = [] ;
+        end
+    end
+    colormap(pieColor) 
+
+    % colormap([0 1 1; %// red 
+    %           1 0 1; %// green
+    %           0 1 0; %// blue
     %           1 1 1
-    %          ])    
+    %          ]) 
+
     % if(propUp==0 && propNc~=0 && propDn~=0 && propZo~=0) 
-    %     colormap([0 1 0; % // green
-    %               0 0 1; % // blue
+    %     colormap([1 0 1; % // green
+    %               0 1 0; % // blue
     %               1 1 1 
     %              ])
     % elseif(propUp==0 && propNc==0 && propDn~=0 && propZo~=0)
-    %     colormap([0 0 1; % // green
+    %     colormap([1 0 1; % // green
     %               1 1 1 
     %              ])
     % elseif(propUp==0 && propNc==0 && propDn==0 && propZo~=0)
     %     colormap([1 1 1])
     % elseif(propUp~=0 && propNc==0 && propDn~=0 && propZo~=0)
-    %     colormap([1 0 0; %// red 
-    %               0 0 1; %// blue
+    %     colormap([0 1 1; %// red 
+    %               0 1 0; %// blue
     %               1 1 1
     %              ])    
     % elseif(propUp~=0 && propNc~=0 && propDn~=0 && propZo==0)
-    %     colormap([1 0 0; %// red 
-    %               0 1 0; %// green
-    %               0 0 1; %// blue
+    %     colormap([0 1 1; %// red 
+    %               1 0 1; %// green
+    %               0 1 0; %// blue
     %              ])    
     % end
-
-    colormap([0 1 1; %// red 
-              1 0 1; %// green
-              0 1 0; %// blue
-              1 1 1
-             ])    
-    if(propUp==0 && propNc~=0 && propDn~=0 && propZo~=0) 
-        colormap([1 0 1; % // green
-                  0 1 0; % // blue
-                  1 1 1 
-                 ])
-    elseif(propUp==0 && propNc==0 && propDn~=0 && propZo~=0)
-        colormap([1 0 1; % // green
-                  1 1 1 
-                 ])
-    elseif(propUp==0 && propNc==0 && propDn==0 && propZo~=0)
-        colormap([1 1 1])
-    elseif(propUp~=0 && propNc==0 && propDn~=0 && propZo~=0)
-        colormap([0 1 1; %// red 
-                  0 1 0; %// blue
-                  1 1 1
-                 ])    
-    elseif(propUp~=0 && propNc~=0 && propDn~=0 && propZo==0)
-        colormap([0 1 1; %// red 
-                  1 0 1; %// green
-                  0 1 0; %// blue
-                 ])    
-    end
     
     % for j=1:length(p) 
     %     p(j).EdgeColor = 'None' ;
@@ -297,7 +279,7 @@ for i=1:nbpop
     drawnow ; 
    
     if(IF_SAVE)
-        figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_DATA) ;
+        figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_IEXT) ;
 
         figpath = sprintf('%s/PieChart',figdir) ; 
         fprintf('Writing %s \n',figpath)

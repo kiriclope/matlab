@@ -14,12 +14,12 @@ function [Cond C_Matrix] = BalCond(model,nbpop,dir,Iext,J,IF_DISPLAY)
         IF_DISPLAY=1
     end
 
-    IF_SYM = 0 ;
+    IF_SYM = 1 ;
     if(IF_SYM)
-        if(nbpop>=3)
-            Iext(3) = 0 ;
-        end
-        
+        % if(nbpop>=3)
+        %     Iext(3) = 0 ;
+        % end
+                 
         C = CreateCab(Jdata) ;
         J = sym('J%d%d',nbpop).*C ;
         J(:,1)= ones([1 nbpop]) ;
@@ -44,10 +44,9 @@ function [Cond C_Matrix] = BalCond(model,nbpop,dir,Iext,J,IF_DISPLAY)
         J = Jsym.*C ;
         J(:,2:nbpop) = -J(:,2:nbpop) ;
         Iext = Isym ;
-        Iext(3) = 0 ;
+        % Iext(3) = 0 ;
     end
 
-    det(J)
     Conditions = (de2bi(1:2^(nbpop)-2 )) ;
     Solutions = cell(1,length(Conditions) ) ;
         
@@ -57,7 +56,7 @@ function [Cond C_Matrix] = BalCond(model,nbpop,dir,Iext,J,IF_DISPLAY)
             fprintf('(%d) Condition, ', i)
             fprintf('%d ', Conditions(i,:) ) 
             fprintf(':\n')
-        end    
+        end 
 
         Rates = sym('m%d',[1 nbpop]) ;
         assume(Rates>=0) ;
@@ -133,6 +132,8 @@ function [Cond C_Matrix] = BalCond(model,nbpop,dir,Iext,J,IF_DISPLAY)
                         fprintf('eps>0\n')
                     end
                     %% Input always positif
+
+                    % Cond(i) = 0 ; % TO DELETE
                     
                     if( any( isAlways( nonInputs>=0 ) ) )
                         Solution = nonInputs( find( isAlways( nonInputs>=0 ) ) ) ;
@@ -146,13 +147,15 @@ function [Cond C_Matrix] = BalCond(model,nbpop,dir,Iext,J,IF_DISPLAY)
 
                     else                        
                         nonInputs = subs(nonInputs) ;
-                        nonInputs = subs(nonInputs, m, Rates ) ;
+                        nonInputs = subs(nonInputs, m, Rates ) ; 
                         Solution = [-Rates ; nonInputs] ;
                         if(IF_DISPLAY)
                             fprintf('Balance conditions :\n')
                             fprintf('%s >0 \n ', Solution)
                         end
-                        Solutions{i} = [Solutions{i} ; -Rates ; nonInputs] ;
+                        % Solutions{i} = [Solutions{i} ; -Rates ; nonInputs] ; 
+                        Solutions{i} = [-Rates ; nonInputs] ; 
+                        % Cond(i) = any( isAlways( Solutions{i}>0 ) ) ; 
                         Cond(i) = any( isAlways( Solutions{i}>0 ) ) ; 
                     end
                     
@@ -211,10 +214,11 @@ function [Cond C_Matrix] = BalCond(model,nbpop,dir,Iext,J,IF_DISPLAY)
                     end
 
                     if( ~any(abs(Solution) == Inf ) )
-                        Solutions{i} = [Solutions{i} ; Solution] ;
+                        % Solutions{i} = [Solutions{i} ; Solution] ;
+                        Solutions{i} = [Solution] ;
                         Cond(i) = any( isAlways( Solutions{i}>0 ) ) ; 
                     else
-                        Cond(i) = 1 ;                
+                        Cond(i) = 1 ; 
                     end
                 end                   
             end
@@ -235,24 +239,22 @@ function [Cond C_Matrix] = BalCond(model,nbpop,dir,Iext,J,IF_DISPLAY)
     C_Matrix = [Solutions{:}] ;
     C_Matrix(isnan(C_Matrix))=0 ;
 
-
-
-    if(nbpop>3) 
-        fprintf('add Cond \n')
-        J2pop = J(1:2,1:2) ;
-        I2pop = Iext(1:2) ;
-        Rates2pop = linsolve(J2pop,-I2pop.') ;
+    % if(nbpop>3)                         % 
+    %     fprintf('add Cond \n')
+    %     J2pop = J(1:2,1:2) ;
+    %     I2pop = Iext(1:2) ;
+    %     Rates2pop = linsolve(J2pop,-I2pop.') ;
     
-        Rates1pop = -Iext(2) / J(2,2) ;
+    %     Rates1pop = -Iext(2) / J(2,2) ;
 
-        fprintf('Cond 1 1 0 sqrtK: ')
-        C1 = Iext(4) + J(4,1) * Rates2pop(1) + J(4,2) * Rates2pop(2) <0 || any(Rates2pop<0) ;
-        fprintf('%d \n',C1) 
+    %     fprintf('Cond 1 1 0 sqrtK: ')
+    %     C1 = Iext(4) + J(4,1) * Rates2pop(1) + J(4,2) * Rates2pop(2) <0 || any(Rates2pop<0) ;
+    %     fprintf('%d \n',C1) 
     
-        fprintf('Cond 0 1 0 sqrtK: ')
-        C2 = Iext(4) + J(4,2) * Rates2pop(2) <0  ||  Iext(1) + J(1,2) * Rates1pop >0  || Rates1pop<0 ;
-        fprintf('%d \n',C2) 
-        Cond = [ Cond, C1 , C2 ] ; 
-    end
+    %     fprintf('Cond 0 1 0 sqrtK: ')
+    %     C2 = Iext(4) + J(4,2) * Rates2pop(2) <0  ||  Iext(1) + J(1,2) * Rates1pop >0  || Rates1pop<0 ;
+    %     fprintf('%d \n',C2) 
+    %     Cond = [ Cond, C1 , C2 ] ; 
+    % end
 
 end

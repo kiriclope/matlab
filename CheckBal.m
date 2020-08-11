@@ -1,57 +1,11 @@
-function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr,IF_SAVE)
-%%%%%%%%%%%%%%%%%f%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% function Rate_CheckBal(nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_PE,nPrtr,Iprtr,IF_RING,Cff,Crec,IF_IEXT)
-% Compares simulation to analytics of the balance state
-% if : - file=IdvInputs, plots input distributions
-%      - file=IdvRates, plots rate distributions
-% Utils : - ImportData 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+GlobalVars
 
-    if(nargin<16)
-        IF_SAVE=0 ;        
-        if(nargin<13)
-            IF_IEXT='' ;
-            nPrtr = 2 ;
-            Iprtr = 0 ;            
-            if(nargin<12) ;
-                Cff = [] ;
-                if(nargin<10) 
-                    IF_RING = '' ;
-                    Crec = [] ;
-                    if(nargin<9)
-                        IF_Nk = 0 ;
-                    end
-                end
-            end
-        end
-    end
-
-    dI = Iext ;
-    Iext = ExternalInput(model,nbpop,dir) ; 
-
+    nPrtr = prtrPop ;
+    dI = Iprtr(prtrPop) ;
     IextMF = Iext ;
-    switch IF_IEXT
 
-      case {'Delta','Gauss','DeltaGauss'}
-        if( isempty(dI) || dI==0)
-            Iprtr = Iext(nPrtr) ;
-        else
-            Iprtr = Iext(nPrtr) + dI ; 
-            IextMF(nPrtr) = Iprtr ;
-        end
-
-    end
-
-
-    cl = {[1 0 0] [0 0 1] [0 1 0]  [0.7 0.7 0.7]} ;
-    p = [] ;
-    THRESHOLD = .1 ;
     m0=.01 ;
     
-    nbN = nbNeuron(nbpop,n,IF_Nk,p) ;
-    Cpt = CptNeuron(nbpop,nbN) ;
-
-    J = ImportJab(model,nbpop,dir) ;
     
     MF = BalRatesMF(model,nbpop,dir,IextMF*m0,J) ;
 
@@ -65,15 +19,12 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
     fprintf('%.3f ', QchAvgTF(u,b) *1000) 
     fprintf('\n') 
     
-    nb = 5 ; 
-    L = 1.5 ; 
-
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Rate toy model rates
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     if strfind(file,'Pop')
-        data = ImportData(model,nbpop,dir,file,n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
+        data = ImportData(model,nbpop,dir,file,N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
         if strfind(file,'Input')
             figname=sprintf('%s',file) ;
             fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
@@ -85,7 +36,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
                 plot(tps,data(:,i+2),'color',cl{i+1})
             end 
 
-            data = ImportData(model,nbpop,dir,'SpkTrain',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
+            data = ImportData(model,nbpop,dir,'SpkTrain',N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
             tSpk = data(:,2)./1000 ; 
             Y = 2.*ones(1,length(tSpk)) ; 
             plot(tSpk,Y, 'kv','markerSize',1) 
@@ -125,7 +76,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
     end
 
     if strfind(file,'SpkTrain')
-        data = ImportData(model,nbpop,dir,file,n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
+        data = ImportData(model,nbpop,dir,file,N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
 
         % tSpk = data(:,2) ;
         % [acor lag] = xcorr(tSpk,'coeff') ;
@@ -177,7 +128,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
         set(0, 'DefaultFigureRenderer', 'zbuffer') ;
 
         try
-            data = ImportData(model,nbpop,dir,'Raster',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
+            data = ImportData(model,nbpop,dir,'Raster',N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
             Spikes = sortrows(data,2) ;
             Spikes(:,2) = Spikes(:,2)./1000 ;
         catch
@@ -293,24 +244,28 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
 
     if strcmpi(file,'Raster')
         try                    
-            data = ImportData(model,nbpop,dir,file,n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr);
+            data = ImportData(model,nbpop,dir,file,N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr);
             Spikes = sortrows(data) ; 
             Spikes(:,2) = Spikes(:,2)./1000. ;
         catch
             fprintf('FILE NOT FOUND\n')
         end
-        
+
+        % nbN = 128 ;
+        % Cpt(1) = 0 ;
+        % Cpt(2) = 128 ;
+         
         for i=1:nbpop
-            Spikes( Spikes(:,1)<=Cpt(i+1) & Spikes(:,1)>Cpt(i+1)-0.8*nbN(i), : ) = [] ;
+            Spikes( Spikes(:,1)<=Cpt(i+1) & Spikes(:,1)>Cpt(i+1)-.0*nbN(i), : ) = [] ; 
         end
 
-        reSizeIdx = 1:length( unique( Spikes ) ) ;
+        reSizeIdx = 1:length( unique( Spikes ) ) ; 
 
-        [nbSpk nidx]= hist(Spikes(:,1),unique( Spikes(:,1) ) ) ;
-        CumSumSpk = [0 cumsum(nbSpk)] ;
+        [nbSpk nidx]= hist(Spikes(:,1),unique( Spikes(:,1) ) ) ; 
+        CumSumSpk = [0 cumsum(nbSpk)] ; 
         
-        SpkTimes = {} ;
-        for i=1:length(CumSumSpk)-1
+        SpkTimes = {} ; 
+        for i=1:length(CumSumSpk)-1 
             fprintf('# %d nIdx %d nbSpk %.3f ',nidx(i),reSizeIdx(i),nbSpk(i)) 
             try
                 SpkTimes = [ SpkTimes;{Spikes(CumSumSpk(i)+1:CumSumSpk(i)+nbSpk(i)-1,2).'} ] ; 
@@ -346,7 +301,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
 
         xlabel('t (s)')
         ylabel('#')
-        xlim([0 .25])
+        xlim([0 1])
         drawnow ;
 
         hold off ;
@@ -370,7 +325,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
 
     if strcmpi(file,'CVdist')
         try
-            data = ImportData(model,nbpop,dir,'Raster',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr);
+            data = ImportData(model,nbpop,dir,'Raster',N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr);
             Spikes = sortrows(data) ; 
             Spikes(:,2) = Spikes(:,2)./1000. ;
         catch
@@ -433,7 +388,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
             drawnow ; 
             
             if(IF_SAVE) 
-                figdir = FigDir(model,nbpop,dir,n,K,g,IF_RING,Crec,Cff,IF_IEXT) ; 
+                figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_IEXT) ; 
                 try
                     mkdir(figdir)
                 end                
@@ -449,18 +404,19 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
 
     if strcmp(file,'Voltage')
         try
-            data = ImportData(model,nbpop,dir,'Voltage',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
-            rates = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
-            for i=1:length(data(1,:))-1
-                IdvRates(i) = mean(rates(:,i+1)) ;
-            end
+            data = ImportData(model,nbpop,dir,'Voltage',N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
+        %     rates = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
+        %     for i=1:length(data(1,:))-1
+        %         IdvRates(i) = mean(rates(:,i+1)) ;
+        %     end
         end
-        tps = data(:,1)./1000 ;
+        tps = data(:,1)./1000 ;         %
         Volt = data(:,2:end) ;
         % Volt = 3 .* data(:,2:end) - 40 ;
 
         nId = randi([10 20]) ;
-        figname=sprintf('#%d m_i=%.3f',nId, IdvRates(nId) ) ;
+        figname='Volt' ;
+        % figname=sprintf('#%d m_i=%.3f',nId, IdvRates(nId) ) ;
         fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
         plot(tps,Volt(:,nId),'LineWidth',.25)
         xlabel('t (s)')
@@ -479,7 +435,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
 
     if strcmp(file,'IdvInputs')
         try
-            data = ImportData(model,nbpop,dir,file,n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
+            data = ImportData(model,nbpop,dir,file,N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
             for i=1:length(data(1,:))-1
                 IdvInputs(i) = mean(data(:,i+1)) ;
             end
@@ -583,7 +539,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
 
     if strcmp(file,'IdvRates')
         try
-            data = ImportData(model,nbpop,dir,file,n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
+            data = ImportData(model,nbpop,dir,file,N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
             for i=1:length(data(1,:))-1
                 IdvRates(i) = mean(data(:,i+1)) ;
             end
@@ -643,7 +599,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
             % set(gca, 'XScale', 'log')
 
             if(IF_SAVE)
-                figdir = FigDir(model,nbpop,dir,n,K,g,IF_RING,Crec,Cff,IF_IEXT) ;
+                figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_IEXT) ;
                 try
                     mkdir(figdir)
                 end
@@ -725,7 +681,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
 
     if strcmp(file,'Scatter')
         try
-            data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr-dI) ; 
+            data = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr-dI) ; 
             for i=1:length(data(1,:))-1
                 IdvRates(i) = mean(data(:,i+1)) ;
             end
@@ -736,7 +692,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
         end
 
         try
-            Prtr = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ;
+            Prtr = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ;
             for i=1:length(data(1,:))-1
                 IdvRatesPrtr(i) = mean(Prtr(:,i+1)) ;
             end
@@ -790,7 +746,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
 
 
             if(IF_SAVE)
-                figdir = FigDir(model,nbpop,dir,n,K,g,IF_RING,Crec,Cff,IF_IEXT) ;
+                figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_IEXT) ;
                 fprintf('Writing %s \n',figdir)
                 try
                     mkdir(figdir)
@@ -824,13 +780,13 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
         ErrFlag = 0 ;
 
         try
-            data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ;
+            data = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ;
             DataLength = length(data(1,:))-1 ;
 
             if(IF_IEXT)
                 IextBL = ExternalInput(model,nbpop,dir) ;
                 
-                Baseline = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,IextBL(nPrtr)) ;
+                Baseline = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,IextBL(nPrtr)) ;
                 for i=1:DataLength
                     IdvRatesBL(i) = mean(Baseline(:,i+1)) ;
                 end
@@ -855,20 +811,20 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
         if ErrFlag == 0
             for i=1:nbpop
                 % if(i==1 | i==2)
-                %     figname=sprintf('%s_N%d_Spatial_EI_Cff%.4f',dir,n,Cff) ;
+                %     figname=sprintf('%s_N%d_Spatial_EI_Cff%.4f',dir,N,Cff) ;
                 % else
-                %     figname=sprintf('%s_N%d_Spatial_SV_Cff%.4f',dir,n,Cff) ;
+                %     figname=sprintf('%s_N%d_Spatial_SV_Cff%.4f',dir,N,Cff) ;
                 % end
 
                 switch i
                   case 1
-                    figname=sprintf('%s_N%d_Spatial_E_Cff%.4f',dir,n,Cff) ;
+                    figname=sprintf('%s_N%d_Spatial_E_Cff%.4f',dir,N,Cff) ;
                   case 2
-                    figname=sprintf('%s_N%d_Spatial_I_Cff%.4f',dir,n,Cff) ;
+                    figname=sprintf('%s_N%d_Spatial_I_Cff%.4f',dir,N,Cff) ;
                   case 3
-                    figname=sprintf('%s_N%d_Spatial_S_Cff%.4f',dir,n,Cff) ;
+                    figname=sprintf('%s_N%d_Spatial_S_Cff%.4f',dir,N,Cff) ;
                   case 4
-                    figname=sprintf('%s_N%d_Spatial_X_Cff%.4f',dir,n,Cff) ;
+                    figname=sprintf('%s_N%d_Spatial_X_Cff%.4f',dir,N,Cff) ;
                 end
 
                 if( ishandle( findobj('type','figure','name',figname) ) )
@@ -997,7 +953,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
 
                 if(IF_SAVE)
                     
-                    figdir = FigDir(model,nbpop,dir,n,K,g,IF_RING,Crec,Cff,IF_IEXT) ;
+                    figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_IEXT) ;
                     fprintf('Writing %s \n',figdir)
                     
                     try
@@ -1019,7 +975,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
 
     if strcmp(file,'MeanRates')
         % try
-        %     data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
+        %     data = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
         %     for i=2:length(data(1,:))
         %         IdvRates(i) = mean(data(:,i)) ;
         %     end
@@ -1044,8 +1000,10 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
         %     PopRate = [] ;
         % end
 
-        data = ImportData(model,nbpop,dir,'Mean',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
+        data = ImportData(model,nbpop,dir,'Mean',N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr,IF_Dij,Dij) ;
         tps = data(:,1)/1000 ;
+        
+        PopRate = [] ;
         for i=1:nbpop
             PopRate(i,:) = data(:,i+1) ;
         end
@@ -1064,8 +1022,8 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
         
         drawnow ;
         hold off ;
-        xlim([0 2])
-        ylim([0 10])
+        % xlim([0 2])
+        % ylim([0 10])
         % figname=sprintf('AC') ;
         % fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
         % for i=1:nbpop
@@ -1084,13 +1042,17 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
         % xlabel('Frequency')
         % ylabel('Magnitude')
                 
-        % fprintf('Simuls : ')
-        % fprintf('%.3f | ', MeanRate)
-        % fprintf('\n')
-
+        fprintf('Simuls : ')
+        for i=1:nbpop
+            fprintf('%.3f | ', mean(PopRate(i,:)))
+        end
+        fprintf('\n')
+        
         if(IF_SAVE)
-            
-            figdir = FigDir(model,nbpop,dir,n,K,g,IF_RING,Crec,Cff,IF_IEXT) ;
+
+            xlim([0 2])
+            ylim([0 12])
+            figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_IEXT) ;
             fprintf('Writing %s \n',figdir)
             
             try
@@ -1104,7 +1066,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
 
     if strcmpi(file,'fft')        
         try
-            data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
+            data = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
             for i=2:length(data(1,:))
                 IdvRates(i) = mean(data(:,i)) ;
             end
@@ -1161,7 +1123,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
         open(writerObj);
 
         try
-            data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ;
+            data = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ;
         end
 
         binLength = length(data(:,1)) ;
@@ -1238,7 +1200,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
         fig = figure('Name',figname,'NumberTitle','off') ;
 
         try
-            data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ;
+            data = ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ;
         end
 
         binLength = length(data(:,1)) ;
@@ -1300,7 +1262,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
     if strcmpi(file,'Bump2D')
         
         try
-            data=ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr);
+            data=ImportData(model,nbpop,dir,'IdvRates',N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr);
         end
         
         binLength = length(data(:,1)) ;
@@ -1342,50 +1304,19 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
 
     %%%%%%%%%%%%%%%%%%%%%
 
-    function out = CVfunc(ISI)
-        out = sqrt(var(ISI))./mean(ISI) ;
-    end
+    CVfunc = @(ISI) sqrt(var(ISI))./mean(ISI) ;
 
-    function out = CV2func(ISI)
-        dISI = abs(ISI(1:end-1)-ISI(2:end)) ;
-        sumISI = ISI(1:end-1)+ISI(2:end) ;
-        out = 2.* mean( dISI )./mean( sumISI ) ;
-    end
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    function out = SmoothSignal(x)
-        windowSize = 5 ; 
-        Tw = (1./windowSize).*ones(1,windowSize) ; 
-        % Tw = ones(1,length(x))/length(x) ;
-        out = filter(Tw,.08,x) ;
-    end
-
-    function out = M1Component(x)
-        dPhi = pi./length(x) ;
-        y = 1:length(x) ;
-        out = 2.*abs(x*exp(-2j.*y.*dPhi).' )./length(x) ;
-    end
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    function out = NthFourierMoment(x, n, phaseShift)
-        out = [] ;
-        nPoints = length(x) ;
-        if(n==0)
-            preFactor = 1 ;
-        else
-            preFactor = 2 * n ;
-        end
-        y = linspace(0, pi, nPoints) - phaseShift ;
-        out = preFactor.*x*cos(2.*n.*y).'./nPoints ;
-    end
+    % function out = CV2func(ISI)
+    %     dISI = abs(ISI(1:end-1)-ISI(2:end)) ;
+    %     sumISI = ISI(1:end-1)+ISI(2:end) ;
+    %     out = 2.* mean( dISI )./mean( sumISI ) ;
+    % end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     if strfind(file,'file')
         try
-            data = ImportData(model,nbpop,dir,file,n,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
+            data = ImportData(model,nbpop,dir,file,N,K,g,IF_RING,Crec,Cff,IF_IEXT,nPrtr,Iprtr) ; 
         catch
             fprintf(' FILE NOT FOUND \n')
             return ;
@@ -1427,7 +1358,7 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
 
         if(IF_SAVE)
             
-            figdir = FigDir(model,nbpop,dir,n,K,g,IF_RING,Crec,Cff) ;
+            figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff) ;
             fprintf('Writing %s \n',figdir)
             
             try
@@ -1438,5 +1369,3 @@ function CheckBal(model,nbpop,dir,Iext,K,file,n,g,IF_Nk,IF_RING,Crec,Cff,IF_IEXT
         end
         
     end
-
-end

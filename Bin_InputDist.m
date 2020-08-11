@@ -1,4 +1,4 @@
-function [u a b] = Bin_InputDist(nbpop,dir,Iext,K,theta,IF_DISP)
+function [u a b] = Bin_InputDist(model,nbpop,dir,Iext,K,theta,IF_DISP,u,a)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % function [u a b] = Bin_InputDist(nbpop,dir,Iext,K,theta)
 % Computes input distribution for binary network in 
@@ -10,7 +10,7 @@ function [u a b] = Bin_InputDist(nbpop,dir,Iext,K,theta,IF_DISP)
     warning off ;
 
     if(isempty(Iext))
-        Iext = ExternalInput('Binary',nbpop,dir) ;
+        Iext = ExternalInput(model,nbpop,dir) ;
     end
 
     if nargin<5
@@ -19,13 +19,25 @@ function [u a b] = Bin_InputDist(nbpop,dir,Iext,K,theta,IF_DISP)
     if nargin<6 
         IF_DISP = true ;
     end
-    
-    J = ImportJab('Binary',nbpop,dir) ;
+
+    b=zeros(1,nbpop) ;
+     
+    J = ImportJab(model,nbpop,dir) ;
     J2 = J.*J ;
 
     detJ = det(J) ;
     MFRates = linsolve(J,-Iext.') ;
 
+    D = [[1 1 1]; [1 1 1] ;[1 0 0]] ;
+    %D = [[1 1 1]; [1 1 1] ;[1/sqrt(K) 1/sqrt(K) 0]] ;
+    
+    for i=1:nbpop
+        for j=1:nbpop
+            J(i,j) = J(i,j) * D(i,j) ; 
+            J2(i,j) = J2(i,j) * D(i,j) * D(i,j) ; 
+        end
+    end
+    
     if IF_DISP
         fprintf('MF Rates : ')
         fprintf('%.3f | ',MFRates)
@@ -35,15 +47,38 @@ function [u a b] = Bin_InputDist(nbpop,dir,Iext,K,theta,IF_DISP)
     flag = 0 ;
     ntrial = 0 ;
     ntrialmax = 500 ;
-    xmax = 1 ;
-    x = zeros(1,2.*nbpop) ;
+    xmax = 1 ; 
+    x0 = zeros(1,2.*nbpop) ;
     %% x(1:nbpop) = -xmax + 2.*xmax*rand(1,nbpop) ;
     
-    rd = - xmax + 2*xmax*rand ;
-    sig = 2*xmax*rand ;
-    x(1:nbpop) = normrnd(rd,sig,1,nbpop) ;
-    x(nbpop+1:end) = xmax*rand(1,nbpop) ;
-    
+    % XMAX = xmax*rand ;
+    % rd = - XMAX + 2*XMAX*rand ;
+    % sig = 2*XMAX*rand ;
+    % x(1:nbpop) = normrnd(rd,sig,1,nbpop) ;
+    % x(nbpop+1:end) = XMAX*rand(1,nbpop) ;
+    if(nargin<9) 
+            for i=1:nbpop
+                XMAX = xmax*rand ;
+                rd = - XMAX + 2*XMAX*rand ; 
+                sig = XMAX*rand ; 
+                x0(i) = normrnd(rd,sig) ;
+                x0(i+nbpop) = XMAX*rand ;
+            end
+    else 
+        if( ~isempty(u) )
+            x0(1:nbpop) = u ;
+            x0(nbpop+1:end) = a ; 
+        else
+            for i=1:nbpop
+                XMAX = xmax*rand ;
+                rd = - XMAX + 2*XMAX*rand ; 
+                sig = XMAX*rand ; 
+                x0(i) = normrnd(rd,sig) ;
+                x0(i+nbpop) = XMAX*rand ;
+            end
+        end
+    end
+         
     if IF_DISP
         fprintf('CI : ')
         fprintf('%.3f | ', x)
@@ -55,17 +90,17 @@ function [u a b] = Bin_InputDist(nbpop,dir,Iext,K,theta,IF_DISP)
     options = optimset('Display','off') ;
     TOLERANCE = 1E-5 ;
     fval = 0 ;
-    
-    Rates = 0 ;
-    while flag<=0 | any(abs(SelfCstEq(x))>TOLERANCE | all(Rates)<=0 )
+
+    Sol = 0 ;
+    while( flag<=0 || any(abs(SelfCstEq(x))>TOLERANCE) || all(Sol)<=0 )
         try
-            [x,fval,flag] = fsolve(@SelfCstEq,x,options) ;
+            [x,fval,flag] = fsolve(@SelfCstEq,x0,options) ;
             % [u,res,fval,flag] = lsqnonlin(@SelfCstEq,u,[0 0],Inf,options) ;
         end
 
         u = x(1:nbpop) ;
         a = x(nbpop+1:end) ;
-        Rates = QchAvgTF(u,a) ;
+        Sol = QchAvgTF(u,a) ;
 
         if IF_DISP
             fprintf('ntrial %d',ntrial)
@@ -79,11 +114,12 @@ function [u a b] = Bin_InputDist(nbpop,dir,Iext,K,theta,IF_DISP)
             fprintf('\r')
         end
 
-        if flag<=0 | any(abs(SelfCstEq(x))>TOLERANCE) | all(Rates)<=0
-            rd = - xmax + 2*xmax*rand ;
-            sig = 2*xmax*rand ;
-            x(1:nbpop) = normrnd(rd,sig,1,nbpop) ;
-            x(nbpop+1:end) = xmax*rand(1,nbpop) ;
+        if flag<=0 | any(abs(SelfCstEq(x))>TOLERANCE) || all(Sol)<=0
+            XMAX = xmax*rand ;
+            rd = - XMAX + 2*XMAX*rand ;
+            sig = 2*XMAX*rand ;
+            x0(1:nbpop) = normrnd(rd,sig,1,nbpop) ;
+            x0(nbpop+1:end) = XMAX*rand(1,nbpop) ;
             % x(1:nbpop) = -xmax + 2.*xmax*rand(1,nbpop) ;
             % x(nbpop+1:end) = xmax*rand(1,nbpop) ;
         end
@@ -129,9 +165,9 @@ function [u a b] = Bin_InputDist(nbpop,dir,Iext,K,theta,IF_DISP)
         options = optimset('Display','off') ;
         % options = optimset('Display','off','Algorithm','levenberg-marquardt') ;
 
-        while bflag<=0 | any(abs(QchSelfCstEq(b))>TOLERANCE)
-            try
-                [b,fval,bflag] = fsolve(@QchSelfCstEq,b,options) ;
+        while bflag<=0 | any(abs(QchSelfCstEq(b))>TOLERANCE) 
+            try 
+                [b,fval,bflag] = fsolve(@QchSelfCstEq,b,options) ; 
                 % [b,res,fval,flag] = lsqnonlin(@QchSelfCstEq,b,[0 0],a,options) ;
             end
             
@@ -175,7 +211,7 @@ function [u a b] = Bin_InputDist(nbpop,dir,Iext,K,theta,IF_DISP)
         u = x(1:nbpop) ;
         a = x(nbpop+1:end) ;
 
-        Equ = u.'./sqrt(K) - (Iext.'+ J*QchAvgTF(u,a).') ;
+        Equ = u.' - sqrt(K) .* (Iext.'+ J*QchAvgTF(u,a).') ;
         Eqa = a.' - J2*QchAvgTF(u,a).' ;
         Eq = [Equ;Eqa] ;
     end
@@ -208,13 +244,10 @@ function [u a b] = Bin_InputDist(nbpop,dir,Iext,K,theta,IF_DISP)
     
     function out = QchAvgTF(u,a)
         out = zeros(1,nbpop) ;
-        for i=1:nbpop
-            if(a(i)>0)
-                out(i) = .5*erfc( ( theta-u(i) )./sqrt(2.*a(i) ) ) ;
-            else
-                out(i) = 0 ;
-            end
-        end
+        idx = find(a>0) ;
+        nidx= find(a<=0) ;
+        out(idx) = .5*erfc( ( theta-u(idx) )./sqrt(2.*a(idx) ) ) ;
+        out(nidx) = 0 ;
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%

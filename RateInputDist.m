@@ -6,7 +6,7 @@ function [u b] = RateInputDist(model,nbpop,dir,Iext,K,g,J,IF_DISP,u,b)
     if(isempty(Iext)) 
         Iext = ExternalInput(model,nbpop,dir) ;
     end
-    if( nargin<7 | isempty(J) )
+    if( nargin<7 || isempty(J) )
         J = ImportJab(model,nbpop,dir) ;
     end
     if nargin<8
@@ -17,7 +17,7 @@ function [u b] = RateInputDist(model,nbpop,dir,Iext,K,g,J,IF_DISP,u,b)
     J2 = J.*J ; 
     detJ = det(J) ; 
     MFRates = linsolve(J,-Iext.') ; 
-
+    
     if IF_DISP
         fprintf('MF Rates : ')
         fprintf('%.3f | ',MFRates)
@@ -26,7 +26,7 @@ function [u b] = RateInputDist(model,nbpop,dir,Iext,K,g,J,IF_DISP,u,b)
     
     flag = 0 ; 
     ntrial = 0 ; 
-    ntrialmax = 100 ; 
+    ntrialmax = 1000 ; 
     if(K==Inf)
         xmax = g ; 
     else
@@ -35,10 +35,6 @@ function [u b] = RateInputDist(model,nbpop,dir,Iext,K,g,J,IF_DISP,u,b)
     x0 = zeros(1,2*nbpop) ; 
 
     if(nargin<9) 
-        % rd = - xmax + 2*xmax*rand ; 
-        % sig = 2*xmax*rand ; 
-        % x0(1:nbpop) = normrnd(rd,sig,1,nbpop) ; 
-        % x0(nbpop+1:end) = xmax*rand(1,nbpop) ; 
             for i=1:nbpop
                 XMAX = xmax*rand ;
                 rd = - XMAX + 2*XMAX*rand ; 
@@ -77,6 +73,7 @@ function [u b] = RateInputDist(model,nbpop,dir,Iext,K,g,J,IF_DISP,u,b)
     fval = 0 ; 
 
     while flag<=0 || any(abs(SelfCstEq(x0))>TOLERANCE )
+
         [x0,fval,flag] = fsolve(@SelfCstEq,x0,options) ;
 
         if IF_DISP 
@@ -179,14 +176,14 @@ function [u b] = RateInputDist(model,nbpop,dir,Iext,K,g,J,IF_DISP,u,b)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     function out = QchAvgTF2(u,b) 
-        if(b>0)
+        if(b>0) 
             out = (u.^2+b).*Phi( u./sqrt(b) ) + u.*sqrt(b).*phi( u./sqrt(b) ) ; 
         else
-            out = u.^2 ;
+            out = u.^2 ; 
         end
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+    
 end
 

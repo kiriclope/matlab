@@ -1,251 +1,209 @@
-function RatesVsCff(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec,Cff,IF_SAVE,Xlim,Ylim)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% function InputDistdI(model,nbpop,dir,Iext,K,dIlim,IF_DATA,n,g,IF_Nk,IF_RING,Crec,Cff,IF_SAVE,Xlim,Ylim)
-% Plots population time average rate vs the 
-% perturbed input Iext(2)+dI.
-% utils : Rate_InputDist(nbpop,dir,I,K)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    IF_OPS = 0 ;
-    ndI = 2 ;
-    L = 2 ;
-    dI = Iext ;
-    Iext = ExternalInput(model,nbpop,dir) ;
-    % Iext(ndI) = Iext(ndI) + dI ;
+%clear all ; 
+GlobalVars
 
-    warning off ;
-
-    if nargin<7
-        IF_DATA = false ;
-    end 
-
-    if nargin<10
-        IF_Nk = false ;
-    end
-
-    if nargin<11
-        IF_RING = false ;
-    end
-
-    if nargin<14
-        IF_SAVE = false ;
-    end
-
-    if strcmpi(model,'Rates')
-        THRESHOLD = 0 ;
-    else
-        THRESHOLD = .1 ;
-    end
-
-    cl = {[1 0 0] [0 0 1] [0 1 0]  [0.7 0.7 0.7]} ;
-    % cl = {[1 0 0] [0 0 1] [1 0 0] [0 0 1] [0 1 0]  [0.7 0.7 0.7]} ;
-    
-    if( strcmp(IF_RING,'Ring') | strcmp(IF_RING,'Gauss') | strcmp(IF_RING,'Exp') )
-        Cth = .125 ;
-    else
-        Cth = 100 ;
-    end
-
-    if IF_DATA
-        Iprtr = [dIlim(1) dIlim(2) dIlim(3)] ;
-        nbN = nbNeuron(nbpop,n,IF_Nk,[]) ;
-        Cpt = CptNeuron(nbpop,nbN) ;
-        I = Iprtr(1):Iprtr(2):Iprtr(3) ;
-        nb=10 ;
-
-        for i=1:length(I)
-                        
-            try
-                % if(i==1)
-                %     data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,0,0,2,0) ;
-                %     % data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,0,IF_DATA,ndI,Iext(ndI)) ;
-                % else
-                data = ImportData(model,nbpop,dir,'IdvRates',n,K,g,IF_RING,Crec,I(i),IF_DATA,ndI,Cff+Iext(ndI)) ; 
-                % end
-               
-                for j=1:length(data(1,:))-1
-                    IdvRates(i,j) = mean(data(:,j+1)) ;
-                end
-            catch
-                fprintf('FILE NOT FOUND \n')
-                for j=1:n*10000
-                    IdvRates(i,j) = nan ;
-                end
-            end
-
-            fprintf(' Rates ')
-
-            for j=1:nbpop
-
-                X = linspace(-L/2,L/2,length( IdvRates(i,Cpt(j)+1:Cpt(j+1) ) ) ) ;
-                Idv = IdvRates(i,Cpt(j)+1:Cpt(j+1) );
-
-                if(IF_OPS & j==2)
-
-                    Nlength = Cpt(j)+1:Cpt(j+1) ;
-
-                    IdvUp = Idv(OpsIdx) ;
-                    IdvDown = Idv(setdiff(Nlength-Cpt(2),OpsIdx) );
-                    
-                    IdxUp = find(IdvUp>=THRESHOLD) ;
-                    IdxDown = find(IdvDown>=THRESHOLD) ;
-                    
-                    if(i==1)
-                        UpSize = length(IdxUp) ;
-                        DownSize = length(IdxDown) ;
-                    end
-
-                    if( length(IdxUp)==0 )
-                        mUp(i) = 0 ;
-                    else
-                        IdvUp = IdvUp(IdxUp) ;
-                        mUp(i) = sum( IdvUp )./UpSize ;
-                    end                   
-
-                    fprintf('Up %.3f ', mUp(i) )
-                    
-                    if( length(IdxDown)==0 )
-                        mDown(i) = 0 ;
-                    else
-                        IdvDown = IdvDown(IdxDown) ;
-                        mDown(i) = sum( IdvDown )./DownSize ;
-                    end                                                                              
-                    fprintf('Down %.3f ', mDown(i) )
-                end
-
-                nbROI = length(find(abs(X)<=Cth)) ;
-                idx = find(Idv>=THRESHOLD) ;
-
-                if( length(idx)==0 )
-                    m(j,i) = 0 ;
-                else
-
-                    X = X(idx) ;
-                    Idv = Idv(idx) ;
-                    idx = find(abs(X)<=Cth) ; % Cff
-
-                    if( length(idx)==0 )
-                        m(j,i) = 0 ;
-                    else
-                        
-                        X = X(idx) ;
-                        Idv = Idv(idx) ; 
-                        fprintf(' %d %d ',idx(1),idx(length(idx))) 
-                        
-                        m(j,i) = sum( Idv )./nbROI ;
-                    end
-                end
-                fprintf('%.3f ', m(j,i) )
-            end
-            
-            fprintf('\n')
+for i=1:length(v_Cff)   
+    data = ImportData(model, nbpop, dir, 'IdvRates', N, K, g, IF_RING, ...
+                      Crec, v_Cff(i), IF_IEXT, prtrPop, Iext(prtrPop) + Iprtr) ;
+    try
+        for j=1:length(data(1,:))-1 
+            IdvRates(i,j) = mean(data(:,j+1)) ;
         end
-
-        for i=1:nbpop
-            if(i==1 | i==2)
-                figname=sprintf('%s_RatesVsCff_Cth%.3f',dir,2*Cth) ;
-                if(IF_OPS)
-                    figname=sprintf('%s_RatesvsdI_EI_OPS',dir) ;
-                end
-            else
-                figname=sprintf('%s_RatesvsdI_SV_Cth%.3f',dir,2*Cth) ;
-                if(IF_OPS)
-                    figname=sprintf('%s_RatesvsdI_SV_OPS',dir) ;
-                end
-            end
-            if( ishandle( findobj('type','figure','name',figname) ) )
-                fig = findobj('type','figure','name',figname) ; 
-                figure(fig); hold on ; 
-            else
-                fig = figure('Name',figname,'NumberTitle','off') ; hold on ; 
-                xlabel('\delta_{opto}')
-                ylabel('Norm. Rates')
-            end
-
-            if(IF_OPS==0 | i==1)
-                plot(I,m(i,1:end)./m(i,1),'o','MarkerEdgeColor',cl{i},'MarkerSize',2,'MarkerFaceColor','none','LineWidth', 1)
-                plot(I,m(i,1:end)./m(i,1),'-','Color',cl{i})
-            end
-
-            if(IF_OPS & i==2)
-                plot(I-Iext(2),mUp./mUp(1),'^','MarkerEdgeColor','m','MarkerSize',2,'MarkerFaceColor','none','LineWidth', 1) 
-                plot(I-Iext(2),mUp./mUp(1),'-','Color','m')
-
-                % plot(I-Iext(2),mDown./mDown(1),'v','MarkerEdgeColor','g','MarkerSize',2,'MarkerFaceColor','none','LineWidth', 1)
-                % plot(I-Iext(2),mDown./mDown(1),'-','Color','g')
-                 
-                plot(I-Iext(2),m(i,:)./m(i,1),'o','MarkerEdgeColor','b','MarkerSize',2,'MarkerFaceColor','none','LineWidth', 1) 
-                plot(I-Iext(2),m(i,:)./m(i,1),'-','Color','b')
-            end
-
-                            
-            plot([4*Crec(1) 4*Crec(1)],[0 4],'--r', 'linewidth', 1)
-            plot([4*Crec(2) 4*Crec(2)],[0 4],'--b', 'linewidth', 1)
-            if(nbpop>2)
-                plot([4*Crec(3) 4*Crec(3)],[0 4],'--','color',cl{i}, 'linewidth', 1)
-                plot([4*Crec(4) 4*Crec(4)],[0 4],'--','color',cl{i}, 'linewidth', 1)
-            end
-
-            if(i==4)
-                ylim([0 4])
-            else
-                ylim([0 1.5])
-            end
-
-            X = linspace(-L/2,L/2,length( IdvRates(1,Cpt(i)+1:Cpt(i+1) ) ) ) ;
-            idx = find(abs(X)<=Cth) ; % Cff
-
-            % for k=1:25
-            %     nId = randi([idx(1)+Cpt(i) idx(end)+Cpt(i)]) ;
-            %     if IdvRates(1,nId)>THRESHOLD
-            %         patchline(I-Iext(2),IdvRates(:,nId)./IdvRates(1,nId),'linestyle','-','edgecolor',cl{i},'edgealpha',.1) 
-            %     end
-            % end
-             
-            % xlim([.01 100])
-            % set(gca,'Xscale', 'log')
-            % ylim([.01 10])
-            % set(gca,'Yscale', 'log')
-
-            if(IF_SAVE & (i==2 | i==4))
-                
-                figdir = FigDir(model,nbpop,dir,n,K,g,IF_RING,Crec,2,IF_DATA) ;
-                fprintf('Writing %s \n',figdir)
-                
-                try
-                    mkdir(figdir) ;
-                end
-                
-                ProcessFigure(fig, fullfile(figdir,figname)) ;
-            end
-            
-        end
-
-        %ylim([0 2])
         
-        hold off ;
+        fprintf(' Rates ') 
+        for j=1:nbpop 
+            m(j,i) = 0 ; 
+            Rates = IdvRates(i, Cpt(j)+1:Cpt(j+1)) ; 
 
-    end
+            if(i==1) 
+                BL = IdvRates(i, Cpt(j)+1:Cpt(j+1)) ; 
+            end
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            % m(j,i) = ratesCutOff(Rates, BL, THRESHOLD, Cth, DIM,
+            % L) ; 
+            
+            m(j,i) = mean(Rates) ;
+            fprintf('%.3f ', round(m(j,i),3) ) 
 
-    function out = phi(x)
-        out = exp(-x.^2./2)./sqrt(2.*pi);
-    end
+            if(j==prtrPop)
+                if(IF_PROPWEAK)
+                    [mUp(i) mDn(i)] = ratesProp(Rates, BL, THRESHOLD, v_Cff(i)*L/2/sqrt(K), DIM, L) ; 
+                else  
+                    [mUp(i) mDn(i)] = ratesProp(Rates, BL, THRESHOLD, v_Cff(i)*L/2, DIM, L) ; 
+                end 
+                fprintf('%.3f %.3f ', round(mUp(i),3), round(mDn(i),3)) 
+            end
+            
+        end 
+        fprintf('\n')
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    function out = Phi(x)
-        out = .5.*(1+erf( x./sqrt(2) ) ) ;
-    end
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    function out = QchAvgTF(u,b)
-        if(b>0)
-            out = u.*Phi( u./sqrt(b) ) + sqrt(b).*phi( u./sqrt(b) ) ;
-        else
-            out = u ;
+        Gext = Iext ;
+        Gext(prtrPop) = Iext(prtrPop) + v_Cff(i) ;
+        fprintf('MF Rates ') 
+        RatesMF = BalRatesMF(model,nbpop,dir,Gext*.01,J,0) ; 
+        for j=1:nbpop 
+            MFrates(j,i) = RatesMF(j)*1000 ; 
+            fprintf('%.2f ', round(MFrates(j,i),2) ) 
         end
+        fprintf('\n')
+
+     catch
+        for j=1:nbN(nbpop)
+            IdvRates(i,j) = nan ;
+        end
+
+        fprintf(' Rates ') 
+        for j=1:nbpop 
+            m(j,i) = nan ;
+            Rates = IdvRates(i, Cpt(j)+1:Cpt(j+1)) ;
+            fprintf('%.3f ', m(j,i) )
+        end 
+        fprintf('\n')
+        
     end
 
 end
+
+if(~FIGPERPOP)
+    figtitle = sprintf('%s_RatesVsCff',dir) ;
+
+    if( ishandle( findobj('type','figure','name',figtitle) ) )
+        fig = findobj('type','figure','name',figtitle) ; 
+        fig = figure(fig); hold on ; 
+    else
+        fig = figure('Name',figtitle,'NumberTitle','off') ; hold on ; 
+            if(IF_PROP)
+                if(IF_PROPWEAK)
+                    xlabel('p / $\sqrt{K}$') 
+                else
+                    xlabel('p') 
+                end
+            else
+                xlabel('Cff') 
+            end
+
+        if(IF_NORM)
+            ylabel('Norm. Rates') 
+        else
+            ylabel('Rates') 
+        end
+    end
+end
+
+for i=1:nbpop
+    
+    if(FIGPERPOP)
+        if(i==1 || i==2) 
+            figtitle = sprintf('%s_RatesVsCff%s_EI',dir,popList(prtrPop)) ; 
+        else 
+            figtitle = sprintf('%s_RatesVsCff%s_SV',dir,popList(prtrPop)) ; 
+        end
+
+        if( ishandle( findobj('type','figure','name',figtitle) ) )
+            fig = findobj('type','figure','name',figtitle) ; 
+            fig = figure(fig); hold on ; 
+        else
+
+            fig = popPerFig(i,dir,figtitle) ;
+            if(IF_PROP)
+                if(IF_PROPWEAK)
+                    xlabel('p / $\sqrt{K}$') 
+                else
+                    xlabel('p') 
+                end
+            else
+                xlabel('Cff') 
+            end
+            
+            if(IF_NORM)
+                ylabel('Norm. Rates') 
+            else 
+                ylabel('Rates') 
+            end 
+        end
+    end
+
+    if(IF_NORM)
+        NormRates = m(i,:)./m(i,1) ;
+    else
+        NormRates = m(i,:) ;
+    end
+
+    id = find( ~isnan(NormRates) ) ;
+    id = 1:length(v_Cff) ; 
+
+    
+    patchline(abs(v_Cff(id)), NormRates(id), 'linestyle','-','edgecolor',cl{i},'edgealpha',alp,'linewidth',1.5) 
+    plot(abs(v_Cff(id)), NormRates(id), mk,'MarkerEdgeColor', ...
+         cl{i},'MarkerSize',mkSize,'MarkerFaceColor','none','LineWidth', alp) 
+    
+    if(i==prtrPop)
+        NormUp = mUp(:)./mDn(1) ; 
+        NormDn = mDn(:)./mDn(1) ; 
+        
+        patchline(abs(v_Cff(id)), NormUp(id), 'linestyle','-','edgecolor','g','edgealpha',alp,'linewidth',1.5) 
+        plot(abs(v_Cff(id)), NormUp(id), '^','MarkerEdgeColor', ...
+             'g','MarkerSize',mkSize,'MarkerFaceColor','none','LineWidth', alp) 
+        
+        patchline(abs(v_Cff(id)), NormDn(id), 'linestyle','-','edgecolor','m','edgealpha',alp,'linewidth',1.5) 
+        plot(abs(v_Cff(id)), NormDn(id), 'v','MarkerEdgeColor', ...
+             'm','MarkerSize',mkSize,'MarkerFaceColor','none','LineWidth', alp) 
+    end            
+    
+    if( (i==2 || i==4 ) && IF_NORM)
+        if(IF_MF_RATES)
+            if(i==2)
+                for j=1:2
+                    MFpop = MFrates(j,:)./MFrates(j,1) ;
+                    plot(abs(v_Cff(id)), MFpop(id), '--','Color',cl{j}) 
+                end
+            elseif(i==4)
+                for j=3:4
+                    MFpop = MFrates(j,:)./MFrates(j,1) ;
+                    plot(abs(v_Cff(id)), MFpop(id), '--','Color',cl{j}) 
+                end
+            end
+
+        end
+        
+        plot(abs(v_Cff(1:end)),ones(1, length(v_Cff(1:end)) ),'--','Color','k') 
+        
+    end
+    
+    if(IF_IDVTraces) 
+        countUp = 1 ;
+        countDown = 1 ;
+        countMax = 1 ;
+        while countUp+countDown<nbIdv && countMax<100 
+            nId = randi([Cpt(i)+1 Cpt(i+1)]) ; 
+            countMax = countMax + 1 ;
+            
+            if IdvRates(1,nId)>=0
+                
+                if IdvRates(4,nId)./IdvRates(1,nId) >= 1 && countUp<=nbIdv/2
+                    countUp = countUp+1 ;
+                    IdvNormRates = IdvRates(:,nId)./IdvRates(1,nId) ;
+                    patchline(v_Cff(id), IdvNormRates(id), 'linestyle','-','edgecolor',cl{i},'edgealpha',.2,'linewidth',1.5) 
+                    
+                end                    
+                if IdvRates(4,nId)./IdvRates(1,nId) <= 1 && countDown<=nbIdv/2
+                    countDown = countDown+1 ;
+                    IdvNormRates = IdvRates(:,nId)./IdvRates(1,nId) ;
+                    patchline(v_Cff(id), IdvNormRates(id), 'linestyle','-','edgecolor',cl{i},'edgealpha',.2,'linewidth',1.5) 
+                end
+                
+            end
+        end
+    end
+    
+    if(IF_SAVE & (i==2 || i==4)) 
+        figdir = FigDir(model,nbpop,dir,N,K,g,IF_RING,Crec,Cff,IF_IEXT) ;
+        fprintf('Writing %s \n',figdir)
+        try
+            mkdir(figdir) ;
+        end
+        ProcessFigure(fig, fullfile(figdir,figtitle)) ;
+    end
+    
+end
+
+hold off ;

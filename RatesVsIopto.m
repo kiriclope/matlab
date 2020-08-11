@@ -1,16 +1,9 @@
 %clear all ; 
 GlobalVars
 
-Iext = ExternalInput(model,nbpop,dir) ;    
-nbN = nbNeuron(nbpop,N,IF_Nk,[]) ;
-Cpt = CptNeuron(nbpop,nbN) ;
-
-v_Iprtr = v_Iprtr(1):v_Iprtr(2):v_Iprtr(3) ;
-
-J = ImportJab(model,nbpop,dir) ; 
-
-for i=1:length(v_Iprtr)   
-    data = ImportData(model, nbpop, dir, 'IdvRates', N, K, g, IF_RING, Crec, Cff, IF_IEXT, prtrPop, Iext(prtrPop) + v_Iprtr(i) ) ;
+for i=1:length(v_Iprtr) 
+    data = ImportData(model, nbpop, dir, 'IdvRates', N, K, g, IF_RING, ...
+                      Crec, Cff, IF_IEXT, prtrPop, Iext + v_Iprtr(i) ) ;
     try
         for j=1:length(data(1,:))-1 
             IdvRates(i,j) = mean(data(:,j+1)) ;
@@ -56,8 +49,8 @@ for i=1:length(v_Iprtr)
 end
 
 if(~FIGPERPOP)
-    figtitle = sprintf('%s_RatesVsIopto',dir) ;
-    if(IF_LOGSCALE)
+    figtitle = sprintf('%s_RatesVsIopto',dir) ; 
+    if(IF_LOGSCALE) 
         figtitle = sprintf('%s_RatesVsIopto_Log',dir) ;
     else
         figtitle = sprintf('%s_RatesVsIopto_LogX',dir) ;
@@ -98,12 +91,20 @@ for i=1:nbpop
         if(i==1 || i==2) 
             figtitle = sprintf('%s_RatesVsIopto%s_EI',dir,popList(prtrPop)) ; 
             if(IF_LOGSCALE)
-                figtitle = sprintf('%s_RatesVsIopto%sLogEI',dir,popList(prtrPop)) ;
+                if(IF_IDVTraces)
+                    figtitle = sprintf('%s_RatesVsIopto%sIdvLogEI',dir,popList(prtrPop)) ;
+                else
+                    figtitle = sprintf('%s_RatesVsIopto%sLogEI',dir,popList(prtrPop)) ;                    
+                end
             end
         else 
             figtitle = sprintf('%s_RatesVsIopto%s_SV',dir,popList(prtrPop)) ; 
             if(IF_LOGSCALE)
-                figtitle = sprintf('%s_RatesVsIopto%sLogSV',dir,popList(prtrPop)) ;
+                if(IF_IDVTraces)
+                    figtitle = sprintf('%s_RatesVsIopto%sIdvLogSV',dir,popList(prtrPop)) ;
+                else
+                    figtitle = sprintf('%s_RatesVsIopto%sLogSV',dir,popList(prtrPop)) ;
+                end
             end
         end
         if(IF_POWER~=0) 
@@ -130,10 +131,12 @@ for i=1:nbpop
         NormRates = m(i,:) ;
     end
 
+    NormRates(find(NormRates<.01)) = .001 ;
+
     id = find( ~isnan(NormRates) ) ;
     id = IDX:length(v_Iprtr) ; 
 
-    if(~IF_COUNTPIF && ~IF_ROBUST)
+    if( ~IF_COUNTPIF && ~IF_ROBUST )
         % plot(abs(v_Iprtr(id)), NormRates(id), '-','Color',cl{i}) 
         % plot(abs(v_Iprtr(id)), NormRates(id), '+','MarkerEdgeColor',cl{i},'MarkerSize',5,'MarkerFaceColor','none','LineWidth', 1) 
         
@@ -179,29 +182,41 @@ for i=1:nbpop
     end
     
     if(IF_IDVTraces) 
-        countUp = 1 ;
-        countDown = 1 ;
-        countMax = 1 ;
-        while countUp+countDown<nbIdv && countMax<100 
-            nId = randi([Cpt(i)+1 Cpt(i+1)]) ; 
-            countMax = countMax + 1 ;
+        % countUp = 1 ;
+        % countDown = 1 ;
+        % countMax = 1 ;
+        % while countUp+countDown<nbIdv && countMax<100 
+        %     nId = randi([Cpt(i)+1 Cpt(i+1)]) ; 
+        %     countMax = countMax + 1 ;
             
-            if IdvRates(1,nId)>=0
+        %     if IdvRates(1,nId)>=0
                 
-                if IdvRates(4,nId)./IdvRates(1,nId) >= 1 && countUp<=nbIdv/2
-                    countUp = countUp+1 ;
-                    IdvNormRates = IdvRates(:,nId)./IdvRates(1,nId) ;
-                    patchline(v_Iprtr(id), IdvNormRates(id), 'linestyle','-','edgecolor',cl{i},'edgealpha',.2,'linewidth',1.5) 
+        %         if IdvRates(4,nId)./IdvRates(1,nId) >= 1 && countUp<=nbIdv/2
+        %             countUp = countUp+1 ;
+        %             IdvNormRates = IdvRates(:,nId)./IdvRates(1,nId) ;
+        %             patchline(v_Iprtr(id), IdvNormRates(id), 'linestyle','-','edgecolor',cl{i},'edgealpha',.2,'linewidth',1.5) 
                     
-                end                    
-                if IdvRates(4,nId)./IdvRates(1,nId) <= 1 && countDown<=nbIdv/2
-                    countDown = countDown+1 ;
-                    IdvNormRates = IdvRates(:,nId)./IdvRates(1,nId) ;
-                    patchline(v_Iprtr(id), IdvNormRates(id), 'linestyle','-','edgecolor',cl{i},'edgealpha',.2,'linewidth',1.5) 
-                end
+        %         end                    
+        %         if IdvRates(4,nId)./IdvRates(1,nId) <= 1 && countDown<=nbIdv/2
+        %             countDown = countDown+1 ;
+        %             IdvNormRates = IdvRates(:,nId)./IdvRates(1,nId) ;
+        %             patchline(v_Iprtr(id), IdvNormRates(id), 'linestyle','-','edgecolor',cl{i},'edgealpha',.2,'linewidth',1.5) 
+        %         end
                 
-            end
-        end
+        %     end
+        % end
+
+        countMax = 0 ;
+        while countMax<nbIdv(i)
+            nId = randi([Cpt(i)+1 Cpt(i+1)]) ; 
+            if IdvRates(1,nId)>=THRESHOLD 
+                countMax = countMax + 1 ; 
+                IdvNormRates = IdvRates(:,nId)./IdvRates(1,nId) ;
+                IdvNormRates(find(IdvNormRates<.01)) = .001 ;    
+                patchline(v_Iprtr(id), IdvNormRates(id), 'linestyle','-','edgecolor',cl{i},'edgealpha',.2,'linewidth',1.5) 
+            end 
+        end 
+        
     end
     
     if(IF_COUNTPIF)
@@ -225,12 +240,19 @@ for i=1:nbpop
     if(IF_LOGSCALE) 
         xlim([.01 100])
         set(gca,'Xscale', 'log')
+        % curtickX = get(gca,'XTick');
+        % set(gca, 'XTickLabel', cellstr(num2str(curtickX(:)))) ;
         if(prtrPop==1)
             ylim([.1 10])
         else
             ylim([.01 10])
         end
         set(gca,'Yscale', 'log') 
+        % if(IF_IDVTraces)
+        % ylim([.01 100])
+        % end
+        % curtickY = get(gca,'YTick');
+        % set(gca, 'YTickLabel', cellstr(num2str(curtickY(:)))) ;
     else
         if(IF_LOGSCALEX)
             if(nbpop==2)

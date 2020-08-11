@@ -22,8 +22,8 @@ b=[];
 for i=1:length(v_Iprtr) 
 
     Iext(prtrPop) = IextBL(prtrPop) + v_Iprtr(i) ; 
-    Iext(prtrPop+1) = IextBL(prtrPop+1) + v_Iprtr(i) ; 
-    Iext(prtrPop+2) = IextBL(prtrPop+2) + v_Iprtr(i) ; 
+    % Iext(prtrPop+1) = IextBL(prtrPop+1) + v_Iprtr(i) ; 
+    % Iext(prtrPop+2) = IextBL(prtrPop+2) + v_Iprtr(i) ; 
     
     % for j=1:nbpop-1
     %     Iext(j) = max(( C(j) - A(j) ) * v_Iprtr(i) + B(j) , 0) ; 
@@ -44,7 +44,7 @@ for i=1:length(v_Iprtr)
 
     fprintf('P_opto ') 
     %    fprintf('%.3f ', P0 .* ( exp( v_Iprtr(i) ./ I0 ) - 1 ) ) 
-    if(IF_POWER==1)
+    if(IF_POWER==1) 
         %fprintf('%.3f ',  P0 .* ( exp(  v_Iprtr(i) ./ I0 ) - 1 ) ) ;
         fprintf('%.3f ', Pinf ./ ( 1 + exp(-( v_Iprtr(i)*2 - I0 )/Iinf ) ) ) ;
     elseif(IF_POWER==2)  

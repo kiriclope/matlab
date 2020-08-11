@@ -20,10 +20,10 @@ function [m idx RatesOut ROI] = ratesCutOff(Rates1, Rates2, THRESHOLD, Cth, DIM,
             if( length(ROI)==0 )
                 m = .01 ;
             else                
-                RatesOut = RatesCO(ROI) ;
+                RatesOut = RatesCO(ROI) ; 
                 % fprintf(' %d %d ', idx(1), idx(length(idx)))                
                 % m = sum(Rates) ./ sizeROI ; 
-                m = mean(RatesOut) ;
+                m = mean(RatesOut) ; 
             end
             
         else
